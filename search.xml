@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Java NIO Channel</title>
+    <url>/2020/12/24/Java-NIO-Channel/</url>
+    <content><![CDATA[<h1 id="Java-NIO-Channel"><a href="#Java-NIO-Channel" class="headerlink" title="Java NIO Channel"></a>Java NIO Channel</h1><p><code>Java NIO Channels</code> 类似于流，但有一些区别：</p>
+<ul>
+<li>可以从通道中读取数据或写入数据到通道中。流通常是单向的（读或写）。</li>
+<li>通道可以异步读写。</li>
+<li>通道的数据总是被读取到缓冲区中或将缓冲区中数据写入到通道。<a id="more"></a>
+如上所述，将数据从通道读取到缓冲区中，然后将数据从缓冲区写入通道中。这是一个说明：</li>
+</ul>
+<p><img src="http://tutorials.jenkov.com/images/java-nio/overview-channels-buffers.png" alt="Java NIO：通道和缓冲区"></p>
+<h2 id="1-Channel-实现"><a href="#1-Channel-实现" class="headerlink" title="1 Channel 实现"></a>1 Channel 实现</h2><p>以下是 Java NIO 中最重要的 Channel 实现：</p>
+<ul>
+<li>FileChannel</li>
+<li>DatagramChannel</li>
+<li>SocketChannel</li>
+<li>ServerSocketChannel</li>
+</ul>
+<p><code>FileChannel</code>从文件中读取和写入数据。</p>
+<p><code>DatagramChannel</code>可以通过 UDP 读取和写入网络数据。</p>
+<p><code>SocketChannel</code>可以通过 TCP 读取和写入网络数据。</p>
+<p><code>ServerSocketChannel</code> 可以监听新的 TCP 连接，像 Web 服务器一样，为每个新的 TCP 连接创建一个<code>SocketChannel</code>。</p>
+<h2 id="2-Channel-简单示例"><a href="#2-Channel-简单示例" class="headerlink" title="2 Channel 简单示例"></a>2 Channel 简单示例</h2><p>这是一个简单示例，该示例使用 <code>FileChannel</code> 将一些数据读取到 <code>Buffer</code>：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">RandomAccessFile accessFile = <span class="keyword">new</span> RandomAccessFile(<span class="string">&quot;data/nio-data.txt&quot;</span>, <span class="string">&quot;rw&quot;</span>);</span><br><span class="line">FileChannel inChannel = accessFile.getChannel();</span><br><span class="line"></span><br><span class="line"><span class="comment">// create buffer with capacity 48 bytes.</span></span><br><span class="line">ByteBuffer buffer = ByteBuffer.allocate(<span class="number">48</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// read into buffer</span></span><br><span class="line"><span class="keyword">int</span> bytesRead = inChannel.read(buffer);</span><br><span class="line"><span class="keyword">while</span> (bytesRead != -<span class="number">1</span>) &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;Read &quot;</span> + bytesRead);</span><br><span class="line">    <span class="comment">// make buffer ready for read.</span></span><br><span class="line">    buffer.flip();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (buffer.hasRemaining()) &#123;</span><br><span class="line">        <span class="comment">// read 1 byte at a time.</span></span><br><span class="line">        System.out.println((<span class="keyword">char</span>) buffer.get());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// make buffer ready for writing.</span></span><br><span class="line">    buffer.clear();</span><br><span class="line">    bytesRead = inChannel.read(buffer);</span><br><span class="line">&#125;</span><br><span class="line">accessFile.close();</span><br></pre></td></tr></table></figure>
+<p>注意 <code>buf.flip()</code> 的调用。首先，读入数据到缓冲区，然后反转 Buffer，再从 Buffer 中读取数据。在下一节有关 <code>Buffer</code> 的文档中，将对此进行详细的说明。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>NIO</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java NIO 教程</title>
+    <url>/2020/12/24/Java-NIO-%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="Java-NIO-教程"><a href="#Java-NIO-教程" class="headerlink" title="Java NIO 教程"></a>Java NIO 教程</h1><p>本系列教程翻译自 Jakob Jenkov 的文章，原文链接：<a href="http://tutorials.jenkov.com/java-nio/index.html">http://tutorials.jenkov.com/java-nio/index.html</a></p>
+<a id="more"></a>
+<p>Java NIO（New IO）是 Java IO API 的替代品，意味着可以替代标准 Java IO 和 Java Networking API。 Java NIO 提供了与传统 IO API 不同的 IO 编程模型。 注意：有时 NIO 被称为是非阻塞 IO。 但是，这并不是 NIO 最初的意思。 另外，NIO API 的某些部分实际上是阻塞的，例如：文件 API，因此，“非阻塞”标签可能会引起误导。</p>
+<h2 id="1-Java-NIO-Non-blocking-IO（非阻塞-IO）"><a href="#1-Java-NIO-Non-blocking-IO（非阻塞-IO）" class="headerlink" title="1 Java NIO: Non-blocking IO（非阻塞 IO）"></a>1 Java NIO: Non-blocking IO（非阻塞 IO）</h2><p>Java NIO 使您可以使用非阻塞 IO。 例如，线程可以要求通道将数据读入缓冲区，当通道将数据读入缓冲区时，线程可以执行其他操作。 一旦将数据读入缓冲区，线程就可以继续对其进行处理。 将数据写入通道时也是如此。</p>
+<h2 id="2-Java-NIO-Channels-and-Buffers（通道和缓冲区）"><a href="#2-Java-NIO-Channels-and-Buffers（通道和缓冲区）" class="headerlink" title="2 Java NIO: Channels and Buffers（通道和缓冲区）"></a>2 Java NIO: Channels and Buffers（通道和缓冲区）</h2><p>标准的 IO 基于字节流和字符流进行操作的，而 NIO 是基于通道（Channel）和缓冲区（Buffer）进行操作，数据总是从通道读取到缓冲区中，或者从缓冲区写入到通道中。</p>
+<h2 id="3-Java-NIO-Selectors（选择器）"><a href="#3-Java-NIO-Selectors（选择器）" class="headerlink" title="3 Java NIO: Selectors（选择器）"></a>3 Java NIO: Selectors（选择器）</h2><p>Java NIO包含“选择器”的概念。 选择器是一个对象，可以监视多个通道的事件（例如：打开连接，到达数据等）。 因此，单个线程可以监视多个通道以获取数据。</p>
+<h2 id="4-Java-NIO-Concepts"><a href="#4-Java-NIO-Concepts" class="headerlink" title="4 Java NIO Concepts"></a>4 Java NIO Concepts</h2><p>与旧的 Java IO 模型相比，在 Java NIO 中需要学习几个新概念。 这些概念在下面列出：</p>
+<ul>
+<li><a href="http://tutorials.jenkov.com/java-nio/channels.html">Channels</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/buffers.html">Buffers</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/scatter-gather.html">Scatter - Gather</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/channel-to-channel-transfers.html">Channel to Channel Transfers</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/selectors.html">Selectors</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/file-channel.html">FileChannel</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/socketchannel.html">SocketChannel</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/server-socket-channel.html">ServerSocketChannel</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/non-blocking-server.html">Non-blocking Server Design</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/datagram-channel.html">DatagramChannel</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/pipe.html">Pipe</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/nio-vs-io.html">NIO vs. IO</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/path.html">Path</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/files.html">Files</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/asynchronousfilechannel.html">AsynchronousFileChannel</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>NIO</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java NIO 概述</title>
+    <url>/2020/12/23/Java-NIO-%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<h1 id="Java-NIO-概述"><a href="#Java-NIO-概述" class="headerlink" title="Java NIO 概述"></a>Java NIO 概述</h1><p>原文链接：<a href="http://tutorials.jenkov.com/java-nio/overview.html">http://tutorials.jenkov.com/java-nio/overview.html</a></p>
+<a id="more"></a>
+<p>Java NIO 由以下核心组件组成：</p>
+<ul>
+<li>通道</li>
+<li>缓冲区</li>
+<li>选择器</li>
+</ul>
+<p>Java NIO 拥有比这些更多的类和组件，但在我看来 <code>Channel</code>，<code>Buffer</code>  和 <code>Selector</code>构成了 API 的核心。其余组件，例如  <code>Pipe</code> 和 <code>FileLock</code> 仅仅是与三个核心组件结合使用的实用程序类。因此，在本 NIO 概述中，我将重点介绍这三个组件。其他组件在本教程的其他地方以其自己的文本进行了说明。</p>
+<h2 id="1-通道（Channel）和缓冲区（Buffer）"><a href="#1-通道（Channel）和缓冲区（Buffer）" class="headerlink" title="1 通道（Channel）和缓冲区（Buffer）"></a>1 通道（Channel）和缓冲区（Buffer）</h2><p>通常，NIO 中的所有 IO 都从一个 <code>Channel</code> 开始。<code>Channel</code>有点像流。<code>Channel</code> 中的数据可以读入到一个<code>Buffer</code>。数据也可以从一个<code>Buffer</code>写入到<code>Channel</code>。如下图所示：</p>
+<p><img src="http://tutorials.jenkov.com/images/java-nio/overview-channels-buffers.png" alt="Java NIO：通道和缓冲区"></p>
+<p>Java NIO：通道将数据读取到缓冲区中，缓冲区将数据写入通道中</p>
+<p>Java中有几种<code>Channel</code>和<code>Buffer</code>类型。这是<code>Channel</code>Java NIO中主要实现的列表：</p>
+<ul>
+<li>FileChannel</li>
+<li>DatagramChannel</li>
+<li>SocketChannel</li>
+<li>ServerSocketChannel</li>
+</ul>
+<p>如您所见，这些通道涵盖 UDP + TCP 网络 IO 和文件 IO。</p>
+<p>这些类也有一些有趣的接口，但是为了简单起见，我将它们排除在 Java NIO 概述之外。在本 Java NIO 教程的其他文本中将对它们进行解释。</p>
+<p>这是 Java NIO 中 <code>Buffer</code> 的关键的实现：</p>
+<ul>
+<li>ByteBuffer</li>
+<li>CharBuffer</li>
+<li>DoubleBuffer</li>
+<li>FloatBuffer</li>
+<li>IntBuffer</li>
+<li>LongBuffer</li>
+<li>ShortBuffer</li>
+</ul>
+<p>这些 <code>Buffer</code> 包括了您可以通过 IO 发送的基本数据类型：byte, short, int, long, float, double 和 char。</p>
+<p>Java NIO 还有与内存映射文件结合使用的 <code>MappedByteBuffer</code> ，不过，不在 <code>Buffer</code>  概述中说明。</p>
+<h2 id="2-选择器（Selectors）"><a href="#2-选择器（Selectors）" class="headerlink" title="2 选择器（Selectors）"></a>2 选择器（Selectors）</h2><p><code>Selector</code> 允许单线程处理多个 <code>Channel</code>。如果您的应用程序打开了很多个连接（通道），但每个连接的流量很少，使用 <code>Selector</code> 就会很方便。例如，在聊天服务器中。</p>
+<p>这是使用一个 <code>Selector</code> 来处理 3 个 <code>Channel</code> 的示意图：</p>
+<p><img src="http://tutorials.jenkov.com/images/java-nio/overview-selectors.png" alt="Java NIO：选择器"></p>
+<p>要想使用 <code>Selector</code>，需要向 <code>Selector</code> 注册 <code>Channel</code>，然后，调用  <code>select()</code> 方法。该方法会一直阻塞，直到有一个已注册通道有事件准备就绪。方法返回后，线程就会处理这些事件。事件可以是传入连接，接收到的数据等。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>NIO</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SpringBoot 线程池（一）：使用同步线程池</title>
+    <url>/2020/12/21/SpringBoot-%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BD%BF%E7%94%A8%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/</url>
+    <content><![CDATA[<h1 id="SpringBoot-线程池（一）：使用同步线程池"><a href="#SpringBoot-线程池（一）：使用同步线程池" class="headerlink" title="SpringBoot 线程池（一）：使用同步线程池"></a>SpringBoot 线程池（一）：使用同步线程池</h1><a id="more"></a>
+<h2 id="1-创建任务"><a href="#1-创建任务" class="headerlink" title="1 创建任务"></a>1 创建任务</h2><h3 id="1-1-创建同步任务类-SyncTask"><a href="#1-1-创建同步任务类-SyncTask" class="headerlink" title="1.1 创建同步任务类 SyncTask"></a>1.1 创建同步任务类 SyncTask</h3><p>创建同步任务类 <code>SyncTask</code>，添加 <code>@Component</code> 注释</p>
+<h3 id="1-2-创建需要执行的任务"><a href="#1-2-创建需要执行的任务" class="headerlink" title="1.2 创建需要执行的任务"></a>1.2 创建需要执行的任务</h3><p>为了测试方便，只打印一行信息</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 同步任务</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sync</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName() + <span class="string">&quot;：sync execute task...&quot;</span>);</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="1-3-创建线程池、任务执行调用方法"><a href="#1-3-创建线程池、任务执行调用方法" class="headerlink" title="1.3 创建线程池、任务执行调用方法"></a>1.3 创建线程池、任务执行调用方法</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/** 同步任务线程池 */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ExecutorService executorService = <span class="keyword">new</span> ThreadPoolExecutor(<span class="number">10</span>, <span class="number">20</span>, <span class="number">60L</span>,</span><br><span class="line">	TimeUnit.MILLISECONDS, <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;(<span class="number">50</span>),</span><br><span class="line">	<span class="keyword">new</span> ThreadFactoryBuilder().setNameFormat(<span class="string">&quot;sync-task-thread-pool-%d&quot;</span>).build());</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 执行方法</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 提交任务给线程池</span></span><br><span class="line">    executorService.submit(<span class="keyword">this</span>::sync);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="1-4-SyncTask-类完整代码"><a href="#1-4-SyncTask-类完整代码" class="headerlink" title="1.4 SyncTask 类完整代码"></a>1.4 SyncTask 类完整代码</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SyncTask</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** 同步任务线程池 */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ExecutorService executorService = <span class="keyword">new</span> ThreadPoolExecutor(<span class="number">10</span>, <span class="number">20</span>, <span class="number">60L</span>,</span><br><span class="line">            TimeUnit.MILLISECONDS, <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;(<span class="number">50</span>),</span><br><span class="line">            <span class="keyword">new</span> ThreadFactoryBuilder().setNameFormat(<span class="string">&quot;sync-task-thread-pool-%d&quot;</span>).build());</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 同步任务</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sync</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot;：sync execute task...&quot;</span>);</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 执行方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 提交任务给线程池</span></span><br><span class="line">        executorService.submit(<span class="keyword">this</span>::sync);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-创建单元测试进行测试"><a href="#2-创建单元测试进行测试" class="headerlink" title="2 创建单元测试进行测试"></a>2 创建单元测试进行测试</h2><p>本次使用 <code>JUnit5</code> 进行测试，完整代码如下：</p>
+<h3 id="2-1-不使用线程池"><a href="#2-1-不使用线程池" class="headerlink" title="2.1 不使用线程池"></a>2.1 不使用线程池</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StudyApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	SyncTask syncTask;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">syncWithoutThreadPool</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;start execute task...&quot;</span>);</span><br><span class="line">		<span class="keyword">long</span> startTime = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span> ; i++) &#123;</span><br><span class="line">			syncTask.sync();</span><br><span class="line">		&#125;</span><br><span class="line">        </span><br><span class="line">		<span class="keyword">long</span> endTime = System.currentTimeMillis();</span><br><span class="line">		System.out.println(<span class="string">&quot;total time：&quot;</span> + (endTime - startTime));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>打印日志结果：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">start execute task...</span><br><span class="line">main：sync execute task...</span><br><span class="line">main：sync execute task...</span><br><span class="line">main：sync execute task...</span><br><span class="line">main：sync execute task...</span><br><span class="line">main：sync execute task...</span><br><span class="line">main：sync execute task...</span><br><span class="line">main：sync execute task...</span><br><span class="line">main：sync execute task...</span><br><span class="line">main：sync execute task...</span><br><span class="line">main：sync execute task...</span><br><span class="line">total time：10117</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-使用线程池"><a href="#2-2-使用线程池" class="headerlink" title="2.2 使用线程池"></a>2.2 使用线程池</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StudyApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	SyncTask syncTask;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">syncWithThreadPool</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;start execute task...&quot;</span>);</span><br><span class="line">		<span class="keyword">long</span> startTime = System.currentTimeMillis();</span><br><span class="line">        </span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span> ; i++) &#123;</span><br><span class="line">			syncTask.execute();</span><br><span class="line">		&#125;</span><br><span class="line">        </span><br><span class="line">		<span class="keyword">long</span> endTime = System.currentTimeMillis();</span><br><span class="line">		System.out.println(<span class="string">&quot;total time：&quot;</span> + (endTime - startTime));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>打印日志结果：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">start execute task...</span><br><span class="line">sync-task-thread-pool-0：sync execute task...</span><br><span class="line">sync-task-thread-pool-1：sync execute task...</span><br><span class="line">sync-task-thread-pool-2：sync execute task...</span><br><span class="line">sync-task-thread-pool-3：sync execute task...</span><br><span class="line">sync-task-thread-pool-4：sync execute task...</span><br><span class="line">sync-task-thread-pool-5：sync execute task...</span><br><span class="line">sync-task-thread-pool-6：sync execute task...</span><br><span class="line">sync-task-thread-pool-7：sync execute task...</span><br><span class="line">sync-task-thread-pool-8：sync execute task...</span><br><span class="line">total time：2</span><br><span class="line">sync-task-thread-pool-9：sync execute task...</span><br></pre></td></tr></table></figure>
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3 总结"></a>3 总结</h2><p>由上述结果可见：使用线程池执行批量任务速度要快。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>SpringBoot</tag>
+        <tag>JUC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SpringBoot 线程池（二）：使用异步线程池</title>
+    <url>/2020/12/21/SpringBoot-%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E4%BD%BF%E7%94%A8%E5%BC%82%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/</url>
+    <content><![CDATA[<h1 id="SpringBoot-线程池（二）：使用异步线程池"><a href="#SpringBoot-线程池（二）：使用异步线程池" class="headerlink" title="SpringBoot 线程池（二）：使用异步线程池"></a>SpringBoot 线程池（二）：使用异步线程池</h1><a id="more"></a>
+<h2 id="1-创建异步线程池配置"><a href="#1-创建异步线程池配置" class="headerlink" title="1 创建异步线程池配置"></a>1 创建异步线程池配置</h2><h3 id="1-1-配置线程池属性"><a href="#1-1-配置线程池属性" class="headerlink" title="1.1 配置线程池属性"></a>1.1 配置线程池属性</h3><p>在 <code>application.properties</code> 配置文件中添加异步线程池的相关属性</p>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 异步线程池相关属性</span></span><br><span class="line"><span class="meta">asyncThreadPool.corePoolSize</span> = <span class="string">10</span></span><br><span class="line"><span class="meta">asyncThreadPool.maxPoolSize</span> = <span class="string">20</span></span><br><span class="line"><span class="meta">asyncThreadPool.queueCapacity</span> = <span class="string">50</span></span><br><span class="line"><span class="meta">asyncThreadPool.keepAliveSeconds</span> = <span class="string">60</span></span><br><span class="line"><span class="meta">asyncThreadPool.threadNamePrefix</span> = <span class="string">async-task-thread-pool-%d</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-2-创建线程池配置类"><a href="#1-2-创建线程池配置类" class="headerlink" title="1.2 创建线程池配置类"></a>1.2 创建线程池配置类</h3><p>创建 <code>AsyncConfig</code> 类并添加 <code>@Configuration</code> 注释，完整配置如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 异步线程池配置</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;asyncThreadPool.corePoolSize&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> corePoolSize;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;asyncThreadPool.maxPoolSize&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> maxPoolSize;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;asyncThreadPool.queueCapacity&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> queueCapacity;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;asyncThreadPool.keepAliveSeconds&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> keepAliveSeconds;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;asyncThreadPool.threadNamePrefix&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String threadNamePrefix;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Executor <span class="title">asyncExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ThreadPoolTaskExecutor threadPoolTaskExecutor = <span class="keyword">new</span> ThreadPoolTaskExecutor();</span><br><span class="line">        threadPoolTaskExecutor.setCorePoolSize(corePoolSize);</span><br><span class="line">        threadPoolTaskExecutor.setMaxPoolSize(maxPoolSize);</span><br><span class="line">        threadPoolTaskExecutor.setQueueCapacity(queueCapacity);</span><br><span class="line">        threadPoolTaskExecutor.setKeepAliveSeconds(keepAliveSeconds);</span><br><span class="line">        threadPoolTaskExecutor.setThreadNamePrefix(threadNamePrefix);</span><br><span class="line">        threadPoolTaskExecutor.initialize();</span><br><span class="line">        <span class="keyword">return</span> threadPoolTaskExecutor;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-创建任务"><a href="#2-创建任务" class="headerlink" title="2 创建任务"></a>2 创建任务</h2><h3 id="2-1-创建异步任务类-SyncTask"><a href="#2-1-创建异步任务类-SyncTask" class="headerlink" title="2.1 创建异步任务类 SyncTask"></a>2.1 创建异步任务类 SyncTask</h3><p>创建同步任务类 <code>AsyncTask</code>，添加 <code>@Component</code> 注释</p>
+<h3 id="2-2-创建需要执行的任务"><a href="#2-2-创建需要执行的任务" class="headerlink" title="2.2 创建需要执行的任务"></a>2.2 创建需要执行的任务</h3><p>为了测试方便，只打印一行信息，异步任务需要添加 <code>@Async</code> 注解。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Async(&quot;asyncExecutor&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName() + <span class="string">&quot;：async execute task...&quot;</span>);</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-SyncTask-类完整代码"><a href="#2-3-SyncTask-类完整代码" class="headerlink" title="2.3  SyncTask 类完整代码"></a>2.3  SyncTask 类完整代码</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncTask</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Async(&quot;asyncExecutor&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">&quot;：async execute task...&quot;</span>);</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-创建单元测试进行测试"><a href="#2-创建单元测试进行测试" class="headerlink" title="2 创建单元测试进行测试"></a>2 创建单元测试进行测试</h2><p>本次使用 <code>JUnit5</code> 进行测试，完整代码如下：</p>
+<h3 id="2-1-无返回值"><a href="#2-1-无返回值" class="headerlink" title="2.1 无返回值"></a>2.1 无返回值</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StudyApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	AsyncTask asyncTask;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">asyncWithThreadPool</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;start execute task...&quot;</span>);</span><br><span class="line">		<span class="keyword">long</span> startTime = System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 无返回值</span></span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span> ; i++) &#123;</span><br><span class="line">			asyncTask.execute();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">long</span> endTime = System.currentTimeMillis();</span><br><span class="line">		System.out.println(<span class="string">&quot;total time：&quot;</span> + (endTime - startTime));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>打印日志结果：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">start execute task...</span><br><span class="line">total time：5</span><br><span class="line">async-task-thread-pool-1：async execute task...</span><br><span class="line">async-task-thread-pool-10：async execute task...</span><br><span class="line">async-task-thread-pool-8：async execute task...</span><br><span class="line">async-task-thread-pool-6：async execute task...</span><br><span class="line">async-task-thread-pool-5：async execute task...</span><br><span class="line">async-task-thread-pool-7：async execute task...</span><br><span class="line">async-task-thread-pool-4：async execute task...</span><br><span class="line">async-task-thread-pool-9：async execute task...</span><br><span class="line">async-task-thread-pool-3：async execute task...</span><br><span class="line">async-task-thread-pool-2：async execute task...</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>SpringBoot</tag>
+        <tag>JUC</tag>
+      </tags>
+  </entry>
+</search>
