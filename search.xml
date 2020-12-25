@@ -117,6 +117,32 @@
       </tags>
   </entry>
   <entry>
+    <title>Redis 基于SpringBoot API的使用</title>
+    <url>/2020/12/26/Redis-%E5%9F%BA%E4%BA%8ESpringBoot-API%E7%9A%84%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="基于-Spring-Boot-的-Redis-使用"><a href="#基于-Spring-Boot-的-Redis-使用" class="headerlink" title="基于 Spring Boot 的 Redis 使用"></a>基于 Spring Boot 的 Redis 使用</h1><a id="more"></a>
+
+<h2 id="1-新建-Spring-Boot-项目"><a href="#1-新建-Spring-Boot-项目" class="headerlink" title="1 新建 Spring Boot 项目"></a>1 新建 Spring Boot 项目</h2><p>本次使用的工具是 <code>IDEA</code>，新建项目，点击 <code>Next</code></p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20201226003848807.png" alt="image-20201226003848807"></p>
+<p><code>NoSQL</code> 中选中 <code>Spring Data Redis</code>，继续点击 <code>Next</code></p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20201226003954727.png" alt="image-20201226003954727"></p>
+<p>选择一个合适的磁盘目录，创建新项目，一个新的项目就创建好了。</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20201226004241036.png" alt="image-20201226004241036"></p>
+<p>可以看到 <code>pom.xml</code> 中引用了 <code>spring-boot-starter-data-redis</code></p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20201226004412233.png" alt="image-20201226004412233"></p>
+<p><code>Maven</code> 依赖如下：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="2-Redis-参数配置"><a href="#2-Redis-参数配置" class="headerlink" title="2 Redis 参数配置"></a>2 Redis 参数配置</h2><p>在 <code>application.properties</code>（也可以是 <code>application.yml</code>）添加 <code>Redis </code> 的参数：</p>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="meta">spring.redis.port</span>=<span class="string">6379</span></span><br><span class="line"><span class="meta">spring.redis.host</span>=<span class="string">127.0.0.1</span></span><br></pre></td></tr></table></figure>
+<h2 id="3-基础-API"><a href="#3-基础-API" class="headerlink" title="3 基础 API"></a>3 基础 API</h2><h3 id="3-1-低级-API"><a href="#3-1-低级-API" class="headerlink" title="3.1 低级 API"></a>3.1 低级 API</h3><h3 id="3-2-高级-API"><a href="#3-2-高级-API" class="headerlink" title="3.2 高级 API"></a>3.2 高级 API</h3><h4 id="3-2-1-RedisTemplate"><a href="#3-2-1-RedisTemplate" class="headerlink" title="3.2.1 RedisTemplate"></a>3.2.1 RedisTemplate</h4><h4 id="3-2-2-StringRedisTemplate"><a href="#3-2-2-StringRedisTemplate" class="headerlink" title="3.2.2 StringRedisTemplate"></a>3.2.2 StringRedisTemplate</h4>]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>SpringBoot</tag>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis 基本数据类型 Hashes</title>
     <url>/2020/12/26/Redis-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-Hashes/</url>
     <content><![CDATA[<h1 id="Redis-Hashes"><a href="#Redis-Hashes" class="headerlink" title="Redis Hashes"></a>Redis Hashes</h1><h2 id="1-Hashes简介"><a href="#1-Hashes简介" class="headerlink" title="1 Hashes简介"></a>1 Hashes简介</h2><a id="more"></a>
