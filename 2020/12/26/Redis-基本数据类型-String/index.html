@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Redis Strings1 Strings 简介官网： 这是最简单Redis类型。如果你只用这种类型，Redis就像一个可以持久化的memcached服务器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 基本数据类型 String">
+<meta property="og:url" content="http://example.com/2020/12/26/Redis-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-String/index.html">
+<meta property="og:site_name" content="叶杨树">
+<meta property="og:description" content="Redis Strings1 Strings 简介官网： 这是最简单Redis类型。如果你只用这种类型，Redis就像一个可以持久化的memcached服务器">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-12-25T16:17:32.000Z">
+<meta property="article:modified_time" content="2020-12-25T16:20:31.297Z">
+<meta property="article:author" content="yeyangshu">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2020/12/26/Redis-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-String/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Redis 基本数据类型 String | 叶杨树</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?dc857a740bb405db311eeba15419758c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+	<a target="_blank" rel="noopener" href="https://github.com/Yeyangshu" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">叶杨树</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录成长点滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/26/Redis-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-String/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/%E8%90%A8%E5%8B%92%E8%8A%AC%E5%A6%AE.png">
+      <meta itemprop="name" content="yeyangshu">
+      <meta itemprop="description" content="时光笔记本">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="叶杨树">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis 基本数据类型 String
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-12-26 00:17:32 / 修改时间：00:20:31" itemprop="dateCreated datePublished" datetime="2020-12-26T00:17:32+08:00">2020-12-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/12/26/Redis-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-String/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/12/26/Redis-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-String/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Redis-Strings"><a href="#Redis-Strings" class="headerlink" title="Redis Strings"></a>Redis Strings</h1><h2 id="1-Strings-简介"><a href="#1-Strings-简介" class="headerlink" title="1 Strings 简介"></a>1 Strings 简介</h2><p>官网：</p>
+<p>这是最简单Redis类型。如果你只用这种类型，Redis就像一个可以持久化的memcached服务器</p>
+<a id="more"></a>
+
+<h2 id="2-String-命令"><a href="#2-String-命令" class="headerlink" title="2 String 命令"></a>2 String 命令</h2><h3 id="2-1-help-string"><a href="#2-1-help-string" class="headerlink" title="2.1 help @string"></a>2.1 help @string</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help @string</span><br><span class="line"></span><br><span class="line">  APPEND key value</span><br><span class="line">  summary: Append a value to a key</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  BITCOUNT key [start end]</span><br><span class="line">  summary: Count set bits in a string</span><br><span class="line">  since: 2.6.0</span><br><span class="line"></span><br><span class="line">  BITFIELD key [GET type offset] [SET type offset value] [INCRBY type offset increment] [OVERFLOW WRAP|SAT|FAIL]</span><br><span class="line">  summary: Perform arbitrary bitfield integer operations on strings</span><br><span class="line">  since: 3.2.0</span><br><span class="line"></span><br><span class="line">  BITOP operation destkey key [key ...]</span><br><span class="line">  summary: Perform bitwise operations between strings</span><br><span class="line">  since: 2.6.0</span><br><span class="line"></span><br><span class="line">  BITPOS key bit [start] [end]</span><br><span class="line">  summary: Find first bit set or clear in a string</span><br><span class="line">  since: 2.8.7</span><br><span class="line"></span><br><span class="line">  DECR key</span><br><span class="line">  summary: Decrement the integer value of a key by one</span><br><span class="line">  since: 1.0.0</span><br><span class="line"></span><br><span class="line">  DECRBY key decrement</span><br><span class="line">  summary: Decrement the integer value of a key by the given number</span><br><span class="line">  since: 1.0.0</span><br><span class="line"></span><br><span class="line">  GET key</span><br><span class="line">  summary: Get the value of a key</span><br><span class="line">  since: 1.0.0</span><br><span class="line"></span><br><span class="line">  GETBIT key offset</span><br><span class="line">  summary: Returns the bit value at offset in the string value stored at key</span><br><span class="line">  since: 2.2.0</span><br><span class="line"></span><br><span class="line">  GETRANGE key start end</span><br><span class="line">  summary: Get a substring of the string stored at a key</span><br><span class="line">  since: 2.4.0</span><br><span class="line"></span><br><span class="line">  GETSET key value</span><br><span class="line">  summary: Set the string value of a key and return its old value</span><br><span class="line">  since: 1.0.0</span><br><span class="line"></span><br><span class="line">  INCR key</span><br><span class="line">  summary: Increment the integer value of a key by one</span><br><span class="line">  since: 1.0.0</span><br><span class="line"></span><br><span class="line">  INCRBY key increment</span><br><span class="line">  summary: Increment the integer value of a key by the given amount</span><br><span class="line">  since: 1.0.0</span><br><span class="line"></span><br><span class="line">  INCRBYFLOAT key increment</span><br><span class="line">  summary: Increment the float value of a key by the given amount</span><br><span class="line">  since: 2.6.0</span><br><span class="line"></span><br><span class="line">  MGET key [key ...]</span><br><span class="line">  summary: Get the values of all the given keys</span><br><span class="line">  since: 1.0.0</span><br><span class="line"></span><br><span class="line">  MSET key value [key value ...]</span><br><span class="line">  summary: Set multiple keys to multiple values</span><br><span class="line">  since: 1.0.1</span><br><span class="line"></span><br><span class="line">  MSETNX key value [key value ...]</span><br><span class="line">  summary: Set multiple keys to multiple values, only if none of the keys exist</span><br><span class="line">  since: 1.0.1</span><br><span class="line"></span><br><span class="line">  PSETEX key milliseconds value</span><br><span class="line">  summary: Set the value and expiration in milliseconds of a key</span><br><span class="line">  since: 2.6.0</span><br><span class="line"></span><br><span class="line">  SET key value [expiration EX seconds|PX milliseconds] [NX|XX]</span><br><span class="line">  summary: Set the string value of a key</span><br><span class="line">  since: 1.0.0</span><br><span class="line"></span><br><span class="line">  SETBIT key offset value</span><br><span class="line">  summary: Sets or clears the bit at offset in the string value stored at key</span><br><span class="line">  since: 2.2.0</span><br><span class="line"></span><br><span class="line">  SETEX key seconds value</span><br><span class="line">  summary: Set the value and expiration of a key</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  SETNX key value</span><br><span class="line">  summary: Set the value of a key, only if the key does not exist</span><br><span class="line">  since: 1.0.0</span><br><span class="line"></span><br><span class="line">  SETRANGE key offset value</span><br><span class="line">  summary: Overwrite part of a string at key starting at the specified offset</span><br><span class="line">  since: 2.2.0</span><br><span class="line"></span><br><span class="line">  STRLEN key</span><br><span class="line">  summary: Get the length of the value stored in a key</span><br><span class="line">  since: 2.2.0</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-Strings字符串操作命令详解"><a href="#2-2-Strings字符串操作命令详解" class="headerlink" title="2.2 Strings字符串操作命令详解"></a>2.2 Strings字符串操作命令详解</h3><h4 id="2-2-1-SET-amp-GET"><a href="#2-2-1-SET-amp-GET" class="headerlink" title="2.2.1 SET&amp;GET"></a>2.2.1 SET&amp;GET</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help set</span><br><span class="line"></span><br><span class="line">  SET key value [EX seconds] [PX milliseconds] [NX|XX]</span><br><span class="line">  summary: Set the string value of a key</span><br><span class="line">  since: 1.0.0</span><br><span class="line">  group: string</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; help get</span><br><span class="line"></span><br><span class="line">  GET key</span><br><span class="line">  summary: Get the value of a key</span><br><span class="line">  since: 1.0.0</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>通常用SET command 和 GET command来设置和获取字符串值，值可以是任何种类的字符串（包括二进制数据）</p>
+<ul>
+<li><p>EX：过期时间</p>
+</li>
+<li><p>PX：时间单位</p>
+</li>
+<li><p>NX ：key未创建时则创建，已经创建时不创建。</p>
+<p>用处：分布式锁，一堆人都想删一个文件，很多链接对单线程redis操作，谁成功就拿到锁，其余人失败</p>
+</li>
+<li><p>XX：只能更新，key存在时更新，key不存在时不能更新</p>
+</li>
+</ul>
+<p>案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">set</span>测试</span></span><br><span class="line">127.0.0.1:6379&gt; set k1 hello</span><br><span class="line">OK</span><br><span class="line"><span class="meta">#</span><span class="bash"> get测试</span></span><br><span class="line">127.0.0.1:6379&gt; get k1</span><br><span class="line">&quot;hello&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> nx测试</span></span><br><span class="line">127.0.0.1:6379&gt; set k1 ooxx nx</span><br><span class="line">(nil)</span><br><span class="line">127.0.0.1:6379&gt; get k1</span><br><span class="line">&quot;hello&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> xx测试</span></span><br><span class="line">127.0.0.1:6379&gt; set k2 hello xx</span><br><span class="line">(nil)</span><br><span class="line">127.0.0.1:6379&gt; get k2</span><br><span class="line">(nil)</span><br></pre></td></tr></table></figure>
+<h4 id="2-2-2-MSET-amp-MGET"><a href="#2-2-2-MSET-amp-MGET" class="headerlink" title="2.2.2 MSET&amp;MGET"></a>2.2.2 MSET&amp;MGET</h4><p>同时设置一个或多个 key-value 对。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help mset</span><br><span class="line"></span><br><span class="line">  MSET key value [key value ...]</span><br><span class="line">  summary: Set multiple keys to multiple values</span><br><span class="line">  since: 1.0.1</span><br><span class="line">  group: string</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; help mget</span><br><span class="line"></span><br><span class="line">  MGET key [key ...]</span><br><span class="line">  summary: Get the values of all the given keys</span><br><span class="line">  since: 1.0.0</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 设置[k3,a]，[k4,b]</span></span><br><span class="line">127.0.0.1:6379&gt; mset k3 a k4 b</span><br><span class="line">OK</span><br><span class="line"><span class="meta">#</span><span class="bash"> 获取k3，k4的value</span></span><br><span class="line">127.0.0.1:6379&gt; mget k3 k4</span><br><span class="line">1) &quot;a&quot;</span><br><span class="line">2) &quot;b&quot;</span><br></pre></td></tr></table></figure>
+<h4 id="2-2-3-APPEND"><a href="#2-2-3-APPEND" class="headerlink" title="2.2.3 APPEND"></a>2.2.3 APPEND</h4><p>如果 key 已经存在并且是一个字符串， APPEND 命令将指定的 value 追加到该 key 原来值（value）的末尾。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help append</span><br><span class="line"></span><br><span class="line">  APPEND key value</span><br><span class="line">  summary: Append a value to a key</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; get k1</span><br><span class="line">&quot;hello&quot;</span><br><span class="line">127.0.0.1:6379&gt; append k1 &quot; world&quot;</span><br><span class="line">(integer) 11</span><br><span class="line">127.0.0.1:6379&gt; get k1</span><br><span class="line">&quot;hello world&quot;</span><br></pre></td></tr></table></figure>
+<h4 id="2-2-4-GETRANGE-amp-SETRANGE"><a href="#2-2-4-GETRANGE-amp-SETRANGE" class="headerlink" title="2.2.4 GETRANGE&amp;SETRANGE"></a>2.2.4 GETRANGE&amp;SETRANGE</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help getrange</span><br><span class="line"></span><br><span class="line">  GETRANGE key start end</span><br><span class="line">  summary: Get a substring of the string stored at a key</span><br><span class="line">  since: 2.4.0</span><br><span class="line">  group: string</span><br><span class="line">  </span><br><span class="line">127.0.0.1:6379&gt; help setrange</span><br><span class="line"></span><br><span class="line">  SETRANGE key offset value</span><br><span class="line">  summary: Overwrite part of a string at key starting at the specified offset</span><br><span class="line">  since: 2.2.0</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>GETRANGE：获取存储在指定 key 中字符串的子字符串。字符串的截取范围由 start 和 end 两个偏移量决定(包括 start 和 end 在内)。</p>
+<p>SETRANGE：用 value 参数覆写给定 key 所储存的字符串值，从偏移量 offset 开始。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 此时k1 value=<span class="string">&quot;hello world&quot;</span></span></span><br><span class="line">127.0.0.1:6379&gt; get k1</span><br><span class="line">&quot;hello world&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 取子字符串<span class="string">&quot;world&quot;</span></span></span><br><span class="line">127.0.0.1:6379&gt; GETRANGE k1 6 10</span><br><span class="line">&quot;world&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 逆向索引取值</span></span><br><span class="line">127.0.0.1:6379&gt; GETRANGE k1 6 -1</span><br><span class="line">&quot;world&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 正向索引取值</span></span><br><span class="line">127.0.0.1:6379&gt; GETRANGE k1 0 -1</span><br><span class="line">&quot;hello world&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> SETRANGE</span></span><br><span class="line">127.0.0.1:6379&gt; SETRANGE k1 6 yeyangshu</span><br><span class="line">(integer) 15</span><br><span class="line">127.0.0.1:6379&gt; get k1</span><br><span class="line">&quot;hello yeyangshu&quot;</span><br></pre></td></tr></table></figure>
+<h4 id="2-2-5-STRLEN"><a href="#2-2-5-STRLEN" class="headerlink" title="2.2.5 STRLEN"></a>2.2.5 STRLEN</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help strlen</span><br><span class="line"></span><br><span class="line">  STRLEN key</span><br><span class="line">  summary: Get the length of the value stored in a key</span><br><span class="line">  since: 2.2.0</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>获取指定 key 所储存的字符串值的长度。当 key 储存的不是字符串值时，返回一个错误。</p>
+<p>案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; get k1</span><br><span class="line">&quot;hello yeyangshu&quot;</span><br><span class="line">127.0.0.1:6379&gt; STRLEN k1</span><br><span class="line">(integer) 15</span><br></pre></td></tr></table></figure>
+<h4 id="2-2-6-GETSET"><a href="#2-2-6-GETSET" class="headerlink" title="2.2.6 GETSET"></a>2.2.6 GETSET</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help getset</span><br><span class="line"></span><br><span class="line">  GETSET key value</span><br><span class="line">  summary: Set the string value of a key and return its old value</span><br><span class="line">  since: 1.0.0</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>设置指定 key 的值，并返回 key 的旧值。</p>
+<p>案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; GET k1</span><br><span class="line">&quot;100&quot;</span><br><span class="line">127.0.0.1:6379&gt; GETSET k1 200</span><br><span class="line">&quot;100&quot;</span><br><span class="line">127.0.0.1:6379&gt; GET k1</span><br><span class="line">&quot;200&quot;</span><br></pre></td></tr></table></figure>
+<h4 id="2-2-7-MSETNX"><a href="#2-2-7-MSETNX" class="headerlink" title="2.2.7 MSETNX"></a>2.2.7 MSETNX</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help MSETNX</span><br><span class="line"></span><br><span class="line">  MSETNX key value [key value ...]</span><br><span class="line">  summary: Set multiple keys to multiple values, only if none of the keys exist</span><br><span class="line">  since: 1.0.1</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>同时设置一个或多个 key-value 对，当且仅当所有给定 key 都<strong>不存在</strong>。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 设置k1、k2的值</span></span><br><span class="line">127.0.0.1:6379&gt; MSETNX k1 a k2 b</span><br><span class="line">(integer) 1</span><br><span class="line">127.0.0.1:6379&gt; MGET k1 k2</span><br><span class="line">1) &quot;a&quot;</span><br><span class="line">2) &quot;b&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置k2、k3的值，k2已经存在整体返回失败</span></span><br><span class="line">127.0.0.1:6379&gt; MSETNX k2 c k3 d</span><br><span class="line">(integer) 0</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-Strings数值操作命令详解"><a href="#2-3-Strings数值操作命令详解" class="headerlink" title="2.3 Strings数值操作命令详解"></a>2.3 Strings数值操作命令详解</h3><h4 id="2-3-1-INCR-amp-DECR"><a href="#2-3-1-INCR-amp-DECR" class="headerlink" title="2.3.1 INCR&amp;DECR"></a>2.3.1 INCR&amp;DECR</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help incr</span><br><span class="line"></span><br><span class="line">  INCR key</span><br><span class="line">  summary: Increment the integer value of a key by one</span><br><span class="line">  since: 1.0.0</span><br><span class="line">  group: string</span><br><span class="line">  </span><br><span class="line">127.0.0.1:6379&gt; help decr</span><br><span class="line"></span><br><span class="line">  DECR key</span><br><span class="line">  summary: Decrement the integer value of a key by one</span><br><span class="line">  since: 1.0.0</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>INCR：将 key 中储存的数字值增一。</p>
+<ul>
+<li>如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行 INCR 操作。</li>
+<li>如果值包含错误的类型，或字符串类型的值不能表示为数字，那么返回一个错误。</li>
+</ul>
+<p>DECR：将 key 中储存的数字值减一。</p>
+<ul>
+<li><p>如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行 DECR 操作。</p>
+</li>
+<li><p>如果值包含错误的类型，或字符串类型的值不能表示为数字，那么返回一个错误。</p>
+</li>
+</ul>
+<p>案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> k1原值99</span></span><br><span class="line">127.0.0.1:6379&gt; INCR k1</span><br><span class="line">(integer) 100</span><br><span class="line">127.0.0.1:6379&gt; GET k1</span><br><span class="line">&quot;100&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 不存在k6这个key</span></span><br><span class="line">127.0.0.1:6379&gt; incr k6</span><br><span class="line">(integer) 1</span><br><span class="line">127.0.0.1:6379&gt; get k6</span><br><span class="line">&quot;1&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> k1原值100</span></span><br><span class="line">127.0.0.1:6379&gt; DECR k1</span><br><span class="line">(integer) 99</span><br><span class="line"><span class="meta">#</span><span class="bash"> 不存在k7这个key</span></span><br><span class="line">127.0.0.1:6379&gt; DECR k7</span><br><span class="line">(integer) -1</span><br></pre></td></tr></table></figure>
+<h4 id="2-3-2-INCRBY-amp-DECRBY"><a href="#2-3-2-INCRBY-amp-DECRBY" class="headerlink" title="2.3.2 INCRBY&amp;DECRBY"></a>2.3.2 INCRBY&amp;DECRBY</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help incrby</span><br><span class="line"></span><br><span class="line">  INCRBY key increment</span><br><span class="line">  summary: Increment the integer value of a key by the given amount</span><br><span class="line">  since: 1.0.0</span><br><span class="line">  group: string</span><br><span class="line">  </span><br><span class="line">127.0.0.1:6379&gt; help decrby</span><br><span class="line"></span><br><span class="line">  DECRBY key decrement</span><br><span class="line">  summary: Decrement the integer value of a key by the given number</span><br><span class="line">  since: 1.0.0</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>INCRBY：将 key 中储存的数字加上指定的增量值。</p>
+<ul>
+<li><p>如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行 INCRBY 命令。</p>
+</li>
+<li><p>如果值包含错误的类型，或字符串类型的值不能表示为数字，那么返回一个错误。</p>
+</li>
+</ul>
+<p>DECRBY：将 key 所储存的值减去指定的减量值。</p>
+<ul>
+<li><p>如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行 DECRBY 操作。</p>
+</li>
+<li><p>如果值包含错误的类型，或字符串类型的值不能表示为数字，那么返回一个错误。</p>
+</li>
+</ul>
+<p>案例：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; GET k1</span><br><span class="line"><span class="string">&quot;1&quot;</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; INCRBY k1 <span class="number">10</span></span><br><span class="line">(integer) <span class="number">11</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; GET k1</span><br><span class="line"><span class="string">&quot;11&quot;</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; DECRBY k1 <span class="number">10</span></span><br><span class="line">(integer) <span class="number">1</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; GET k1</span><br><span class="line"><span class="string">&quot;1&quot;</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-3-3-INCRBYFLOAT"><a href="#2-3-3-INCRBYFLOAT" class="headerlink" title="2.3.3 INCRBYFLOAT"></a>2.3.3 INCRBYFLOAT</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help incrbyfloat</span><br><span class="line"></span><br><span class="line">  INCRBYFLOAT key increment</span><br><span class="line">  summary: Increment the float value of a key by the given amount</span><br><span class="line">  since: 2.6.0</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>INCRBYFLOAT：为 key 中所储存的值加上指定的浮点数增量值。</p>
+<ul>
+<li>如果 key 不存在，那么 INCRBYFLOAT 会先将 key 的值设为 0 ，再执行加法操作</li>
+</ul>
+<p>案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; GET k1</span><br><span class="line">&quot;1&quot;</span><br><span class="line">127.0.0.1:6379&gt; INCRBYFLOAT k1 1.1</span><br><span class="line">&quot;2.1&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-Strings位图操作命令详解"><a href="#2-4-Strings位图操作命令详解" class="headerlink" title="2.4 Strings位图操作命令详解"></a>2.4 Strings位图操作命令详解</h3><h4 id="2-4-1-SETBIT"><a href="#2-4-1-SETBIT" class="headerlink" title="2.4.1 SETBIT"></a>2.4.1 SETBIT</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help setbit</span><br><span class="line"></span><br><span class="line">  SETBIT key offset value</span><br><span class="line">  summary: Sets or clears the bit at offset in the string value stored at key</span><br><span class="line">  since: 2.2.0</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>对 key 所储存的字符串值，设置或清除指定偏移量上的位(bit)。</p>
+<p><strong>注意：是二进制位上的偏移，非字节数组</strong></p>
+<p>案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 一个字节有八个二进制位，二进制的值只有0和1</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 将k1二进制位的第2位变为1，00000000 -&gt; 01000000</span></span><br><span class="line">127.0.0.1:6379&gt; SETBIT k1 1 1</span><br><span class="line">(integer) 0</span><br><span class="line"><span class="meta">#</span><span class="bash"> k1长度为一个字节</span></span><br><span class="line">127.0.0.1:6379&gt; STRLEN k1</span><br><span class="line">(integer) 1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 01000000在ASCII码中代表<span class="string">&#x27;@&#x27;</span></span></span><br><span class="line">127.0.0.1:6379&gt; GET k1</span><br><span class="line">&quot;@&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 将k1二进制位的第8位变为1，01000000 -&gt; 01000001</span></span><br><span class="line">127.0.0.1:6379&gt; SETBIT k1 7 1</span><br><span class="line">(integer) 0</span><br><span class="line"><span class="meta">#</span><span class="bash"> 此时还没有超过8位，k1长度为1个字节</span></span><br><span class="line">127.0.0.1:6379&gt; STRLEN k1</span><br><span class="line">(integer) 1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 01000001在ASCII码中代表<span class="string">&#x27;@&#x27;</span></span></span><br><span class="line">127.0.0.1:6379&gt; GET k1</span><br><span class="line">&quot;A&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 将k1二进制位的第10位变为1，01000001 -&gt; 01000001 01000000</span></span><br><span class="line">127.0.0.1:6379&gt; SETBIT k1 9 1</span><br><span class="line">(integer) 0</span><br><span class="line"><span class="meta">#</span><span class="bash"> 此时已经超过8位，k1长度为2个字节</span></span><br><span class="line">127.0.0.1:6379&gt; STRLEN k1</span><br><span class="line">(integer) 2</span><br><span class="line"><span class="meta">#</span><span class="bash"> 01000001 01000000在ASCII码中代表<span class="string">&#x27;A@&#x27;</span></span></span><br><span class="line">127.0.0.1:6379&gt; GET k1</span><br><span class="line">&quot;A@&quot;</span><br></pre></td></tr></table></figure>
+<h4 id="2-4-2-BITPOS"><a href="#2-4-2-BITPOS" class="headerlink" title="2.4.2 BITPOS"></a>2.4.2 BITPOS</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help bitpos</span><br><span class="line"></span><br><span class="line">  BITPOS key bit [start] [end]</span><br><span class="line">  summary: Find first bit set or clear in a string</span><br><span class="line">  since: 2.8.7</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>二进制位<code>1</code>在第几个字节和第几个字节之间最开始的位置</p>
+<p><strong>注意：是字节，不是二进制位</strong></p>
+<p>案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 01000001 01000000</span></span><br><span class="line">127.0.0.1:6379&gt; GET k1</span><br><span class="line">&quot;A@&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 在第一个字节中寻找二进制位为1的第一个位置，结果：下标为1的位置</span></span><br><span class="line">127.0.0.1:6379&gt; BITPOS k1 1 0 0</span><br><span class="line">(integer) 1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 在第二个字节中寻找二进制位为1的第一个位置，结果：下标为9的位置</span></span><br><span class="line">127.0.0.1:6379&gt; BITPOS k1 1 1 1</span><br><span class="line">(integer) 9</span><br><span class="line"><span class="meta">#</span><span class="bash"> 在第一、二个字节中寻找二进制位为1的第一个位置，结果：下标为1的位置</span></span><br><span class="line">127.0.0.1:6379&gt; BITPOS k1 1 0 1</span><br><span class="line">(integer) 1</span><br></pre></td></tr></table></figure>
+<h4 id="2-4-3-BITCOUNT"><a href="#2-4-3-BITCOUNT" class="headerlink" title="2.4.3 BITCOUNT"></a>2.4.3 BITCOUNT</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help bitcount</span><br><span class="line"></span><br><span class="line">  BITCOUNT key [start end]</span><br><span class="line">  summary: Count set bits in a string</span><br><span class="line">  since: 2.6.0</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>计算给定字符串中，被设置为 <code>1</code> 的比特位的数量。</p>
+<ul>
+<li><p>一般情况下，给定的整个字符串都会被进行计数，通过指定额外的 <code>start</code> 或 <code>end</code> 参数，可以让计数只在特定的位上进行。</p>
+</li>
+<li><p>不存在的 <code>key</code> 被当成是空字符串来处理，因此对一个不存在的 <code>key</code> 进行 <code>BITCOUNT</code> 操作，结果为 <code>0</code> 。</p>
+</li>
+</ul>
+<p>案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 01000001 01000000</span></span><br><span class="line">127.0.0.1:6379&gt; GET k1</span><br><span class="line">&quot;A@&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 在第一个字节中计算二进制位为1的数量，结果：2</span></span><br><span class="line">127.0.0.1:6379&gt; BITCOUNT k1 0 0</span><br><span class="line">(integer) 2</span><br><span class="line"><span class="meta">#</span><span class="bash"> 在第二个字节中计算二进制位为1的数量，结果：1</span></span><br><span class="line">127.0.0.1:6379&gt; BITCOUNT k1 1 1 </span><br><span class="line">(integer) 1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 在第一、二个字节中计算二进制位为1的数量，结果：3</span></span><br><span class="line">127.0.0.1:6379&gt; BITCOUNT k1 0 1 </span><br><span class="line">(integer) 3</span><br></pre></td></tr></table></figure>
+<h4 id="2-4-4-BITOP"><a href="#2-4-4-BITOP" class="headerlink" title="2.4.4 BITOP"></a>2.4.4 BITOP</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help bitop</span><br><span class="line"></span><br><span class="line">  BITOP operation destkey key [key ...]</span><br><span class="line">  summary: Perform bitwise operations between strings</span><br><span class="line">  since: 2.6.0</span><br><span class="line">  group: string</span><br></pre></td></tr></table></figure>
+<p>对一个或多个保存二进制位的字符串 <code>key</code> 进行位元操作，并将结果保存到 <code>destkey</code> 上。</p>
+<p><code>operation</code> 可以是 <code>AND</code> 、 <code>OR</code> 、 <code>NOT</code> 、 <code>XOR</code> 这四种操作中的任意一种：</p>
+<ul>
+<li><code>BITOP AND destkey key [key ...]</code> ，对一个或多个 <code>key</code> 求逻辑并，并将结果保存到 <code>destkey</code> 。</li>
+<li><code>BITOP OR destkey key [key ...]</code> ，对一个或多个 <code>key</code> 求逻辑或，并将结果保存到 <code>destkey</code> 。</li>
+<li><code>BITOP XOR destkey key [key ...]</code> ，对一个或多个 <code>key</code> 求逻辑异或，并将结果保存到 <code>destkey</code> 。</li>
+<li><code>BITOP NOT destkey key</code> ，对给定 <code>key</code> 求逻辑非，并将结果保存到 <code>destkey</code> 。</li>
+</ul>
+<p>除了 <code>NOT</code> 操作之外，其他操作都可以接受一个或多个 <code>key</code> 作为输入。</p>
+<p>案例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; SETBIT k1 1 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; SETBIT k1 7 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; get k1</span><br><span class="line">&quot;A&quot;</span><br><span class="line">127.0.0.1:6379&gt; SETBIT k2 1 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; SETBIT k2 6 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; get k2</span><br><span class="line">&quot;B&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 按位与计算k1、k2</span></span><br><span class="line">127.0.0.1:6379&gt; bitop and andkey k1 k2</span><br><span class="line">(integer) 1</span><br><span class="line">127.0.0.1:6379&gt; get andkey</span><br><span class="line">&quot;@&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 按位或计算k1、k2</span></span><br><span class="line">127.0.0.1:6379&gt; bitop or orkey k1 k2</span><br><span class="line">(integer) 1</span><br><span class="line">127.0.0.1:6379&gt; get orkey</span><br><span class="line">&quot;C&quot;</span><br></pre></td></tr></table></figure>
+<h2 id="2-3-String应用场景"><a href="#2-3-String应用场景" class="headerlink" title="2.3 String应用场景"></a>2.3 String应用场景</h2><h3 id="2-3-1-字符串"><a href="#2-3-1-字符串" class="headerlink" title="2.3.1 字符串"></a>2.3.1 字符串</h3><h3 id="2-3-2-数值"><a href="#2-3-2-数值" class="headerlink" title="2.3.2 数值"></a>2.3.2 数值</h3><h3 id="2-3-3-bitmap"><a href="#2-3-3-bitmap" class="headerlink" title="2.3.3 bitmap"></a>2.3.3 bitmap</h3><h4 id="2-3-3-1-用户系统，统计用户登陆天数，且窗口随机"><a href="#2-3-3-1-用户系统，统计用户登陆天数，且窗口随机" class="headerlink" title="2.3.3.1 用户系统，统计用户登陆天数，且窗口随机"></a>2.3.3.1 用户系统，统计用户登陆天数，且窗口随机</h4><p>公司的用户系统，统计未来用户的登陆天数，且窗口随机。比如说在电商的公司当中，统计双十一前一周和后一周用户的登陆天数。</p>
+<ol>
+<li><p>解决方案一：MySQL数据库</p>
+<p>使用MySQL数据库，创建一张用户登录表，用户每次登录可以产生一行记录，登记登陆时间。</p>
+<p>问题：</p>
+<ul>
+<li>关系型数据库表与表之间会有主外键或者关联，关联的 <code>id</code> 可能3、4个字节</li>
+<li>成本复杂度，每张表每行需要存储一个日期，登陆时间，日期也需要至少4个字节</li>
+</ul>
+<p>一个用户的一笔登录就需要消耗8个字节，电商可能有几十万人，每人一年至少登陆200天，这张表的数据量可能非常大；随机窗口进行查询的时候，需要遍历所有的数据，成本非常高！</p>
+</li>
+<li><p>解决方案二：Redis数据库</p>
+<p>成本计算，两个固定的数值，第一个固定的数值就是一年的天数，365或者366，假设一年400天，如果每一天从左向右对应一个二进制位，第一个二进制位代表第一天，第二个二进制位代表第二天，一共400个二进制位，400(位)/ 8=50(字节)，使用50个字节可以记录一个用户全年365天的登录状态。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> yeyangshu第2天登录</span></span><br><span class="line">127.0.0.1:6379&gt; SETBIT yeyangshu 1 1</span><br><span class="line"><span class="meta">#</span><span class="bash"> yeyangshu第8天登录</span></span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; SETBIT yeyangshu 7 1</span><br><span class="line">(integer) 0</span><br><span class="line"><span class="meta">#</span><span class="bash"> yeyangshu第365天登录</span></span><br><span class="line">127.0.0.1:6379&gt; SETBIT yeyangshu 364 1</span><br><span class="line">(integer) 0</span><br><span class="line"><span class="meta">#</span><span class="bash"> 计算总共占用的空间</span></span><br><span class="line">127.0.0.1:6379&gt; STRLEN yeyangshu</span><br><span class="line">(integer) 46</span><br></pre></td></tr></table></figure>
+<p>统计最后两周用户登录的天数</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 统计最后两周yeyangshu登陆天数</span></span><br><span class="line">127.0.0.1:6379&gt; BITCOUNT yeyangshu -2 -1</span><br><span class="line">(integer) 1</span><br></pre></td></tr></table></figure>
+<p>优点：CPU对二进制位的计算速度是最快的，关系型数据库需要从磁盘读取文件，第一个会产生IO，第二个读取磁盘之后，需要将数据解码再参与计算，而且不是二进制位的计算</p>
+</li>
+</ol>
+<h4 id="2-3-3-2-电商做活动，该准备多少礼物"><a href="#2-3-3-2-电商做活动，该准备多少礼物" class="headerlink" title="2.3.3.2 电商做活动，该准备多少礼物"></a>2.3.3.2 电商做活动，该准备多少礼物</h4><p>电商做活动，当天登陆就送礼物，准备多少礼物？假设电商有2亿用户，活动当天登录送礼物，每个人只能送一件，请问库存需要准备多少礼物？</p>
+<p>电商里面有一个基本常识，用户分为僵尸用户、冷热用户（忠诚用户）。</p>
+<p>过往一年中或同比去年的时间范围内或上一个月窗口内，网站有1亿活跃用户或100万活跃用户经常登录，其实根本不是2亿用户，所以最终的目标是活跃用户。</p>
+<p>这也是需要经常做的一个统计：活跃用户统计。活跃用户统计的本质是什么？比如说1号到3号，1号里面有多少人，2号里面有多少人并且还需要去重，如何去设计？</p>
+<p>需求综上：活跃用户统计，随机窗口，连续登录并且去重。</p>
+<p>Redis做法</p>
+<p>日期作为key，20200101，用户id映射到二进制位上。假设小明的id是10，小李的id是1000，二进制位1代表登录，二进制位0代表未登录，假设第一天只有小明登录了，<code>setbit 20200101 10 1</code>，第二天小明和小李都登陆了，<code>setbit 20200102 1000 1</code>，计算1号和2号的活跃用户。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> SETBIT date OFFSET id</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 1号小明登录</span></span><br><span class="line">127.0.0.1:6379&gt; SETBIT 20200101 10 1</span><br><span class="line">(integer) 0</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 2号小明登录</span></span><br><span class="line">127.0.0.1:6379&gt; SETBIT 20200102 10 1</span><br><span class="line">(integer) 0</span><br><span class="line"><span class="meta">#</span><span class="bash"> 2号小李登录</span></span><br><span class="line">127.0.0.1:6379&gt; SETBIT 20200102 1000 1</span><br><span class="line">(integer) 0</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 或运算，参加运算的两个对象，一个为1，其值为1，目的是统计这两天的登录人数</span></span><br><span class="line">127.0.0.1:6379&gt; BITOP or destkey 20200101 20200102</span><br><span class="line">(integer) 126</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> BITCOUNT计算出活跃人数</span></span><br><span class="line">127.0.0.1:6379&gt; BITCOUNT destkey 0 -1</span><br><span class="line">(integer) 2</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>yeyangshu
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2020/12/26/Redis-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-String/" title="Redis 基本数据类型 String">http://example.com/2020/12/26/Redis-基本数据类型-String/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/26/%E4%BD%BF%E7%94%A8ThreadLocal%E5%88%9B%E5%BB%BA%E7%BA%BF%E7%A8%8B%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="prev" title="使用ThreadLocal创建线程上下文">
+      <i class="fa fa-chevron-left"></i> 使用ThreadLocal创建线程上下文
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/26/Redis-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-Lists/" rel="next" title="Redis 基本数据类型 Lists">
+      Redis 基本数据类型 Lists <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-Strings"><span class="nav-number">1.</span> <span class="nav-text">Redis Strings</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Strings-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">1 Strings 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-String-%E5%91%BD%E4%BB%A4"><span class="nav-number">1.2.</span> <span class="nav-text">2 String 命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-help-string"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 help @string</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-Strings%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 Strings字符串操作命令详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-SET-amp-GET"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">2.2.1 SET&amp;GET</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2-MSET-amp-MGET"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">2.2.2 MSET&amp;MGET</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-3-APPEND"><span class="nav-number">1.2.2.3.</span> <span class="nav-text">2.2.3 APPEND</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-4-GETRANGE-amp-SETRANGE"><span class="nav-number">1.2.2.4.</span> <span class="nav-text">2.2.4 GETRANGE&amp;SETRANGE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-5-STRLEN"><span class="nav-number">1.2.2.5.</span> <span class="nav-text">2.2.5 STRLEN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-6-GETSET"><span class="nav-number">1.2.2.6.</span> <span class="nav-text">2.2.6 GETSET</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-7-MSETNX"><span class="nav-number">1.2.2.7.</span> <span class="nav-text">2.2.7 MSETNX</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-Strings%E6%95%B0%E5%80%BC%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 Strings数值操作命令详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-1-INCR-amp-DECR"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">2.3.1 INCR&amp;DECR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-2-INCRBY-amp-DECRBY"><span class="nav-number">1.2.3.2.</span> <span class="nav-text">2.3.2 INCRBY&amp;DECRBY</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-3-INCRBYFLOAT"><span class="nav-number">1.2.3.3.</span> <span class="nav-text">2.3.3 INCRBYFLOAT</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-Strings%E4%BD%8D%E5%9B%BE%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.2.4.</span> <span class="nav-text">2.4 Strings位图操作命令详解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-1-SETBIT"><span class="nav-number">1.2.4.1.</span> <span class="nav-text">2.4.1 SETBIT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-2-BITPOS"><span class="nav-number">1.2.4.2.</span> <span class="nav-text">2.4.2 BITPOS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-3-BITCOUNT"><span class="nav-number">1.2.4.3.</span> <span class="nav-text">2.4.3 BITCOUNT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-4-BITOP"><span class="nav-number">1.2.4.4.</span> <span class="nav-text">2.4.4 BITOP</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-String%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.3.</span> <span class="nav-text">2.3 String应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-number">1.3.1.</span> <span class="nav-text">2.3.1 字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-%E6%95%B0%E5%80%BC"><span class="nav-number">1.3.2.</span> <span class="nav-text">2.3.2 数值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-3-bitmap"><span class="nav-number">1.3.3.</span> <span class="nav-text">2.3.3 bitmap</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-3-1-%E7%94%A8%E6%88%B7%E7%B3%BB%E7%BB%9F%EF%BC%8C%E7%BB%9F%E8%AE%A1%E7%94%A8%E6%88%B7%E7%99%BB%E9%99%86%E5%A4%A9%E6%95%B0%EF%BC%8C%E4%B8%94%E7%AA%97%E5%8F%A3%E9%9A%8F%E6%9C%BA"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">2.3.3.1 用户系统，统计用户登陆天数，且窗口随机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-3-2-%E7%94%B5%E5%95%86%E5%81%9A%E6%B4%BB%E5%8A%A8%EF%BC%8C%E8%AF%A5%E5%87%86%E5%A4%87%E5%A4%9A%E5%B0%91%E7%A4%BC%E7%89%A9"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">2.3.3.2 电商做活动，该准备多少礼物</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="yeyangshu"
+      src="/images/%E8%90%A8%E5%8B%92%E8%8A%AC%E5%A6%AE.png">
+  <p class="site-author-name" itemprop="name">yeyangshu</p>
+  <div class="site-description" itemprop="description">时光笔记本</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Yeyangshu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Yeyangshu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/yeyangshu@163.com" title="E-Mail → yeyangshu@163.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+	  
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=527827288&auto=1&height=32"></iframe>
+	  
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2019-06 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yeyangshu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'FHMmDFWSQowARsSpxYUz4RbY-gzGzoHsz',
+      appKey     : '6yeUKrwCpXsKWc3vMMjPSw5Y',
+      placeholder: "",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
