@@ -117,6 +117,17 @@
       </tags>
   </entry>
   <entry>
+    <title>Redis Hash mapping</title>
+    <url>/2020/12/27/Redis-Hash-mapping/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis 基于SpringBoot API的使用</title>
     <url>/2020/12/26/Redis-%E5%9F%BA%E4%BA%8ESpringBoot-API%E7%9A%84%E4%BD%BF%E7%94%A8/</url>
     <content><![CDATA[<h1 id="基于-Spring-Boot-的-Redis-API-使用"><a href="#基于-Spring-Boot-的-Redis-API-使用" class="headerlink" title="基于 Spring Boot 的 Redis API 使用"></a>基于 Spring Boot 的 Redis API 使用</h1><a id="more"></a>
@@ -236,8 +247,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>SpringBoot</tag>
         <tag>Redis</tag>
+        <tag>SpringBoot</tag>
       </tags>
   </entry>
   <entry>
@@ -602,6 +613,46 @@
       </tags>
   </entry>
   <entry>
+    <title>Redis 序列化器</title>
+    <url>/2020/12/26/Redis-%E5%BA%8F%E5%88%97%E5%8C%96%E5%99%A8/</url>
+    <content><![CDATA[<h1 id="Redis-序列化器"><a href="#Redis-序列化器" class="headerlink" title="Redis 序列化器"></a>Redis 序列化器</h1><a id="more"></a>
+
+<p>从框架的角度来看，Redis 中存储的数据仅为字节。尽管 Redis 本身支持各种类型，但在大多数情况下，它们是指数据的存储方式，而不是其表示的内容。是否将信息转换为字符串或其他对象由用户自己决定。</p>
+<p>Spring Data 中，Redis 可以通过<code>org.springframework.data.redis.serializer</code> 包处理用户（自定义）类型和原始数据之间的转换（反之亦然）。</p>
+<p>该软件包包含两种类型的序列化器，顾名思义，它们负责序列化过程：</p>
+<ul>
+<li>基于的两路串行器的<code>RedisSerializer</code>。</li>
+<li>使用 <code>RedisElementReader</code> 和 <code>RedisElementWriter</code> 的元素读取器和元素写入器。</li>
+</ul>
+<p>两者之间的主要区别在于，<code>RedisSerializer</code> 序列化为 <code>byte[]</code>，而 readers 和 writers 序列化为<code>ByteBuffer</code>。</p>
+<p>接口的截图：</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20201226225711767.png" alt="image-20201226225711767"></p>
+<p>Spring Data Redis 的序列化器提供了多种实现方式：</p>
+<ul>
+<li>GenericToStringSerializer：使用 Spring 转换服务进行序列化。</li>
+<li>GenericJackson2JsonRedisSerializer：将对象序列化为 Json</li>
+<li>Jackson2JsonRedisSerializer：使用 Jackson2，将对象序列化为 Json。</li>
+<li>JdkSerializationRedisSerializer：使用 Java 序列化，<code>RedisCache</code> 和 <code>RedisTemplate</code> 默认使用此方式。</li>
+<li>OxmSerializer：使用 Spring O/X 映射的编排器和解排器实现序列化，用于 XML 序列化。</li>
+<li>StringRedisSerializer：序列化 String 类型的 key 和 value。</li>
+</ul>
+<p>存储格式不仅限于 values，也可以无限制地用于 keys, values 或者 hashes。</p>
+<h2 id="1-默认序列化器"><a href="#1-默认序列化器" class="headerlink" title="1 默认序列化器"></a>1 默认序列化器</h2><p> <code>RedisTemplate</code> 默认使用 <code>JdkSerializationRedisSerializer</code>，<code>StringRedisTemplate </code> 默认使用 <code>StringRedisSerializer</code></p>
+<h2 id="2-自定义序列化器"><a href="#2-自定义序列化器" class="headerlink" title="2 自定义序列化器"></a>2 自定义序列化器</h2><p>如果在实际项目中上述序列化器中没有符合需求的序列化器，或者不使用默认的序列化器，那么可以自定义序列化器。</p>
+<p>例如，使用  <code>RedisTemplate</code>  时，希望 key 是 String 类型，而 value 是 自定义的 Person 类且序列化为 JSON，就可以自定义 key 和 value 的序列化器。</p>
+<p>配置代码如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedisTemplate&lt;String, Person&gt; <span class="title">redisTemplate</span><span class="params">(RedisConnectionFactory cf)</span></span>&#123;</span><br><span class="line">        RedisTemplate&lt;String, Person&gt; redisTemplate = <span class="keyword">new</span> RedisTemplate&lt;&gt;();</span><br><span class="line">        redisTemplate.setConnectionFactory(cf);</span><br><span class="line">        redisTemplate.setKeySerializer(<span class="keyword">new</span> StringRedisSerializer());</span><br><span class="line">        redisTemplate.setValueSerializer(<span class="keyword">new</span> Jackson2JsonRedisSerializer&lt;&gt;(Person.class));</span><br><span class="line">        <span class="keyword">return</span>  redisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Person类：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SpringBoot 线程池（一）：使用同步线程池</title>
     <url>/2020/12/21/SpringBoot-%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BD%BF%E7%94%A8%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/</url>
     <content><![CDATA[<h1 id="SpringBoot-线程池（一）：使用同步线程池"><a href="#SpringBoot-线程池（一）：使用同步线程池" class="headerlink" title="SpringBoot 线程池（一）：使用同步线程池"></a>SpringBoot 线程池（一）：使用同步线程池</h1><a id="more"></a>
@@ -833,46 +884,6 @@
 <p>Redis做法</p>
 <p>日期作为key，20200101，用户id映射到二进制位上。假设小明的id是10，小李的id是1000，二进制位1代表登录，二进制位0代表未登录，假设第一天只有小明登录了，<code>setbit 20200101 10 1</code>，第二天小明和小李都登陆了，<code>setbit 20200102 1000 1</code>，计算1号和2号的活跃用户。</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> SETBIT date OFFSET id</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 1号小明登录</span></span><br><span class="line">127.0.0.1:6379&gt; SETBIT 20200101 10 1</span><br><span class="line">(integer) 0</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 2号小明登录</span></span><br><span class="line">127.0.0.1:6379&gt; SETBIT 20200102 10 1</span><br><span class="line">(integer) 0</span><br><span class="line"><span class="meta">#</span><span class="bash"> 2号小李登录</span></span><br><span class="line">127.0.0.1:6379&gt; SETBIT 20200102 1000 1</span><br><span class="line">(integer) 0</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 或运算，参加运算的两个对象，一个为1，其值为1，目的是统计这两天的登录人数</span></span><br><span class="line">127.0.0.1:6379&gt; BITOP or destkey 20200101 20200102</span><br><span class="line">(integer) 126</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> BITCOUNT计算出活跃人数</span></span><br><span class="line">127.0.0.1:6379&gt; BITCOUNT destkey 0 -1</span><br><span class="line">(integer) 2</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Redis 序列化器</title>
-    <url>/2020/12/26/Redis-%E5%BA%8F%E5%88%97%E5%8C%96%E5%99%A8/</url>
-    <content><![CDATA[<h1 id="Redis-序列化器"><a href="#Redis-序列化器" class="headerlink" title="Redis 序列化器"></a>Redis 序列化器</h1><a id="more"></a>
-
-<p>从框架的角度来看，Redis 中存储的数据仅为字节。尽管 Redis 本身支持各种类型，但在大多数情况下，它们是指数据的存储方式，而不是其表示的内容。是否将信息转换为字符串或其他对象由用户自己决定。</p>
-<p>Spring Data 中，Redis 可以通过<code>org.springframework.data.redis.serializer</code> 包处理用户（自定义）类型和原始数据之间的转换（反之亦然）。</p>
-<p>该软件包包含两种类型的序列化器，顾名思义，它们负责序列化过程：</p>
-<ul>
-<li>基于的两路串行器的<code>RedisSerializer</code>。</li>
-<li>使用 <code>RedisElementReader</code> 和 <code>RedisElementWriter</code> 的元素读取器和元素写入器。</li>
-</ul>
-<p>两者之间的主要区别在于，<code>RedisSerializer</code> 序列化为 <code>byte[]</code>，而 readers 和 writers 序列化为<code>ByteBuffer</code>。</p>
-<p>接口的截图：</p>
-<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20201226225711767.png" alt="image-20201226225711767"></p>
-<p>Spring Data Redis 的序列化器提供了多种实现方式：</p>
-<ul>
-<li>GenericToStringSerializer：使用 Spring 转换服务进行序列化。</li>
-<li>GenericJackson2JsonRedisSerializer：将对象序列化为 Json</li>
-<li>Jackson2JsonRedisSerializer：使用 Jackson2，将对象序列化为 Json。</li>
-<li>JdkSerializationRedisSerializer：使用 Java 序列化，<code>RedisCache</code> 和 <code>RedisTemplate</code> 默认使用此方式。</li>
-<li>OxmSerializer：使用 Spring O/X 映射的编排器和解排器实现序列化，用于 XML 序列化。</li>
-<li>StringRedisSerializer：序列化 String 类型的 key 和 value。</li>
-</ul>
-<p>存储格式不仅限于 values，也可以无限制地用于 keys, values 或者 hashes。</p>
-<h2 id="1-默认序列化器"><a href="#1-默认序列化器" class="headerlink" title="1 默认序列化器"></a>1 默认序列化器</h2><p> <code>RedisTemplate</code> 默认使用 <code>JdkSerializationRedisSerializer</code>，<code>StringRedisTemplate </code> 默认使用 <code>StringRedisSerializer</code></p>
-<h2 id="2-自定义序列化器"><a href="#2-自定义序列化器" class="headerlink" title="2 自定义序列化器"></a>2 自定义序列化器</h2><p>如果在实际项目中上述序列化器中没有符合需求的序列化器，或者不使用默认的序列化器，那么可以自定义序列化器。</p>
-<p>例如，使用  <code>RedisTemplate</code>  时，希望 key 是 String 类型，而 value 是 自定义的 Person 类且序列化为 JSON，就可以自定义 key 和 value 的序列化器。</p>
-<p>配置代码如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedisTemplate&lt;String, Person&gt; <span class="title">redisTemplate</span><span class="params">(RedisConnectionFactory cf)</span></span>&#123;</span><br><span class="line">        RedisTemplate&lt;String, Person&gt; redisTemplate = <span class="keyword">new</span> RedisTemplate&lt;&gt;();</span><br><span class="line">        redisTemplate.setConnectionFactory(cf);</span><br><span class="line">        redisTemplate.setKeySerializer(<span class="keyword">new</span> StringRedisSerializer());</span><br><span class="line">        redisTemplate.setValueSerializer(<span class="keyword">new</span> Jackson2JsonRedisSerializer&lt;&gt;(Person.class));</span><br><span class="line">        <span class="keyword">return</span>  redisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Person类：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
       <categories>
         <category>Java</category>
       </categories>
