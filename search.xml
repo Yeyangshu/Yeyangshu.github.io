@@ -154,6 +154,50 @@
       </tags>
   </entry>
   <entry>
+    <title>Redis 主从复制</title>
+    <url>/2020/12/27/Redis-%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/</url>
+    <content><![CDATA[<h1 id="Redis-主从复制"><a href="#Redis-主从复制" class="headerlink" title="Redis 主从复制"></a>Redis 主从复制</h1><a id="more"></a>
+
+<h2 id="1-主从复制配置和演示"><a href="#1-主从复制配置和演示" class="headerlink" title="1 主从复制配置和演示"></a>1 主从复制配置和演示</h2><h3 id="1-1-手动演示"><a href="#1-1-手动演示" class="headerlink" title="1.1 手动演示"></a>1.1 手动演示</h3><h4 id="1-1-1-准备工作"><a href="#1-1-1-准备工作" class="headerlink" title="1.1.1 准备工作"></a>1.1.1 准备工作</h4><p>一台机器开三个实例，更改配置文件关闭后台运行</p>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 主机和从机都设置一下日志</span></span><br><span class="line"><span class="comment"># 关闭后台运行</span></span><br><span class="line"><span class="attr">daemonize</span> <span class="string">no</span></span><br><span class="line"><span class="comment"># 关闭日志文件，实时打印日志</span></span><br><span class="line"><span class="comment">#logfile /var/log/redis_6379.log</span></span><br><span class="line"><span class="comment"># 关掉AOF日志</span></span><br><span class="line"><span class="attr">appendonly</span> <span class="string">no</span></span><br><span class="line"><span class="comment"># 效果：Redis实例前台阻塞运行，没有AOF日志</span></span><br></pre></td></tr></table></figure>
+<p>进入test文件夹，启动redis</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;6379.conf</span><br><span class="line">redis-server .&#x2F;6380.conf</span><br><span class="line">redis-server .&#x2F;6381.conf</span><br></pre></td></tr></table></figure>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200721224518202.png" alt="image-20200721224518202"></p>
+<p>现在已经有了三台实例，此时希望 6379 作为主机</p>
+<h4 id="1-1-2-手动复制"><a href="#1-1-2-手动复制" class="headerlink" title="1.1.2 手动复制"></a>1.1.2 手动复制</h4><p>从机复制命令</p>
+<ul>
+<li>5.0 以前：SLAVEOF</li>
+<li>5.0 以后：REPLICAIF</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="attr">help</span> <span class="string">SLAVEOF</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200721225251413.png" alt="image-20200721225251413"></p>
+<p>6380 机器连接 6379</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">slaveof 192.168.1.1 6379</span><br></pre></td></tr></table></figure>
+<p>6379 机器日志</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">6629:M 13 Jul 2020 15:37:10.256 * Replica 127.0.0.1:6380 asks for synchronization</span><br><span class="line">6629:M 13 Jul 2020 15:37:10.256 * Partial resynchronization not accepted: Replication ID mismatch (Replica asked for &#39;753f1f7659bb7ff017cc7c9e1c1ef0bb23eee769&#39;, my replication IDs are &#39;ce4485f2cc7f71534865b54ca649a7833b7c71a5&#39; and &#39;0000000000000000000000000000000000000000&#39;)</span><br><span class="line">6629:M 13 Jul 2020 15:37:10.256 * Starting BGSAVE for SYNC with target: disk</span><br><span class="line">6629:M 13 Jul 2020 15:37:10.292 * Background saving started by pid 6748</span><br><span class="line">6748:C 13 Jul 2020 15:37:10.302 * DB saved on disk</span><br><span class="line">6748:C 13 Jul 2020 15:37:10.303 * RDB: 4 MB of memory used by copy-on-write</span><br><span class="line">6629:M 13 Jul 2020 15:37:10.355 * Background saving terminated with success</span><br><span class="line">6629:M 13 Jul 2020 15:37:10.355 * Synchronization with replica 127.0.0.1:6380 succeeded</span><br></pre></td></tr></table></figure>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200721231737542.png" alt="image-20200721231737542"></p>
+<p>6380 机器日志</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">6669:S 13 Jul 2020 15:37:09.547 * Before turning into a replica, using my master parameters to synthesize a cached master: I may be able to synchronize with the new master with just a partial transfer.</span><br><span class="line">6669:S 13 Jul 2020 15:37:09.547 * REPLICAOF 127.0.0.1:6379 enabled (user request from &#39;id&#x3D;3 addr&#x3D;127.0.0.1:52883 fd&#x3D;7 name&#x3D; age&#x3D;1580 idle&#x3D;0 flags&#x3D;N db&#x3D;0 sub&#x3D;0 psub&#x3D;0 multi&#x3D;-1 qbuf&#x3D;44 qbuf-free&#x3D;32724 obl&#x3D;0 oll&#x3D;0 omem&#x3D;0 events&#x3D;r cmd&#x3D;replicaof&#39;)</span><br><span class="line">6669:S 13 Jul 2020 15:37:10.254 * Connecting to MASTER 127.0.0.1:6379</span><br><span class="line">6669:S 13 Jul 2020 15:37:10.256 * MASTER &lt;-&gt; REPLICA sync started</span><br><span class="line">6669:S 13 Jul 2020 15:37:10.256 * Non blocking connect for SYNC fired the event.</span><br><span class="line">6669:S 13 Jul 2020 15:37:10.256 * Master replied to PING, replication can continue...</span><br><span class="line">6669:S 13 Jul 2020 15:37:10.256 * Trying a partial resynchronization (request 753f1f7659bb7ff017cc7c9e1c1ef0bb23eee769:1).</span><br><span class="line">6669:S 13 Jul 2020 15:37:10.317 * Full resync from master: 6f76be684c7924f28999c4a24b6f212002285eff:0</span><br><span class="line">6669:S 13 Jul 2020 15:37:10.317 * Discarding previously cached master state.</span><br><span class="line">6669:S 13 Jul 2020 15:37:10.355 * MASTER &lt;-&gt; REPLICA sync: receiving 175 bytes from master</span><br><span class="line">&#x2F;&#x2F; 清除老数据</span><br><span class="line">6669:S 13 Jul 2020 15:37:10.355 * MASTER &lt;-&gt; REPLICA sync: Flushing old data</span><br><span class="line">6669:S 13 Jul 2020 15:37:10.355 * MASTER &lt;-&gt; REPLICA sync: Loading DB in memory</span><br><span class="line">6669:S 13 Jul 2020 15:37:10.355 * MASTER &lt;-&gt; REPLICA sync: Finished with success</span><br></pre></td></tr></table></figure>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200721231941240.png" alt="image-20200721231941240"></p>
+<p>6379 插入数据 k1</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">set k1 123</span><br></pre></td></tr></table></figure>
+<p>6380 可以查询此数据，但是 6380 不可以新增</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6380&gt; get k1</span><br><span class="line">&quot;123&quot;</span><br><span class="line">127.0.0.1:6380&gt; set k2 123</span><br><span class="line">(error) READONLY You can&#39;t write against a read only replica.</span><br></pre></td></tr></table></figure>
+<p>如果slave不想追随主机</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">REPLICAOF no one</span><br></pre></td></tr></table></figure>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200721233951199.png" alt="image-20200721233951199"></p>
+<h3 id="1-2-配置文件"><a href="#1-2-配置文件" class="headerlink" title="1.2 配置文件"></a>1.2 配置文件</h3><p>查看 6379.conf</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200721235844532.png" alt="image-20200721235844532"></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 机器</span><br><span class="line">replicaof &lt;masterip&gt; &lt;masterport&gt;</span><br><span class="line">&#x2F;&#x2F; 密码</span><br><span class="line">masterauth &lt;master-password&gt;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 设置成yes，主从复制中，从服务器可以响应客户端请求;设置成no，主从复制中，从服务器将阻塞所有请求，有客户端请求时返回“SYNC with master in progress”</span><br><span class="line">replica-serve-stale-data yes</span><br><span class="line"></span><br><span class="line">replica-read-only yes</span><br><span class="line">repl-diskless-sync no</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis 事务</title>
     <url>/2020/12/27/Redis-%E4%BA%8B%E5%8A%A1/</url>
     <content><![CDATA[<h1 id="Redis-事务"><a href="#Redis-事务" class="headerlink" title="Redis 事务"></a>Redis 事务</h1><p>将一组命令放在同一个事务中进行处理</p>
@@ -262,6 +306,17 @@
       </tags>
   </entry>
   <entry>
+    <title>Redis 分区</title>
+    <url>/2020/12/27/Redis-%E5%88%86%E5%8C%BA/</url>
+    <content><![CDATA[<h1 id="Redis-分区"><a href="#Redis-分区" class="headerlink" title="Redis 分区"></a>Redis 分区</h1><a id="more"></a>]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis 发布订阅</title>
     <url>/2020/12/27/Redis-%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85/</url>
     <content><![CDATA[<h1 id="Redis-发布订阅"><a href="#Redis-发布订阅" class="headerlink" title="Redis 发布订阅"></a>Redis 发布订阅</h1><a id="more"></a>
@@ -304,6 +359,41 @@
       <tags>
         <tag>Redis</tag>
         <tag>SpringBoot</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Redis 哨兵模式高可用解决方案</title>
+    <url>/2020/12/27/Redis-%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%AB%98%E5%8F%AF%E7%94%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</url>
+    <content><![CDATA[<h1 id="Redis-哨兵模式高可用解决方案"><a href="#Redis-哨兵模式高可用解决方案" class="headerlink" title="Redis 哨兵模式高可用解决方案"></a>Redis 哨兵模式高可用解决方案</h1><a id="more"></a>
+
+<h2 id="1-Redis哨兵简介"><a href="#1-Redis哨兵简介" class="headerlink" title="1 Redis哨兵简介"></a>1 Redis哨兵简介</h2><p>Redis的哨兵系统用于管理多个Redis服务器，该系统执行以下三个任务：</p>
+<ul>
+<li>监控</li>
+<li>提醒</li>
+<li>自动故障转移</li>
+</ul>
+<h2 id="2-Redis哨兵使用"><a href="#2-Redis哨兵使用" class="headerlink" title="2 Redis哨兵使用"></a>2 Redis哨兵使用</h2><h3 id="2-1-配置-Sentinel"><a href="#2-1-配置-Sentinel" class="headerlink" title="2.1 配置 Sentinel"></a>2.1 配置 Sentinel</h3><p>新建三个 sentinel 配置文件，例 26379.conf、26380.conf、26381.conf 监听主机，内容为</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">port 26379&#x2F;26380&#x2F;26381</span><br><span class="line">sentinel monitor mymaster 127.0.0.1 6379 2</span><br></pre></td></tr></table></figure>
+<p>运行主机</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;6379.conf</span><br></pre></td></tr></table></figure>
+<p>运行两个 slave</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;6380.conf --replicaof 127.0.0.1 6379</span><br><span class="line">redis-server .&#x2F;6381.conf --replicaof 127.0.0.1 6379</span><br></pre></td></tr></table></figure>
+<p>启动哨兵</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;26379.conf --sentinel</span><br><span class="line">redis-server .&#x2F;26380.conf --sentinel</span><br><span class="line">redis-server .&#x2F;26381.conf --sentinel</span><br></pre></td></tr></table></figure>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722211540287.png" alt="image-20200722211540287"></p>
+<h3 id="2-2-测试哨兵"><a href="#2-2-测试哨兵" class="headerlink" title="2.2 测试哨兵"></a>2.2 测试哨兵</h3><p>此时断开 6379，经过一段时间，会投票选出新的主机，本次测试 2 票选出 6381</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">6909:X 13 Jul 2020 17:06:41.887 # +sdown master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +odown master mymaster 127.0.0.1 6379 #quorum 3&#x2F;2</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +new-epoch 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +try-failover master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.964 # +vote-for-leader f0d0f7c12cc881a04d88ad7831100d0eea82cec4 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.969 # 3dd3212a440f415e989718634222ae89fc2fd219 voted for 3dd3212a440f415e989718634222ae89fc2fd219 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.989 # 44c8a525d5b8390571e2621fa3dfa416eafa8c0b voted for f0d0f7c12cc881a04d88ad7831100d0eea82cec4 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.027 # +elected-leader master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.027 # +failover-state-select-slave master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.100 # +selected-slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.100 * +failover-state-send-slaveof-noone slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.159 * +failover-state-wait-promotion slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.445 # +promoted-slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.445 # +failover-state-reconf-slaves master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.528 * +slave-reconf-sent slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.113 # -odown master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.482 * +slave-reconf-inprog slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.482 * +slave-reconf-done slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 # +failover-end master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 * +slave slave 127.0.0.1:6379 127.0.0.1 6379 @ mymaster 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:07:13.568 # +sdown slave 127.0.0.1:6379 127.0.0.1 6379 @ mymaster 127.0.0.1 6381</span><br></pre></td></tr></table></figure>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212104628.png" alt="image-20200722212104628"></p>
+<p>哨兵会自动更改配置文件</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212459813.png" alt="image-20200722212459813"></p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212525730.png" alt="image-20200722212525730"></p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+        <tag>HA</tag>
       </tags>
   </entry>
   <entry>
@@ -832,9 +922,80 @@
       </tags>
   </entry>
   <entry>
+    <title>Redis 持久化</title>
+    <url>/2020/12/27/Redis-%E6%8C%81%E4%B9%85%E5%8C%96/</url>
+    <content><![CDATA[<h1 id="Redis-持久化"><a href="#Redis-持久化" class="headerlink" title="Redis 持久化"></a>Redis 持久化</h1><a id="more"></a>
+
+<p>以下文档来自于Redis中文官网：<a href="http://redis.cn/topics/persistence.html">http://redis.cn/topics/persistence.html</a></p>
+<h2 id="1-Redis持久化方式"><a href="#1-Redis持久化方式" class="headerlink" title="1 Redis持久化方式"></a>1 Redis持久化方式</h2><p>Redis是内存的数据库，掉电易失，所以需要数据需要持久化。</p>
+<p>Redis提供了不同级别的持久化方式：</p>
+<ul>
+<li>RDB：在指定的时间间隔能对你的数据进行快照存储。</li>
+<li>AOF：记录每次对服务器的写操作，当服务器重启的时候会重新执行这些命令来恢复原始的数据，AOF 命令以 Redis 协议追加保存每次的写操作到文件的末尾，Redis 还能对 AOF 文件进行后台重写，使得 AOF 的体积不至于过大。</li>
+<li>也可以同时开启两种持久化方式，在这种情况下，当 Redis 重启的时候会有限载入 AOF 文件来恢复原始的数据，因为通常情况下 AOF 文件保存的数据集要比 RDB 文件保存的数据集要完整</li>
+</ul>
+<h2 id="2-RDB（Redis-DataBase）"><a href="#2-RDB（Redis-DataBase）" class="headerlink" title="2 RDB（Redis DataBase）"></a>2 RDB（Redis DataBase）</h2><h3 id="2-1-RDB-优点"><a href="#2-1-RDB-优点" class="headerlink" title="2.1 RDB 优点"></a>2.1 RDB 优点</h3><ul>
+<li>RDB 是一个非常紧凑的文件，它保存了某个时间点的数据集，非常适用于数据集的备份，比如可以在每个小时保存一下过去 24 小时内的数据，同时每天保存过去 30 天的数据，这样即使出了问题也可以根据需求恢复到不同版本的数据集。</li>
+<li>RDB 是一个紧凑的单一文件，很方便传送到另一个远端数据中心，非常适用于灾难恢复。</li>
+<li>RDB 在保存文件时父进程唯一需要做的就是 fork 出一个子进程，接下来的工作全部由子进程来做，父进程不需要再做其他 IO 操作，所以 RDB 持久化方式可以最大化 Redis 性能。</li>
+<li>与 AOF 相比，在恢复大的数据集的时候，RDB 方式会更快一些。</li>
+</ul>
+<h3 id="2-2-RDB-缺点"><a href="#2-2-RDB-缺点" class="headerlink" title="2.2 RDB 缺点"></a>2.2 RDB 缺点</h3><ul>
+<li>如果你希望在 Redis 意外停止工作（例如电源中断）的情况下丢失的数据最少的话，那么 RDB 不适合你。虽然你可以配置不同的 save 时间点（例如每隔 5 分钟并且对数据集有 100 个写的操作），Redis 要完整的保存整个数据集是一个比较繁重的工作，你通常会每隔 5 分钟或者更久做一次完整的保存，万一在 Redis 意外宕机，你可能会丢失几分钟的数据。</li>
+<li>RDB 需要经常 fork 子进程来保存数据集到硬盘上，当数据集比较大的时候，fork 的过程是非常耗时的，可能会导致 Redis 在一些毫秒级内不能响应客户端的请求。如果数据集巨大并且 CPU 性能不是很好的情况下，这种情况会持续 1 秒，AOF 也需要 fork，但是你可以调节重写日志文件的频率来提高数据集的耐久度。</li>
+</ul>
+<p>总结：</p>
+<ul>
+<li>不支持拉链，只会有一个 dump.rdb。</li>
+<li>容易丢失数据，时点与时点之间的窗口数据容易丢失。</li>
+</ul>
+<h3 id="2-3-RDB-工作原理"><a href="#2-3-RDB-工作原理" class="headerlink" title="2.3 RDB 工作原理"></a>2.3 RDB 工作原理</h3><p>当 Redis 需要保存 dump.rdb 文件时， 服务器执行以下操作:</p>
+<ul>
+<li>Redis 调用 forks。同时拥有父进程和子进程。</li>
+<li>子进程将数据集写入到一个临时 RDB 文件中。</li>
+<li>当子进程完成对新 RDB 文件的写入时，Redis 用新 RDB 文件替换原来的 RDB 文件，并删除旧的 RDB 文件。</li>
+</ul>
+<p>这种工作方式使得 Redis 可以从写时复制（copy-on-write）机制中获益。</p>
+<h3 id="2-4-RDB配置方式"><a href="#2-4-RDB配置方式" class="headerlink" title="2.4 RDB配置方式"></a>2.4 RDB配置方式</h3><ol>
+<li><p>手动 <code>SAVE</code>：适合关机维护时使用</p>
+</li>
+<li><p>手动 <code>BGSAVE</code>：fork()，创建子进程</p>
+</li>
+<li><p>配置文件方式 <code>BGSAVE</code> 规则：注意，使用 save 标识，触发 bsave</p>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="comment">################################ SNAPSHOTTING  ################################</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Save the DB on disk:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#   save &lt;seconds&gt; &lt;changes&gt;</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#   Will save the DB if both the given number of seconds and the given</span></span><br><span class="line"><span class="comment">#   number of write operations against the DB occurred.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#   In the example below the behaviour will be to save:</span></span><br><span class="line"><span class="comment">#   after 900 sec (15 min) if at least 1 key changed</span></span><br><span class="line"><span class="comment">#   after 300 sec (5 min) if at least 10 keys changed</span></span><br><span class="line"><span class="comment">#   after 60 sec if at least 10000 keys changed</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#   <span class="doctag">Note:</span> you can disable saving completely by commenting out all &quot;save&quot; lines.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#   It is also possible to remove all the previously configured save</span></span><br><span class="line"><span class="comment">#   points by adding a save directive with a single empty string argument</span></span><br><span class="line"><span class="comment">#   like in the following example:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#   save &quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">save</span> <span class="string">900 1</span></span><br><span class="line"><span class="attr">save</span> <span class="string">300 10</span></span><br><span class="line"><span class="attr">save</span> <span class="string">60 10000</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># By default Redis will stop accepting writes if RDB snapshots are enabled</span></span><br><span class="line"><span class="comment"># (at least one save point) and the latest background save failed.</span></span><br><span class="line"><span class="comment"># This will make the user aware (in a hard way) that data is not persisting</span></span><br><span class="line"><span class="comment"># on disk properly, otherwise chances are that no one will notice and some</span></span><br><span class="line"><span class="comment"># disaster will happen.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># If the background saving process will start working again Redis will</span></span><br><span class="line"><span class="comment"># automatically allow writes again.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># However if you have setup your proper monitoring of the Redis server</span></span><br><span class="line"><span class="comment"># and persistence, you may want to disable this feature so that Redis will</span></span><br><span class="line"><span class="comment"># continue to work as usual even if there are problems with disk,</span></span><br><span class="line"><span class="comment"># permissions, and so forth.</span></span><br><span class="line"><span class="meta">stop-writes-on-bgsave-error</span> <span class="string">yes</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Compress string objects using LZF when dump .rdb databases?</span></span><br><span class="line"><span class="comment"># For default that&#x27;s set to &#x27;yes&#x27; as it&#x27;s almost always a win.</span></span><br><span class="line"><span class="comment"># If you want to save some CPU in the saving child set it to &#x27;no&#x27; but</span></span><br><span class="line"><span class="comment"># the dataset will likely be bigger if you have compressible values or keys.</span></span><br><span class="line"><span class="attr">rdbcompression</span> <span class="string">yes</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Since version 5 of RDB a CRC64 checksum is placed at the end of the file.</span></span><br><span class="line"><span class="comment"># This makes the format more resistant to corruption but there is a performance</span></span><br><span class="line"><span class="comment"># hit to pay (around 10%) when saving and loading RDB files, so you can disable it</span></span><br><span class="line"><span class="comment"># for maximum performances.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># RDB files created with checksum disabled have a checksum of zero that will</span></span><br><span class="line"><span class="comment"># tell the loading code to skip the check.</span></span><br><span class="line"><span class="attr">rdbchecksum</span> <span class="string">yes</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The filename where to dump the DB</span></span><br><span class="line"><span class="attr">dbfilename</span> <span class="string">dump.rdb</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The working directory.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># The DB will be written inside this directory, with the filename specified</span></span><br><span class="line"><span class="comment"># above using the &#x27;dbfilename&#x27; configuration directive.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># The Append Only File will also be created inside this directory.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Note that you must specify a directory here, not a file name.</span></span><br><span class="line"><span class="attr">dir</span> <span class="string">./</span></span><br><span class="line"><span class="attr">----------------------------------------------------------------------------------</span></span><br><span class="line"><span class="attr">save</span> <span class="string">900 1</span></span><br><span class="line"><span class="attr">save</span> <span class="string">300 10</span></span><br><span class="line"><span class="attr">save</span> <span class="string">60 10000</span></span><br><span class="line"></span><br><span class="line"><span class="attr">dbfilename</span> <span class="string">dump.rdb</span></span><br><span class="line"><span class="attr">dir</span> <span class="string">/var/lib/redis/6379 </span></span><br></pre></td></tr></table></figure>
+<h2 id="3-AOF（Append-Only-File）"><a href="#3-AOF（Append-Only-File）" class="headerlink" title="3 AOF（Append Only File）"></a>3 AOF（Append Only File）</h2></li>
+</ol>
+<h4 id="3-1-AOF-优点"><a href="#3-1-AOF-优点" class="headerlink" title="3.1 AOF 优点"></a>3.1 AOF 优点</h4><ul>
+<li><p>使用AOF会让Redis更加耐久：你可以使用不同的fsync策略；无fsync，每秒fsync，每次写的时候fsync，使用默认的每秒fsync策略，Redis的性能依旧很好（fsync是由后台线程进行处理的，主线程会尽力处理客户端请求），一旦出现故障，你最多丢失1秒的数据</p>
+</li>
+<li><p>AOF 文件是一个只进行追加的日志文件，所以不需要写入 seek，即使由于某些原因（磁盘空间已满，写的过程宕机等待）未执行完整的写入命令，你可可以使用  <code>redis-check-aof</code>  工具修复这些问题。</p>
+</li>
+<li><p>Redis 可以在 AOF 文件体积变得过大时，自动地在后台对 AOF 进行重写：重写后的新 AOF 文件包含了恢复当前数据集所需的最小命令集合。整个重写操作时绝对安全的，因为 Redis 在创建 AOF 文件的过程中，会继续将命令追加到现有的 AOF 文件里面，即使重写过程中发生停机，现有的 AOF 文件也不会丢失。而一旦新 AOF 文件创建完毕，Redis 就会从旧 AOF 文件切换到新 AOF 文件，并开始对新 AOF 文件进行追加操作。</p>
+<ul>
+<li>AOF 文件有序地保存了对数据库执行的所有写入操作，这些写入操作以 Redis 协议的格式保存，因此 AOF 文件的内容非常容易被人读懂，对文件进行分析（parse）也很轻松。导出（export）AOF 文件也非常简单：举个例子，如果你不小心执行了 FLUSHALL 命令，但只要 AOF 文件未被重写，那么只要停止服务器，移除 AOF 文件末尾的 FLUSHALL 命令，并重启 Redis，就可以将数据集恢复到 FLUSHALL 执行之前的状态。</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-2-AOF-缺点"><a href="#3-2-AOF-缺点" class="headerlink" title="3.2 AOF 缺点"></a>3.2 AOF 缺点</h4><ul>
+<li>相同的数据集，AOF 的体积通常要大于 RDB 文件的体积.</li>
+<li>根据所使用的 fsync 策略，AOF 的速度可能慢于 RDB。在一般情况下，每秒的 fsync 的性能依旧非常高，而关闭 fsync 可以让 AOF 的速度和 RDB 一样快，即使在高负荷之下也是如此。不过在处理巨大的写入载入时，RDB可以提供更有保证的最大延迟时间（latency）。</li>
+</ul>
+<h4 id="3-3-AOF-工作原理"><a href="#3-3-AOF-工作原理" class="headerlink" title="3.3 AOF 工作原理"></a>3.3 AOF 工作原理</h4><p>AOF 重写和 RDB 创建快照一样，都巧妙的利用了写时复制机制：</p>
+<ul>
+<li>Redis 执行 fork()，现在同时拥有父进程和子进程。</li>
+<li>子进程开始将新的 AOF 文件的内容写入到临时文件。</li>
+<li>对于所有新执行的写入命令，父进程一边将他们累积到一个内存缓存中，一边将这些改动追加到现有的 AOF 文件的末尾</li>
+</ul>
+<h4 id="3-4-持久化使用方式"><a href="#3-4-持久化使用方式" class="headerlink" title="3.4 持久化使用方式"></a>3.4 持久化使用方式</h4><p>Redis 配置文件 <code>APPEND ONLY MODE</code> 部分介绍了 AOF 的配置</p>
+  <figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 是否开启AOF，默认关闭（no）</span></span><br><span class="line"><span class="attr">appendonly</span> <span class="string">yes</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定 AOF 文件名</span></span><br><span class="line"><span class="attr">appendfilename</span> <span class="string">appendonly.aof</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Redis支持三种不同的刷写模式：</span></span><br><span class="line"><span class="comment"># appendfsync always #每次收到写命令就立即强制写入磁盘，是最有保证的完全的持久化，但速度也是最慢的，一般不推荐使用。</span></span><br><span class="line"><span class="attr">appendfsync</span> <span class="string">everysec #每秒钟强制写入磁盘一次，在性能和持久化方面做了很好的折中，是受推荐的方式。</span></span><br><span class="line"><span class="comment"># appendfsync no     #完全依赖OS的写入，一般为30秒左右一次，性能最好但是持久化最没有保证，不被推荐。</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#在日志重写时，不进行命令追加操作，而只是将其放在缓冲区里，避免与命令的追加造成DISK IO上的冲突。</span></span><br><span class="line"><span class="comment">#设置为yes表示rewrite期间对新写操作不fsync,暂时存在内存中,等rewrite完成后再写入，默认为no</span></span><br><span class="line"><span class="meta">no-appendfsync-on-rewrite</span> <span class="string">no </span></span><br><span class="line"></span><br><span class="line"><span class="comment">#当前AOF文件大小是上次日志重写得到AOF文件大小的二倍时，自动启动新的日志重写过程。</span></span><br><span class="line"><span class="meta">auto-aof-rewrite-percentage</span> <span class="string">100</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#当前AOF文件启动新的日志重写过程的最小值，避免刚刚启动Reids时由于文件尺寸较小导致频繁的重写。</span></span><br><span class="line"><span class="meta">auto-aof-rewrite-min-size</span> <span class="string">64mb</span></span><br></pre></td></tr></table></figure>
+]]></content>
+  </entry>
+  <entry>
     <title>Redis 缓存穿透、缓存击穿、缓存雪崩</title>
     <url>/2020/12/27/Redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E3%80%81%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9/</url>
-    <content><![CDATA[<h1 id="Redis-缓存穿透、缓存击穿、缓存雪崩"><a href="#Redis-缓存穿透、缓存击穿、缓存雪崩" class="headerlink" title="Redis 缓存穿透、缓存击穿、缓存雪崩"></a>Redis 缓存穿透、缓存击穿、缓存雪崩</h1><h2 id="1-Redis-缓存穿透"><a href="#1-Redis-缓存穿透" class="headerlink" title="1 Redis 缓存穿透"></a>1 Redis 缓存穿透</h2><h3 id="1-1-什么是缓存穿透？"><a href="#1-1-什么是缓存穿透？" class="headerlink" title="1.1 什么是缓存穿透？"></a>1.1 什么是缓存穿透？</h3><p>缓存穿透是指在高并发场景下并使用 Redis 作为缓存的时候，查询一个 DB 不存在的数据。</p>
+    <content><![CDATA[<h1 id="Redis-缓存穿透、缓存击穿、缓存雪崩"><a href="#Redis-缓存穿透、缓存击穿、缓存雪崩" class="headerlink" title="Redis 缓存穿透、缓存击穿、缓存雪崩"></a>Redis 缓存穿透、缓存击穿、缓存雪崩</h1><a id="more"></a>
+
+<h2 id="1-Redis-缓存穿透"><a href="#1-Redis-缓存穿透" class="headerlink" title="1 Redis 缓存穿透"></a>1 Redis 缓存穿透</h2><h3 id="1-1-什么是缓存穿透？"><a href="#1-1-什么是缓存穿透？" class="headerlink" title="1.1 什么是缓存穿透？"></a>1.1 什么是缓存穿透？</h3><p>缓存穿透是指在高并发场景下并使用 Redis 作为缓存的时候，查询一个 DB 不存在的数据。</p>
 <h3 id="1-2-缓存穿透解决方案"><a href="#1-2-缓存穿透解决方案" class="headerlink" title="1.2 缓存穿透解决方案"></a>1.2 缓存穿透解决方案</h3><h4 id="1-2-1-布隆过滤器"><a href="#1-2-1-布隆过滤器" class="headerlink" title="1.2.1 布隆过滤器"></a>1.2.1 布隆过滤器</h4><p>将所有可能存在的数据哈希到一个足够大的 bitmap 中，一个一定不存在的数据会被这个 bitmap 拦截掉，从而避免了对底层存储系统的查询压力。</p>
 <h2 id="2-Redis-缓存击穿"><a href="#2-Redis-缓存击穿" class="headerlink" title="2 Redis 缓存击穿"></a>2 Redis 缓存击穿</h2><h3 id="2-1-什么是缓存击穿？"><a href="#2-1-什么是缓存击穿？" class="headerlink" title="2.1 什么是缓存击穿？"></a>2.1 什么是缓存击穿？</h3><p>缓存击穿是指在高并发场景下并使用 Redis 作为缓存的时候，由于 Redis 会清除过期的 key，某个 key 不存在造成所有的并发都访问到数据库，大量的请求可能会瞬间把后端 DB 压垮。</p>
 <h3 id="2-2-缓存击穿解决方案"><a href="#2-2-缓存击穿解决方案" class="headerlink" title="2.2 缓存击穿解决方案"></a>2.2 缓存击穿解决方案</h3><h4 id="2-2-1-设置永不过期"><a href="#2-2-1-设置永不过期" class="headerlink" title="2.2.1 设置永不过期"></a>2.2.1 设置永不过期</h4><p>最简单的方法，key 设置不过期就不会产生此问题</p>
