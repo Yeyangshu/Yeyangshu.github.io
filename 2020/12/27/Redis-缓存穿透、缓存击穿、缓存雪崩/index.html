@@ -20,21 +20,23 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="项目启动加载配置类型数据至内存">
+  <meta name="description" content="Redis 缓存穿透、缓存击穿、缓存雪崩1 Redis 缓存穿透1.1 什么是缓存穿透？缓存穿透是指在高并发场景下并使用 Redis 作为缓存的时候，查询一个 DB 不存在的数据。 1.2 缓存穿透解决方案1.2.1 布隆过滤器将所有可能存在的数据哈希到一个足够大的 bitmap 中，一个一定不存在的数据会被这个 bitmap 拦截掉，从而避免了对底层存储系统的查询压力。 2 Redis 缓存击穿">
 <meta property="og:type" content="article">
-<meta property="og:title" content="项目启动加载配置类型数据至内存">
-<meta property="og:url" content="http://example.com/2020/12/25/%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%87%B3%E5%86%85%E5%AD%98/index.html">
+<meta property="og:title" content="Redis 缓存穿透、缓存击穿、缓存雪崩">
+<meta property="og:url" content="http://example.com/2020/12/27/Redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E3%80%81%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9/index.html">
 <meta property="og:site_name" content="叶杨树">
-<meta property="og:description" content="项目启动加载配置类型数据至内存">
+<meta property="og:description" content="Redis 缓存穿透、缓存击穿、缓存雪崩1 Redis 缓存穿透1.1 什么是缓存穿透？缓存穿透是指在高并发场景下并使用 Redis 作为缓存的时候，查询一个 DB 不存在的数据。 1.2 缓存穿透解决方案1.2.1 布隆过滤器将所有可能存在的数据哈希到一个足够大的 bitmap 中，一个一定不存在的数据会被这个 bitmap 拦截掉，从而避免了对底层存储系统的查询压力。 2 Redis 缓存击穿">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/2029601/202012/2029601-20201219215901828-1492959658.png">
-<meta property="article:published_time" content="2020-12-24T16:02:10.000Z">
-<meta property="article:modified_time" content="2020-12-25T16:05:33.093Z">
+<meta property="article:published_time" content="2020-12-27T03:46:10.000Z">
+<meta property="article:modified_time" content="2020-12-27T10:02:24.050Z">
 <meta property="article:author" content="yeyangshu">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="Redis 缓存穿透">
+<meta property="article:tag" content="Redis 缓存击穿">
+<meta property="article:tag" content="Redis 缓存雪崩">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img2020.cnblogs.com/blog/2029601/202012/2029601-20201219215901828-1492959658.png">
 
-<link rel="canonical" href="http://example.com/2020/12/25/%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%87%B3%E5%86%85%E5%AD%98/">
+<link rel="canonical" href="http://example.com/2020/12/27/Redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E3%80%81%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9/">
 
 
 <script id="page-configurations">
@@ -47,7 +49,7 @@
   };
 </script>
 
-  <title>项目启动加载配置类型数据至内存 | 叶杨树</title>
+  <title>Redis 缓存穿透、缓存击穿、缓存雪崩 | 叶杨树</title>
   
 
 
@@ -177,7 +179,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/25/%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%87%B3%E5%86%85%E5%AD%98/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/27/Redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E3%80%81%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/%E8%90%A8%E5%8B%92%E8%8A%AC%E5%A6%AE.png">
@@ -190,7 +192,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          项目启动加载配置类型数据至内存
+          Redis 缓存穿透、缓存击穿、缓存雪崩
         </h1>
 
         <div class="post-meta">
@@ -199,16 +201,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-12-25 00:02:10" itemprop="dateCreated datePublished" datetime="2020-12-25T00:02:10+08:00">2020-12-25</time>
+              <time title="创建时间：2020-12-27 11:46:10 / 修改时间：18:02:24" itemprop="dateCreated datePublished" datetime="2020-12-27T11:46:10+08:00">2020-12-27</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-26 00:05:33" itemprop="dateModified" datetime="2020-12-26T00:05:33+08:00">2020-12-26</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -235,8 +231,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/12/25/%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%87%B3%E5%86%85%E5%AD%98/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/12/25/%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%87%B3%E5%86%85%E5%AD%98/" itemprop="commentCount"></span>
+    <a title="valine" href="/2020/12/27/Redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E3%80%81%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/12/27/Redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E3%80%81%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -251,15 +247,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="项目启动加载配置类型数据至内存"><a href="#项目启动加载配置类型数据至内存" class="headerlink" title="项目启动加载配置类型数据至内存"></a>项目启动加载配置类型数据至内存</h1><a id="more"></a>
-
-<p>一般数据分类</p>
-<ul>
-<li>流水型数据</li>
-<li>状态型数据</li>
-<li>配置型数据。</li>
-</ul>
-<p>对于配置型数据而言，改动不是很频繁，可以在项目启动的时候直接加载到内存，避免需要数据时去查询数据库，造成不必要的IO消耗。<br>配置类型的数据可以在数据库中存储，也可以托管至github。<br>下图是启动时加载数据的原理图：<br><img src="https://img2020.cnblogs.com/blog/2029601/202012/2029601-20201219215901828-1492959658.png"></p>
+        <h1 id="Redis-缓存穿透、缓存击穿、缓存雪崩"><a href="#Redis-缓存穿透、缓存击穿、缓存雪崩" class="headerlink" title="Redis 缓存穿透、缓存击穿、缓存雪崩"></a>Redis 缓存穿透、缓存击穿、缓存雪崩</h1><h2 id="1-Redis-缓存穿透"><a href="#1-Redis-缓存穿透" class="headerlink" title="1 Redis 缓存穿透"></a>1 Redis 缓存穿透</h2><h3 id="1-1-什么是缓存穿透？"><a href="#1-1-什么是缓存穿透？" class="headerlink" title="1.1 什么是缓存穿透？"></a>1.1 什么是缓存穿透？</h3><p>缓存穿透是指在高并发场景下并使用 Redis 作为缓存的时候，查询一个 DB 不存在的数据。</p>
+<h3 id="1-2-缓存穿透解决方案"><a href="#1-2-缓存穿透解决方案" class="headerlink" title="1.2 缓存穿透解决方案"></a>1.2 缓存穿透解决方案</h3><h4 id="1-2-1-布隆过滤器"><a href="#1-2-1-布隆过滤器" class="headerlink" title="1.2.1 布隆过滤器"></a>1.2.1 布隆过滤器</h4><p>将所有可能存在的数据哈希到一个足够大的 bitmap 中，一个一定不存在的数据会被这个 bitmap 拦截掉，从而避免了对底层存储系统的查询压力。</p>
+<h2 id="2-Redis-缓存击穿"><a href="#2-Redis-缓存击穿" class="headerlink" title="2 Redis 缓存击穿"></a>2 Redis 缓存击穿</h2><h3 id="2-1-什么是缓存击穿？"><a href="#2-1-什么是缓存击穿？" class="headerlink" title="2.1 什么是缓存击穿？"></a>2.1 什么是缓存击穿？</h3><p>缓存击穿是指在高并发场景下并使用 Redis 作为缓存的时候，由于 Redis 会清除过期的 key，某个 key 不存在造成所有的并发都访问到数据库，大量的请求可能会瞬间把后端 DB 压垮。</p>
+<h3 id="2-2-缓存击穿解决方案"><a href="#2-2-缓存击穿解决方案" class="headerlink" title="2.2 缓存击穿解决方案"></a>2.2 缓存击穿解决方案</h3><h4 id="2-2-1-设置永不过期"><a href="#2-2-1-设置永不过期" class="headerlink" title="2.2.1 设置永不过期"></a>2.2.1 设置永不过期</h4><p>最简单的方法，key 设置不过期就不会产生此问题</p>
+<h4 id="2-2-2-使用互斥锁"><a href="#2-2-2-使用互斥锁" class="headerlink" title="2.2.2 使用互斥锁"></a>2.2.2 使用互斥锁</h4><p>使用 Redis 的 <code>SETNX</code>，只有抢到锁的才会去 DB 加载数据，没有抢到锁的等待一段时间。</p>
+<h2 id="3-Redis-缓存雪崩"><a href="#3-Redis-缓存雪崩" class="headerlink" title="3 Redis 缓存雪崩"></a>3 Redis 缓存雪崩</h2><h3 id="3-1-什么是缓存雪崩？"><a href="#3-1-什么是缓存雪崩？" class="headerlink" title="3.1 什么是缓存雪崩？"></a>3.1 什么是缓存雪崩？</h3><p>缓存雪崩是指在高并发场景下并使用 Redis 作为缓存的时候，大量的 key 同时失效间接造成大量的请求访问到达 DB。</p>
+<h3 id="3-2-缓存雪崩解决方案"><a href="#3-2-缓存雪崩解决方案" class="headerlink" title="3.2  缓存雪崩解决方案"></a>3.2  缓存雪崩解决方案</h3><h4 id="3-2-1-随机过期时间"><a href="#3-2-1-随机过期时间" class="headerlink" title="3.2.1 随机过期时间"></a>3.2.1 随机过期时间</h4><p>如果 Redis 中的数据与时点性无关，可以设置 key 随机过期时间，让缓存失效的时间点尽量均匀。</p>
+<h3 id="3-2-2-互斥锁"><a href="#3-2-2-互斥锁" class="headerlink" title="3.2.2 互斥锁"></a>3.2.2 互斥锁</h3><p>如果 Redis 中的数据具有时点性，假设到 0:00 大量的 key 过期，可以对 key 加互斥锁，与缓存击穿类似。</p>
 
     </div>
 
@@ -275,7 +270,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://example.com/2020/12/25/%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%87%B3%E5%86%85%E5%AD%98/" title="项目启动加载配置类型数据至内存">http://example.com/2020/12/25/项目启动加载配置类型数据至内存/</a>
+    <a href="http://example.com/2020/12/27/Redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E3%80%81%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9/" title="Redis 缓存穿透、缓存击穿、缓存雪崩">http://example.com/2020/12/27/Redis-缓存穿透、缓存击穿、缓存雪崩/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -285,6 +280,12 @@
 
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+              <a href="/tags/Redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/" rel="tag"># Redis 缓存穿透</a>
+              <a href="/tags/Redis-%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF/" rel="tag"># Redis 缓存击穿</a>
+              <a href="/tags/Redis-%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9/" rel="tag"># Redis 缓存雪崩</a>
+          </div>
 
         
 
@@ -292,13 +293,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/12/24/Java-NIO-Channel/" rel="prev" title="Java NIO Channel">
-      <i class="fa fa-chevron-left"></i> Java NIO Channel
+    <a href="/2020/12/27/Redis-%E4%BD%BF%E7%94%A8LRU%E7%AE%97%E6%B3%95%E5%81%9A%E7%BC%93%E5%AD%98%E4%BD%BF%E7%94%A8/" rel="prev" title="Redis 使用LRU算法做缓存使用">
+      <i class="fa fa-chevron-left"></i> Redis 使用LRU算法做缓存使用
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/12/26/%E4%BD%BF%E7%94%A8ThreadLocal%E5%88%9B%E5%BB%BA%E7%BA%BF%E7%A8%8B%E4%B8%8A%E4%B8%8B%E6%96%87/" rel="next" title="使用ThreadLocal创建线程上下文">
-      使用ThreadLocal创建线程上下文 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -358,7 +356,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE%E7%B1%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E8%87%B3%E5%86%85%E5%AD%98"><span class="nav-number">1.</span> <span class="nav-text">项目启动加载配置类型数据至内存</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E3%80%81%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">1.</span> <span class="nav-text">Redis 缓存穿透、缓存击穿、缓存雪崩</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-number">1.1.</span> <span class="nav-text">1 Redis 缓存穿透</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E4%BB%80%E4%B9%88%E6%98%AF%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%EF%BC%9F"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 什么是缓存穿透？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 缓存穿透解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-1-%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">1.2.1 布隆过滤器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Redis-%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="nav-number">1.2.</span> <span class="nav-text">2 Redis 缓存击穿</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E4%BB%80%E4%B9%88%E6%98%AF%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%EF%BC%9F"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 什么是缓存击穿？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 缓存击穿解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-%E8%AE%BE%E7%BD%AE%E6%B0%B8%E4%B8%8D%E8%BF%87%E6%9C%9F"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">2.2.1 设置永不过期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2-%E4%BD%BF%E7%94%A8%E4%BA%92%E6%96%A5%E9%94%81"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">2.2.2 使用互斥锁</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Redis-%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">1.3.</span> <span class="nav-text">3 Redis 缓存雪崩</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E4%BB%80%E4%B9%88%E6%98%AF%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%EF%BC%9F"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 什么是缓存雪崩？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2  缓存雪崩解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-%E9%9A%8F%E6%9C%BA%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">3.2.1 随机过期时间</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2-%E4%BA%92%E6%96%A5%E9%94%81"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.2.2 互斥锁</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
