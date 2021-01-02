@@ -1,6 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>JVM class文件结构</title>
+    <url>/2020/12/28/JVM-class%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/</url>
+    <content><![CDATA[<h1 id="class-文件结构"><a href="#class-文件结构" class="headerlink" title="class 文件结构"></a>class 文件结构</h1><a id="more"></a>
+
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JVM 类加载过程</title>
+    <url>/2020/12/28/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="类加载过程"><a href="#类加载过程" class="headerlink" title="类加载过程"></a>类加载过程</h1><a id="more"></a>
+
+<p>一个java文件从编码到最终运行，一般主要包括两个过程：</p>
+<ul>
+<li>编译：将写好的 .java 文件，通过 javac 命令编译成字节码，也就是 .class（二进制字节流） 文件。</li>
+<li>运行：JVM 把编译生成好的 .class 文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的 Java 类型的过程叫做虚拟机的类加载机制。</li>
+</ul>
+<p>与其他语言不同，Java 类型的加载、连接和初始化是在程序运行期间完成的。</p>
+<p>类加载的过程主要分为三个部分：</p>
+<ul>
+<li><p>加载</p>
+</li>
+<li><p>链接</p>
+<p>而链接又可以细分为三个小部分：</p>
+<ul>
+<li>验证</li>
+<li>准备</li>
+<li>解析</li>
+</ul>
+</li>
+<li><p>初始化</p>
+</li>
+</ul>
+<h2 id="1-加载"><a href="#1-加载" class="headerlink" title="1 加载"></a>1 加载</h2><p>简单来说，加载指的是把 class 文件从各个来源通过类加载器加载到内存中。</p>
+<p>在加载阶段，Java 虚拟机需要完成下面三件事情：</p>
+<ol>
+<li><p>通过一个类的全限定名来获取定义此类的二进制字节流。</p>
+<ul>
+<li>可以从ZIP</li>
+<li>网络</li>
+<li>数据库</li>
+<li>其他文件生成</li>
+<li>加密文件中获取</li>
+</ul>
+<p>Java 虚拟机并没有规定二进制字节流必须从 Class 文件中获取。</p>
+</li>
+<li><p>将这个字节流所代表的的静态存储结构转化为方法区的运行时数结构。</p>
+</li>
+<li><p>在内存中生成一个代表这个类的 java.lang.Class 对象，作为方法区这个类的各种数据的访问入口。</p>
+<blockquote>
+<p>什么是 Class 类？在 Java 中每个类都有一个相对应的 Class 类的对象，用于表示这个类的类型信息。</p>
+</blockquote>
+</li>
+<li></li>
+</ol>
+<h2 id="2-连接"><a href="#2-连接" class="headerlink" title="2 连接"></a>2 连接</h2><h3 id="2-1-验证"><a href="#2-1-验证" class="headerlink" title="2.1 验证"></a>2.1 验证</h3><p>这一步的目的是确保 Class 文件的字节流中包含的信息是否符合《Java虚拟机规范》的全部元数要求，保证这些信息被当做运行代码不会危害虚拟机自身的安全。</p>
+<ol>
+<li><p>文件格式验证</p>
+<ul>
+<li><p>行为：验证字节流是否符合 Class 文件格式的规范，并且能被当前版本的虚拟机处理。</p>
+</li>
+<li><p>目的：该阶段的主要目的是保证输入的字节流能正确的解析并存储于方法区之内，后面的 3 个验证阶段全部是基于方法区的存储结构进行的，不会再直接操作字节流。</p>
+</li>
+</ul>
+</li>
+<li><p>元数据验证</p>
+<ul>
+<li>行为：对字节码描述的信息进行语义分析，以保证其描述的信息符合 Java 语言规范的要求。</li>
+<li>目的：对类的元数据信息进行语义校验，保证不存在不符合 Java 语言规范的元数据信息。</li>
+</ul>
+</li>
+<li><p>字节码验证</p>
+<ul>
+<li>目的：通过数据流和控制流分析，确定程序语义是合法的、符合逻辑的。对类的方法体进行校验分析，保证被校验类在运行时不会做出危害虚拟机安全的事件。</li>
+</ul>
+</li>
+<li><p>符号引用验证</p>
+<ul>
+<li>行为：符合引用可以看做是对类自身以外（常量池中的各种符号引用）的信息进行匹配性校验。</li>
+<li>目的：确保解析动作能正常执行。</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-2-准备"><a href="#2-2-准备" class="headerlink" title="2.2 准备"></a>2.2 准备</h3><p>正式为<strong>类中定义的变量</strong>分配内存并设置类变量的<strong>初始值</strong>的阶段，这些变量所使用的内存都将在方法区中进行分配。</p>
+<p>注意：</p>
+<ol>
+<li><p>这个时候进行内存分配的仅包括类变量（被 static 修饰的变量），并不包括实例变量。</p>
+</li>
+<li><p>初始值“通常情况”下是数据类型的零值。</p>
+<table>
+<thead>
+<tr>
+<th align="center">数据类型</th>
+<th align="center">零值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">int</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">long</td>
+<td align="center">oL</td>
+</tr>
+<tr>
+<td align="center">short</td>
+<td align="center">(short)0</td>
+</tr>
+<tr>
+<td align="center">char</td>
+<td align="center">‘\u0000’</td>
+</tr>
+<tr>
+<td align="center">byte</td>
+<td align="center">(byte)0</td>
+</tr>
+<tr>
+<td align="center">boolean</td>
+<td align="center">false</td>
+</tr>
+<tr>
+<td align="center">float</td>
+<td align="center">0.0f</td>
+</tr>
+<tr>
+<td align="center">double</td>
+<td align="center">0.0d</td>
+</tr>
+<tr>
+<td align="center">refrence</td>
+<td align="center">null</td>
+</tr>
+</tbody></table>
+<p>案例：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> value = <span class="number">123</span>;</span><br></pre></td></tr></table></figure>
+<p>value 在准备期间就赋值为 0。</p>
+<p>如果是常量的话，直接赋值为常量指定的值。</p>
+<p>案例：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> value = <span class="number">123</span>;</span><br></pre></td></tr></table></figure>
+<p>value 在准备期间就赋值为 123。</p>
+</li>
+</ol>
+<h3 id="2-3-解析"><a href="#2-3-解析" class="headerlink" title="2.3 解析"></a>2.3 解析</h3><p>Java 虚拟机将常量池内的符号引用替换为直接引用的过程</p>
+<h2 id="3-初始化"><a href="#3-初始化" class="headerlink" title="3 初始化"></a>3 初始化</h2><p>调用类的初始化代码，给成员变量赋初始值</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 类初始化和静态变量初始化测试</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">T_ClassLoadingProduce</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(T.count);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 情景一</span></span><br><span class="line"><span class="comment">     * public static int count = 2;</span></span><br><span class="line"><span class="comment">     * public static T t = new T();</span></span><br><span class="line"><span class="comment">     * 结果：3</span></span><br><span class="line"><span class="comment">     * 分析：</span></span><br><span class="line"><span class="comment">     * 当调用T时，先把T Class load内存进行校验，然后进行preparation赋默认值，此时T是空值，</span></span><br><span class="line"><span class="comment">     * 然后Resolution，在进行initializing初始化赋初始值，这个时候是2，然后count++，输出3</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 情景二</span></span><br><span class="line"><span class="comment">     * public static T t = new T();</span></span><br><span class="line"><span class="comment">     * public static int count = 2;</span></span><br><span class="line"><span class="comment">     * 结果：2</span></span><br><span class="line"><span class="comment">     * 分析：</span></span><br><span class="line"><span class="comment">     * 当调用T时，先把T Class load内存进行校验，然后进行preparation赋默认值，此时T是空值，</span></span><br><span class="line"><span class="comment">     * 然后Resolution，在进行initializing初始化赋初始值，先调用new T这个时候是0，然后count++变成一，然后赋值输出结果为2</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">T</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 初始值null</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> T t = <span class="keyword">new</span> T();</span><br><span class="line">    <span class="comment">// 初始值0</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> count = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">T</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        count++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JVM 虚拟机基础概念</title>
+    <url>/2020/12/28/JVM-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/</url>
+    <content><![CDATA[<h1 id="虚拟机基础概念"><a href="#虚拟机基础概念" class="headerlink" title="虚拟机基础概念"></a>虚拟机基础概念</h1><a id="more"></a>
+
+<h2 id="1-什么是虚拟机"><a href="#1-什么是虚拟机" class="headerlink" title="1 什么是虚拟机"></a>1 什么是虚拟机</h2><p>百度百科：虚拟机是一种抽象化的计算机，通过在实际的计算机上仿真模拟各种计算机功能来实现的。Java 虚拟机有自己完善的硬体架构，如处理器、堆栈、寄存器等，还具有相应的指令系统。Java 虚拟机屏蔽了与具体操作系统平台相关的信息，使得Java程序只需生成在 Java 虚拟机上运行的目标代码（字节码），就可以在多种平台上不加修改地运行。</p>
+<h2 id="2-流行的-Java-虚拟机"><a href="#2-流行的-Java-虚拟机" class="headerlink" title="2 流行的 Java 虚拟机"></a>2 流行的 Java 虚拟机</h2><ul>
+<li><p>Hotspot</p>
+<p>Oracle 官方虚拟机</p>
+</li>
+<li><p>JRockit</p>
+</li>
+<li><p> J9</p>
+</li>
+<li><p>Microsoft VM</p>
+</li>
+<li><p>Liquid VM</p>
+</li>
+<li><p>Taobao VM</p>
+</li>
+</ul>
+<h2 id="3-JDK、JRE、JVM"><a href="#3-JDK、JRE、JVM" class="headerlink" title="3 JDK、JRE、JVM"></a>3 JDK、JRE、JVM</h2><ul>
+<li>JVM：</li>
+<li>JRE = JVM + core libraries</li>
+<li>JDK = JRE + Development Kit</li>
+</ul>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20201228215823470.png" alt="image-20201228215823470"></p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Java NIO Channel</title>
     <url>/2020/12/24/Java-NIO-Channel/</url>
     <content><![CDATA[<h1 id="Java-NIO-Channel"><a href="#Java-NIO-Channel" class="headerlink" title="Java NIO Channel"></a>Java NIO Channel</h1><p><code>Java NIO Channels</code> 类似于流，但有一些区别：</p>
@@ -317,6 +510,41 @@
       </tags>
   </entry>
   <entry>
+    <title>Redis 哨兵模式高可用解决方案</title>
+    <url>/2020/12/27/Redis-%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%AB%98%E5%8F%AF%E7%94%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</url>
+    <content><![CDATA[<h1 id="Redis-哨兵模式高可用解决方案"><a href="#Redis-哨兵模式高可用解决方案" class="headerlink" title="Redis 哨兵模式高可用解决方案"></a>Redis 哨兵模式高可用解决方案</h1><a id="more"></a>
+
+<h2 id="1-Redis哨兵简介"><a href="#1-Redis哨兵简介" class="headerlink" title="1 Redis哨兵简介"></a>1 Redis哨兵简介</h2><p>Redis的哨兵系统用于管理多个Redis服务器，该系统执行以下三个任务：</p>
+<ul>
+<li>监控</li>
+<li>提醒</li>
+<li>自动故障转移</li>
+</ul>
+<h2 id="2-Redis哨兵使用"><a href="#2-Redis哨兵使用" class="headerlink" title="2 Redis哨兵使用"></a>2 Redis哨兵使用</h2><h3 id="2-1-配置-Sentinel"><a href="#2-1-配置-Sentinel" class="headerlink" title="2.1 配置 Sentinel"></a>2.1 配置 Sentinel</h3><p>新建三个 sentinel 配置文件，例 26379.conf、26380.conf、26381.conf 监听主机，内容为</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">port 26379&#x2F;26380&#x2F;26381</span><br><span class="line">sentinel monitor mymaster 127.0.0.1 6379 2</span><br></pre></td></tr></table></figure>
+<p>运行主机</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;6379.conf</span><br></pre></td></tr></table></figure>
+<p>运行两个 slave</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;6380.conf --replicaof 127.0.0.1 6379</span><br><span class="line">redis-server .&#x2F;6381.conf --replicaof 127.0.0.1 6379</span><br></pre></td></tr></table></figure>
+<p>启动哨兵</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;26379.conf --sentinel</span><br><span class="line">redis-server .&#x2F;26380.conf --sentinel</span><br><span class="line">redis-server .&#x2F;26381.conf --sentinel</span><br></pre></td></tr></table></figure>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722211540287.png" alt="image-20200722211540287"></p>
+<h3 id="2-2-测试哨兵"><a href="#2-2-测试哨兵" class="headerlink" title="2.2 测试哨兵"></a>2.2 测试哨兵</h3><p>此时断开 6379，经过一段时间，会投票选出新的主机，本次测试 2 票选出 6381</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">6909:X 13 Jul 2020 17:06:41.887 # +sdown master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +odown master mymaster 127.0.0.1 6379 #quorum 3&#x2F;2</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +new-epoch 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +try-failover master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.964 # +vote-for-leader f0d0f7c12cc881a04d88ad7831100d0eea82cec4 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.969 # 3dd3212a440f415e989718634222ae89fc2fd219 voted for 3dd3212a440f415e989718634222ae89fc2fd219 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.989 # 44c8a525d5b8390571e2621fa3dfa416eafa8c0b voted for f0d0f7c12cc881a04d88ad7831100d0eea82cec4 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.027 # +elected-leader master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.027 # +failover-state-select-slave master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.100 # +selected-slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.100 * +failover-state-send-slaveof-noone slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.159 * +failover-state-wait-promotion slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.445 # +promoted-slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.445 # +failover-state-reconf-slaves master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.528 * +slave-reconf-sent slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.113 # -odown master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.482 * +slave-reconf-inprog slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.482 * +slave-reconf-done slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 # +failover-end master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 * +slave slave 127.0.0.1:6379 127.0.0.1 6379 @ mymaster 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:07:13.568 # +sdown slave 127.0.0.1:6379 127.0.0.1 6379 @ mymaster 127.0.0.1 6381</span><br></pre></td></tr></table></figure>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212104628.png" alt="image-20200722212104628"></p>
+<p>哨兵会自动更改配置文件</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212459813.png" alt="image-20200722212459813"></p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212525730.png" alt="image-20200722212525730"></p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+        <tag>HA</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis 发布订阅</title>
     <url>/2020/12/27/Redis-%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85/</url>
     <content><![CDATA[<h1 id="Redis-发布订阅"><a href="#Redis-发布订阅" class="headerlink" title="Redis 发布订阅"></a>Redis 发布订阅</h1><a id="more"></a>
@@ -359,41 +587,6 @@
       <tags>
         <tag>Redis</tag>
         <tag>SpringBoot</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Redis 哨兵模式高可用解决方案</title>
-    <url>/2020/12/27/Redis-%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%AB%98%E5%8F%AF%E7%94%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</url>
-    <content><![CDATA[<h1 id="Redis-哨兵模式高可用解决方案"><a href="#Redis-哨兵模式高可用解决方案" class="headerlink" title="Redis 哨兵模式高可用解决方案"></a>Redis 哨兵模式高可用解决方案</h1><a id="more"></a>
-
-<h2 id="1-Redis哨兵简介"><a href="#1-Redis哨兵简介" class="headerlink" title="1 Redis哨兵简介"></a>1 Redis哨兵简介</h2><p>Redis的哨兵系统用于管理多个Redis服务器，该系统执行以下三个任务：</p>
-<ul>
-<li>监控</li>
-<li>提醒</li>
-<li>自动故障转移</li>
-</ul>
-<h2 id="2-Redis哨兵使用"><a href="#2-Redis哨兵使用" class="headerlink" title="2 Redis哨兵使用"></a>2 Redis哨兵使用</h2><h3 id="2-1-配置-Sentinel"><a href="#2-1-配置-Sentinel" class="headerlink" title="2.1 配置 Sentinel"></a>2.1 配置 Sentinel</h3><p>新建三个 sentinel 配置文件，例 26379.conf、26380.conf、26381.conf 监听主机，内容为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">port 26379&#x2F;26380&#x2F;26381</span><br><span class="line">sentinel monitor mymaster 127.0.0.1 6379 2</span><br></pre></td></tr></table></figure>
-<p>运行主机</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;6379.conf</span><br></pre></td></tr></table></figure>
-<p>运行两个 slave</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;6380.conf --replicaof 127.0.0.1 6379</span><br><span class="line">redis-server .&#x2F;6381.conf --replicaof 127.0.0.1 6379</span><br></pre></td></tr></table></figure>
-<p>启动哨兵</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;26379.conf --sentinel</span><br><span class="line">redis-server .&#x2F;26380.conf --sentinel</span><br><span class="line">redis-server .&#x2F;26381.conf --sentinel</span><br></pre></td></tr></table></figure>
-<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722211540287.png" alt="image-20200722211540287"></p>
-<h3 id="2-2-测试哨兵"><a href="#2-2-测试哨兵" class="headerlink" title="2.2 测试哨兵"></a>2.2 测试哨兵</h3><p>此时断开 6379，经过一段时间，会投票选出新的主机，本次测试 2 票选出 6381</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">6909:X 13 Jul 2020 17:06:41.887 # +sdown master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +odown master mymaster 127.0.0.1 6379 #quorum 3&#x2F;2</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +new-epoch 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +try-failover master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.964 # +vote-for-leader f0d0f7c12cc881a04d88ad7831100d0eea82cec4 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.969 # 3dd3212a440f415e989718634222ae89fc2fd219 voted for 3dd3212a440f415e989718634222ae89fc2fd219 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.989 # 44c8a525d5b8390571e2621fa3dfa416eafa8c0b voted for f0d0f7c12cc881a04d88ad7831100d0eea82cec4 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.027 # +elected-leader master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.027 # +failover-state-select-slave master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.100 # +selected-slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.100 * +failover-state-send-slaveof-noone slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.159 * +failover-state-wait-promotion slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.445 # +promoted-slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.445 # +failover-state-reconf-slaves master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.528 * +slave-reconf-sent slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.113 # -odown master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.482 * +slave-reconf-inprog slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.482 * +slave-reconf-done slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 # +failover-end master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 * +slave slave 127.0.0.1:6379 127.0.0.1 6379 @ mymaster 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:07:13.568 # +sdown slave 127.0.0.1:6379 127.0.0.1 6379 @ mymaster 127.0.0.1 6381</span><br></pre></td></tr></table></figure>
-<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212104628.png" alt="image-20200722212104628"></p>
-<p>哨兵会自动更改配置文件</p>
-<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212459813.png" alt="image-20200722212459813"></p>
-<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212525730.png" alt="image-20200722212525730"></p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
-        <tag>HA</tag>
       </tags>
   </entry>
   <entry>
@@ -518,68 +711,6 @@
       <tags>
         <tag>Redis</tag>
         <tag>SpringBoot</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Redis 基本数据类型 Hashes</title>
-    <url>/2020/12/26/Redis-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-Hashes/</url>
-    <content><![CDATA[<h1 id="Redis-Hashes"><a href="#Redis-Hashes" class="headerlink" title="Redis Hashes"></a>Redis Hashes</h1><h2 id="1-Hashes简介"><a href="#1-Hashes简介" class="headerlink" title="1 Hashes简介"></a>1 Hashes简介</h2><a id="more"></a>
-
-<p>Redis hash 是一个 string 类型的 field（字段） 和 value（值） 的映射表，hash 特别适合用于存储对象。</p>
-<p>Redis 中每个 hash 可以存储 232 - 1 键值对（40多亿）。</p>
-<h2 id="2-Hashes命令"><a href="#2-Hashes命令" class="headerlink" title="2 Hashes命令"></a>2 Hashes命令</h2><h3 id="2-1-help-hash"><a href="#2-1-help-hash" class="headerlink" title="2.1 help @hash"></a>2.1 help @hash</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help @hash</span><br><span class="line"></span><br><span class="line">  HDEL key field [field ...]</span><br><span class="line">  summary: Delete one or more hash fields</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HEXISTS key field</span><br><span class="line">  summary: Determine if a hash field exists</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HGET key field</span><br><span class="line">  summary: Get the value of a hash field</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HGETALL key</span><br><span class="line">  summary: Get all the fields and values in a hash</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HINCRBY key field increment</span><br><span class="line">  summary: Increment the integer value of a hash field by the given number</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HINCRBYFLOAT key field increment</span><br><span class="line">  summary: Increment the float value of a hash field by the given amount</span><br><span class="line">  since: 2.6.0</span><br><span class="line"></span><br><span class="line">  HKEYS key</span><br><span class="line">  summary: Get all the fields in a hash</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HLEN key</span><br><span class="line">  summary: Get the number of fields in a hash</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HMGET key field [field ...]</span><br><span class="line">  summary: Get the values of all the given hash fields</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HMSET key field value [field value ...]</span><br><span class="line">  summary: Set multiple hash fields to multiple values</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HSCAN key cursor [MATCH pattern] [COUNT count]</span><br><span class="line">  summary: Incrementally iterate hash fields and associated values</span><br><span class="line">  since: 2.8.0</span><br><span class="line"></span><br><span class="line">  HSET key field value</span><br><span class="line">  summary: Set the string value of a hash field</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HSETNX key field value</span><br><span class="line">  summary: Set the value of a hash field, only if the field does not exist</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HSTRLEN key field</span><br><span class="line">  summary: Get the length of the value of a hash field</span><br><span class="line">  since: 3.2.0</span><br><span class="line"></span><br><span class="line">  HVALS key</span><br><span class="line">  summary: Get all the values in a hash</span><br><span class="line">  since: 2.0.0</span><br></pre></td></tr></table></figure>
-<h3 id="2-2-HSET-amp-HGET"><a href="#2-2-HSET-amp-HGET" class="headerlink" title="2.2 HSET&amp;HGET"></a>2.2 HSET&amp;HGET</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help hset</span><br><span class="line"></span><br><span class="line">  HSET key field value</span><br><span class="line">  summary: Set the string value of a hash field</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; help hget</span><br><span class="line"></span><br><span class="line">  HGET key field</span><br><span class="line">  summary: Get the value of a hash field</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br></pre></td></tr></table></figure>
-<p>HSET：将哈希表 <code>key</code> 中的域 <code>field</code> 的值设为 <code>value</code> 。</p>
-<ul>
-<li><p>如果 <code>key</code> 不存在，一个新的哈希表被创建并进行 HSET 操作。</p>
-</li>
-<li><p>如果域 <code>field</code> 已经存在于哈希表中，旧值将被覆盖。</p>
-</li>
-</ul>
-<p>HGET：返回哈希表 <code>key</code> 中给定域 <code>field</code> 的值。</p>
-<ul>
-<li>当给定域不存在或是给定 <code>key</code> 不存在时，返回 <code>nil</code> 。</li>
-</ul>
-<p>案例：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将yeyangshu name赋值yeyangshu</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HSET yeyangshu name yeyangshu</span><br><span class="line">(integer) <span class="number">1</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HGET yeyangshu name</span><br><span class="line"><span class="string">&quot;yeyangshu&quot;</span></span><br><span class="line"><span class="comment"># 将yeyangshu name覆盖赋值yeyang</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HSET yeyangshu name yeyang</span><br><span class="line">(integer) <span class="number">0</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HGET yeyangshu name</span><br><span class="line"><span class="string">&quot;yeyang&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 取不存在的域</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HGET yeyangshu age</span><br><span class="line">(nil)</span><br></pre></td></tr></table></figure>
-<h3 id="2-3-HMSET-amp-HMGET"><a href="#2-3-HMSET-amp-HMGET" class="headerlink" title="2.3 HMSET&amp;HMGET"></a>2.3 HMSET&amp;HMGET</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help hmset</span><br><span class="line"></span><br><span class="line">  HMSET key field value [field value ...]</span><br><span class="line">  summary: Set multiple hash fields to multiple values</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; help hmget</span><br><span class="line"></span><br><span class="line">  HMGET key field [field ...]</span><br><span class="line">  summary: Get the values of all the given hash fields</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br></pre></td></tr></table></figure>
-<p>HMSET：同时将多个 <code>field-value</code> (域-值)对设置到哈希表 <code>key</code> 中。</p>
-<ul>
-<li>此命令会覆盖哈希表中已存在的域。</li>
-</ul>
-<p>HMGET：返回哈希表 <code>key</code> 中，一个或多个给定域的值。</p>
-<p>案例：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; HMSET sean age 20 address beijing</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; HMGET sean name</span><br><span class="line">&quot;yeyangshu&quot;</span><br><span class="line">127.0.0.1:6379&gt; HMGET sean name age address</span><br><span class="line">1) &quot;yeyangshu&quot;</span><br><span class="line">2) &quot;20&quot;</span><br><span class="line">3) &quot;beijing&quot;</span><br></pre></td></tr></table></figure>
-<h3 id="2-4-HGETALL"><a href="#2-4-HGETALL" class="headerlink" title="2.4 HGETALL"></a>2.4 HGETALL</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help hgetall</span><br><span class="line"></span><br><span class="line">  HGETALL key</span><br><span class="line">  summary: Get all the fields and values in a hash</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br></pre></td></tr></table></figure>
-<p>HGETALL：返回哈希表 <code>key</code> 中，所有的域和值。</p>
-<ul>
-<li>在返回值里，紧跟每个域名(field name)之后是域的值(value)，所以返回值的长度是哈希表大小的两倍。</li>
-</ul>
-<p>案例：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HGETALL sean</span><br><span class="line"><span class="number">1</span>) <span class="string">&quot;name&quot;</span></span><br><span class="line"><span class="number">2</span>) <span class="string">&quot;yeyangshu&quot;</span></span><br><span class="line"><span class="number">3</span>) <span class="string">&quot;age&quot;</span></span><br><span class="line"><span class="number">4</span>) <span class="string">&quot;20&quot;</span></span><br><span class="line"><span class="number">5</span>) <span class="string">&quot;address&quot;</span></span><br></pre></td></tr></table></figure>
-<h3 id="2-5-HKEYS-amp-HVALS"><a href="#2-5-HKEYS-amp-HVALS" class="headerlink" title="2.5 HKEYS&amp;HVALS"></a>2.5 HKEYS&amp;HVALS</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help hkeys</span><br><span class="line"></span><br><span class="line">  HKEYS key</span><br><span class="line">  summary: Get all the fields in a hash</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; help hvals</span><br><span class="line"></span><br><span class="line">  HVALS key</span><br><span class="line">  summary: Get all the values in a hash</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br></pre></td></tr></table></figure>
-<p>HKEYS：返回哈希表 <code>key</code> 中的所有域。</p>
-<p>HVALS：返回哈希表 <code>key</code> 中所有域的值。</p>
-<p>案例：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HKEYS sean</span><br><span class="line"><span class="number">1</span>) <span class="string">&quot;name&quot;</span></span><br><span class="line"><span class="number">2</span>) <span class="string">&quot;age&quot;</span></span><br><span class="line"><span class="number">3</span>) <span class="string">&quot;address&quot;</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HVALS sean</span><br><span class="line"><span class="number">1</span>) <span class="string">&quot;yeyangshu&quot;</span></span><br><span class="line"><span class="number">2</span>) <span class="string">&quot;20&quot;</span></span><br><span class="line"><span class="number">3</span>) <span class="string">&quot;beijing&quot;</span></span><br></pre></td></tr></table></figure>
-<h3 id="2-6-HINCRBY-amp-HINCRBYFLOAT"><a href="#2-6-HINCRBY-amp-HINCRBYFLOAT" class="headerlink" title="2.6 HINCRBY&amp;HINCRBYFLOAT"></a>2.6 HINCRBY&amp;HINCRBYFLOAT</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help hincrby</span><br><span class="line"></span><br><span class="line">  HINCRBY key field increment</span><br><span class="line">  summary: Increment the integer value of a hash field by the given number</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; help hincrbyfloat</span><br><span class="line"></span><br><span class="line">  HINCRBYFLOAT key field increment</span><br><span class="line">  summary: Increment the float value of a hash field by the given amount</span><br><span class="line">  since: 2.6.0</span><br><span class="line">  group: hash</span><br></pre></td></tr></table></figure>
-<p>HINCRBY：为哈希表 <code>key</code> 中的域 <code>field</code> 的值加上增量 <code>increment</code> 。</p>
-<ul>
-<li>增量也可以为负数，相当于对给定域进行减法操作。</li>
-</ul>
-<p>HINCRBYFLOAT：为哈希表 <code>key</code> 中的域 <code>field</code> 加上浮点数增量 <code>increment</code> 。</p>
-<p>案例：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HINCRBYFLOAT sean age <span class="number">0.5</span></span><br><span class="line"><span class="string">&quot;20.5&quot;</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HGET sean age</span><br><span class="line"><span class="string">&quot;20.5&quot;</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HINCRBYFLOAT sean age <span class="literal">-1</span></span><br><span class="line"><span class="string">&quot;19.5&quot;</span></span><br></pre></td></tr></table></figure>
-<h2 id="3-Hashes使用场景"><a href="#3-Hashes使用场景" class="headerlink" title="3 Hashes使用场景"></a>3 Hashes使用场景</h2><ol>
-<li>Redis是内存的数据库，所有对值的操作都是非常快的，一般的商品详情页都会有很多字段信息，如果客户端请求这么多数据，每一个数据都需要请求一次数据库，可以使用Redis hashes，将所有的信息进行整合，数据整合，调用次数会变低。</li>
-<li>数据都会变化，比如微博的个人关注、点赞或者商品详情页的浏览次数、被收藏的次数，数据不仅要被查询，还要进行计算，hash还支持数值计算。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
       </tags>
   </entry>
   <entry>
@@ -782,6 +913,68 @@
 <li><p>随机抽奖，一次一个</p>
 <p>奖品分为一、二、三等奖，每次只抽一个人，SPOP key 1</p>
 </li>
+</ol>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Redis 基本数据类型 Hashes</title>
+    <url>/2020/12/26/Redis-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B-Hashes/</url>
+    <content><![CDATA[<h1 id="Redis-Hashes"><a href="#Redis-Hashes" class="headerlink" title="Redis Hashes"></a>Redis Hashes</h1><h2 id="1-Hashes简介"><a href="#1-Hashes简介" class="headerlink" title="1 Hashes简介"></a>1 Hashes简介</h2><a id="more"></a>
+
+<p>Redis hash 是一个 string 类型的 field（字段） 和 value（值） 的映射表，hash 特别适合用于存储对象。</p>
+<p>Redis 中每个 hash 可以存储 232 - 1 键值对（40多亿）。</p>
+<h2 id="2-Hashes命令"><a href="#2-Hashes命令" class="headerlink" title="2 Hashes命令"></a>2 Hashes命令</h2><h3 id="2-1-help-hash"><a href="#2-1-help-hash" class="headerlink" title="2.1 help @hash"></a>2.1 help @hash</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help @hash</span><br><span class="line"></span><br><span class="line">  HDEL key field [field ...]</span><br><span class="line">  summary: Delete one or more hash fields</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HEXISTS key field</span><br><span class="line">  summary: Determine if a hash field exists</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HGET key field</span><br><span class="line">  summary: Get the value of a hash field</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HGETALL key</span><br><span class="line">  summary: Get all the fields and values in a hash</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HINCRBY key field increment</span><br><span class="line">  summary: Increment the integer value of a hash field by the given number</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HINCRBYFLOAT key field increment</span><br><span class="line">  summary: Increment the float value of a hash field by the given amount</span><br><span class="line">  since: 2.6.0</span><br><span class="line"></span><br><span class="line">  HKEYS key</span><br><span class="line">  summary: Get all the fields in a hash</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HLEN key</span><br><span class="line">  summary: Get the number of fields in a hash</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HMGET key field [field ...]</span><br><span class="line">  summary: Get the values of all the given hash fields</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HMSET key field value [field value ...]</span><br><span class="line">  summary: Set multiple hash fields to multiple values</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HSCAN key cursor [MATCH pattern] [COUNT count]</span><br><span class="line">  summary: Incrementally iterate hash fields and associated values</span><br><span class="line">  since: 2.8.0</span><br><span class="line"></span><br><span class="line">  HSET key field value</span><br><span class="line">  summary: Set the string value of a hash field</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HSETNX key field value</span><br><span class="line">  summary: Set the value of a hash field, only if the field does not exist</span><br><span class="line">  since: 2.0.0</span><br><span class="line"></span><br><span class="line">  HSTRLEN key field</span><br><span class="line">  summary: Get the length of the value of a hash field</span><br><span class="line">  since: 3.2.0</span><br><span class="line"></span><br><span class="line">  HVALS key</span><br><span class="line">  summary: Get all the values in a hash</span><br><span class="line">  since: 2.0.0</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-HSET-amp-HGET"><a href="#2-2-HSET-amp-HGET" class="headerlink" title="2.2 HSET&amp;HGET"></a>2.2 HSET&amp;HGET</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help hset</span><br><span class="line"></span><br><span class="line">  HSET key field value</span><br><span class="line">  summary: Set the string value of a hash field</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; help hget</span><br><span class="line"></span><br><span class="line">  HGET key field</span><br><span class="line">  summary: Get the value of a hash field</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br></pre></td></tr></table></figure>
+<p>HSET：将哈希表 <code>key</code> 中的域 <code>field</code> 的值设为 <code>value</code> 。</p>
+<ul>
+<li><p>如果 <code>key</code> 不存在，一个新的哈希表被创建并进行 HSET 操作。</p>
+</li>
+<li><p>如果域 <code>field</code> 已经存在于哈希表中，旧值将被覆盖。</p>
+</li>
+</ul>
+<p>HGET：返回哈希表 <code>key</code> 中给定域 <code>field</code> 的值。</p>
+<ul>
+<li>当给定域不存在或是给定 <code>key</code> 不存在时，返回 <code>nil</code> 。</li>
+</ul>
+<p>案例：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将yeyangshu name赋值yeyangshu</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HSET yeyangshu name yeyangshu</span><br><span class="line">(integer) <span class="number">1</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HGET yeyangshu name</span><br><span class="line"><span class="string">&quot;yeyangshu&quot;</span></span><br><span class="line"><span class="comment"># 将yeyangshu name覆盖赋值yeyang</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HSET yeyangshu name yeyang</span><br><span class="line">(integer) <span class="number">0</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HGET yeyangshu name</span><br><span class="line"><span class="string">&quot;yeyang&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 取不存在的域</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HGET yeyangshu age</span><br><span class="line">(nil)</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-HMSET-amp-HMGET"><a href="#2-3-HMSET-amp-HMGET" class="headerlink" title="2.3 HMSET&amp;HMGET"></a>2.3 HMSET&amp;HMGET</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help hmset</span><br><span class="line"></span><br><span class="line">  HMSET key field value [field value ...]</span><br><span class="line">  summary: Set multiple hash fields to multiple values</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; help hmget</span><br><span class="line"></span><br><span class="line">  HMGET key field [field ...]</span><br><span class="line">  summary: Get the values of all the given hash fields</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br></pre></td></tr></table></figure>
+<p>HMSET：同时将多个 <code>field-value</code> (域-值)对设置到哈希表 <code>key</code> 中。</p>
+<ul>
+<li>此命令会覆盖哈希表中已存在的域。</li>
+</ul>
+<p>HMGET：返回哈希表 <code>key</code> 中，一个或多个给定域的值。</p>
+<p>案例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; HMSET sean age 20 address beijing</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; HMGET sean name</span><br><span class="line">&quot;yeyangshu&quot;</span><br><span class="line">127.0.0.1:6379&gt; HMGET sean name age address</span><br><span class="line">1) &quot;yeyangshu&quot;</span><br><span class="line">2) &quot;20&quot;</span><br><span class="line">3) &quot;beijing&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-HGETALL"><a href="#2-4-HGETALL" class="headerlink" title="2.4 HGETALL"></a>2.4 HGETALL</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help hgetall</span><br><span class="line"></span><br><span class="line">  HGETALL key</span><br><span class="line">  summary: Get all the fields and values in a hash</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br></pre></td></tr></table></figure>
+<p>HGETALL：返回哈希表 <code>key</code> 中，所有的域和值。</p>
+<ul>
+<li>在返回值里，紧跟每个域名(field name)之后是域的值(value)，所以返回值的长度是哈希表大小的两倍。</li>
+</ul>
+<p>案例：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HGETALL sean</span><br><span class="line"><span class="number">1</span>) <span class="string">&quot;name&quot;</span></span><br><span class="line"><span class="number">2</span>) <span class="string">&quot;yeyangshu&quot;</span></span><br><span class="line"><span class="number">3</span>) <span class="string">&quot;age&quot;</span></span><br><span class="line"><span class="number">4</span>) <span class="string">&quot;20&quot;</span></span><br><span class="line"><span class="number">5</span>) <span class="string">&quot;address&quot;</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-5-HKEYS-amp-HVALS"><a href="#2-5-HKEYS-amp-HVALS" class="headerlink" title="2.5 HKEYS&amp;HVALS"></a>2.5 HKEYS&amp;HVALS</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help hkeys</span><br><span class="line"></span><br><span class="line">  HKEYS key</span><br><span class="line">  summary: Get all the fields in a hash</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; help hvals</span><br><span class="line"></span><br><span class="line">  HVALS key</span><br><span class="line">  summary: Get all the values in a hash</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br></pre></td></tr></table></figure>
+<p>HKEYS：返回哈希表 <code>key</code> 中的所有域。</p>
+<p>HVALS：返回哈希表 <code>key</code> 中所有域的值。</p>
+<p>案例：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HKEYS sean</span><br><span class="line"><span class="number">1</span>) <span class="string">&quot;name&quot;</span></span><br><span class="line"><span class="number">2</span>) <span class="string">&quot;age&quot;</span></span><br><span class="line"><span class="number">3</span>) <span class="string">&quot;address&quot;</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HVALS sean</span><br><span class="line"><span class="number">1</span>) <span class="string">&quot;yeyangshu&quot;</span></span><br><span class="line"><span class="number">2</span>) <span class="string">&quot;20&quot;</span></span><br><span class="line"><span class="number">3</span>) <span class="string">&quot;beijing&quot;</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-6-HINCRBY-amp-HINCRBYFLOAT"><a href="#2-6-HINCRBY-amp-HINCRBYFLOAT" class="headerlink" title="2.6 HINCRBY&amp;HINCRBYFLOAT"></a>2.6 HINCRBY&amp;HINCRBYFLOAT</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127.0.0.1:6379&gt; help hincrby</span><br><span class="line"></span><br><span class="line">  HINCRBY key field increment</span><br><span class="line">  summary: Increment the integer value of a hash field by the given number</span><br><span class="line">  since: 2.0.0</span><br><span class="line">  group: hash</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379&gt; help hincrbyfloat</span><br><span class="line"></span><br><span class="line">  HINCRBYFLOAT key field increment</span><br><span class="line">  summary: Increment the float value of a hash field by the given amount</span><br><span class="line">  since: 2.6.0</span><br><span class="line">  group: hash</span><br></pre></td></tr></table></figure>
+<p>HINCRBY：为哈希表 <code>key</code> 中的域 <code>field</code> 的值加上增量 <code>increment</code> 。</p>
+<ul>
+<li>增量也可以为负数，相当于对给定域进行减法操作。</li>
+</ul>
+<p>HINCRBYFLOAT：为哈希表 <code>key</code> 中的域 <code>field</code> 加上浮点数增量 <code>increment</code> 。</p>
+<p>案例：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HINCRBYFLOAT sean age <span class="number">0.5</span></span><br><span class="line"><span class="string">&quot;20.5&quot;</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HGET sean age</span><br><span class="line"><span class="string">&quot;20.5&quot;</span></span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">6379</span>&gt; HINCRBYFLOAT sean age <span class="literal">-1</span></span><br><span class="line"><span class="string">&quot;19.5&quot;</span></span><br></pre></td></tr></table></figure>
+<h2 id="3-Hashes使用场景"><a href="#3-Hashes使用场景" class="headerlink" title="3 Hashes使用场景"></a>3 Hashes使用场景</h2><ol>
+<li>Redis是内存的数据库，所有对值的操作都是非常快的，一般的商品详情页都会有很多字段信息，如果客户端请求这么多数据，每一个数据都需要请求一次数据库，可以使用Redis hashes，将所有的信息进行整合，数据整合，调用次数会变低。</li>
+<li>数据都会变化，比如微博的个人关注、点赞或者商品详情页的浏览次数、被收藏的次数，数据不仅要被查询，还要进行计算，hash还支持数值计算。</li>
 </ol>
 ]]></content>
       <categories>
@@ -1065,6 +1258,401 @@
       </tags>
   </entry>
   <entry>
+    <title>亿级流量网站架构 设计原则</title>
+    <url>/2021/01/01/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99/</url>
+    <content><![CDATA[<h1 id="设计原则"><a href="#设计原则" class="headerlink" title="设计原则"></a>设计原则</h1><a id="more"></a>
+
+<h2 id="1-高并发设计原则"><a href="#1-高并发设计原则" class="headerlink" title="1 高并发设计原则"></a>1 高并发设计原则</h2><h3 id="1-1-无状态"><a href="#1-1-无状态" class="headerlink" title="1.1 无状态"></a>1.1 无状态</h3><p>无状态容易进行水平扩展。</p>
+<p>实际生产环境：应用无状态+配置文件有状态</p>
+<h3 id="1-2-拆分"><a href="#1-2-拆分" class="headerlink" title="1.2 拆分"></a>1.2 拆分</h3><p>系统拆分几种情况：</p>
+<ul>
+<li>系统维度：系统功能、业务拆分，比如商品系统、购物陈、结算、订单系统等。</li>
+<li>功能维度：对一个系统进行功能再拆分，比如，优惠券系统可以拆分为后台券创建系统、领券系统、用券系统。</li>
+<li>读写维度：读量大，使用缓存提升性能；写量大，分库分表。</li>
+<li>AOP 维度：比如，商品详情页可以分为 CDN、页面渲染系统。</li>
+<li>模块维度：代码（Web、Service、Dao）</li>
+</ul>
+<h3 id="1-3-服务化"><a href="#1-3-服务化" class="headerlink" title="1.3 服务化"></a>1.3 服务化</h3><p>总结为如下流程：</p>
+<p>进程内服务 -&gt; 单机远程服务 -&gt; 集群手动注册服务 -&gt; 自动注册服务和发现服务 -&gt; 服务的分组/隔离/路由 -&gt; 服务治理如限流/黑白名单</p>
+<h3 id="1-4-消息队列"><a href="#1-4-消息队列" class="headerlink" title="1.4 消息队列"></a>1.4 消息队列</h3><p>服务解耦（一对多）消费、异步处理、流量削峰/缓冲等。</p>
+<h4 id="1-4-1-大流量缓冲"><a href="#1-4-1-大流量缓冲" class="headerlink" title="1.4.1 大流量缓冲"></a>1.4.1 大流量缓冲</h4><p>牺牲强一致性，保证最终一致性</p>
+<h4 id="1-4-2-数据校对"><a href="#1-4-2-数据校对" class="headerlink" title="1.4.2 数据校对"></a>1.4.2 数据校对</h4><p>消息异步机制场景下，可能存在消息的丢失，需要考虑进行数据校对和修正数据来保证一致性和完整性。</p>
+<h3 id="1-5-数据异构"><a href="#1-5-数据异构" class="headerlink" title="1.5 数据异构"></a>1.5 数据异构</h3><h4 id="1-5-1-数据异构"><a href="#1-5-1-数据异构" class="headerlink" title="1.5.1 数据异构"></a>1.5.1 数据异构</h4><h4 id="1-5-2-数据闭环"><a href="#1-5-2-数据闭环" class="headerlink" title="1.5.2 数据闭环"></a>1.5.2 数据闭环</h4><h3 id="1-6-缓存银弹"><a href="#1-6-缓存银弹" class="headerlink" title="1.6 缓存银弹"></a>1.6 缓存银弹</h3><table>
+<thead>
+<tr>
+<th>流程节点</th>
+<th>缓存技术</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>客户端</td>
+<td>使用浏览器缓存</td>
+</tr>
+<tr>
+<td></td>
+<td>客户端缓存</td>
+</tr>
+<tr>
+<td>客户端网络</td>
+<td>代理服务器开启缓存</td>
+</tr>
+<tr>
+<td>广域网</td>
+<td>使用代理服务器（含 CDN）</td>
+</tr>
+<tr>
+<td></td>
+<td>使用镜像服务器</td>
+</tr>
+<tr>
+<td></td>
+<td>使用 P2P 技术</td>
+</tr>
+<tr>
+<td>源站及源站网络</td>
+<td>使用接入层提供的缓存机制</td>
+</tr>
+<tr>
+<td></td>
+<td>使用应用层提供的缓存机制</td>
+</tr>
+<tr>
+<td></td>
+<td>使用分布式缓存</td>
+</tr>
+<tr>
+<td></td>
+<td>静态化、伪静态化</td>
+</tr>
+<tr>
+<td></td>
+<td>使用服务器操作系统提供的缓存机制</td>
+</tr>
+</tbody></table>
+<h4 id="1-6-1-浏览器端缓存"><a href="#1-6-1-浏览器端缓存" class="headerlink" title="1.6.1 浏览器端缓存"></a>1.6.1 浏览器端缓存</h4><p>设置请求的过期时间。如对响应头 Expires、Cahce-control 进行控制。</p>
+<p>适用于实时性不太敏感的数据，如商品详情页、商家评分、评价、广告词等。</p>
+<h4 id="1-6-2-APP-客户端缓存"><a href="#1-6-2-APP-客户端缓存" class="headerlink" title="1.6.2 APP 客户端缓存"></a>1.6.2 APP 客户端缓存</h4><p>大促前提前下发素材到客户端缓存。</p>
+<h4 id="1-6-3-CDN-缓存"><a href="#1-6-3-CDN-缓存" class="headerlink" title="1.6.3 CDN 缓存"></a>1.6.3 CDN 缓存</h4><p>有些页面、活动页、图片等服务推送到离用户最近的 CDN 节点</p>
+<ul>
+<li>推送机制</li>
+<li>拉取机制</li>
+</ul>
+<h4 id="1-6-4-接入层缓存"><a href="#1-6-4-接入层缓存" class="headerlink" title="1.6.4 接入层缓存"></a>1.6.4 接入层缓存</h4><p>对于没有 CDN 缓存的应用来说，可以使用如 Nginx 搭建一层接入层。</p>
+<h4 id="1-6-5-应用层缓存"><a href="#1-6-5-应用层缓存" class="headerlink" title="1.6.5 应用层缓存"></a>1.6.5 应用层缓存</h4><p>使用 Tomcat 时，可以使用堆内缓存/堆外缓存。可以使用 local redis cache 来代替对外缓存；或在接入层使用 share_dict 来将缓存前置，以减少风暴。</p>
+<h4 id="1-6-6-分布式缓存"><a href="#1-6-6-分布式缓存" class="headerlink" title="1.6.6 分布式缓存"></a>1.6.6 分布式缓存</h4><p>数据量太大，Redis 单服务器存储不了，可以使用分片机制将流量分散到多台，或直接使用分布式缓存实现。</p>
+<h3 id="1-7-并发化"><a href="#1-7-并发化" class="headerlink" title="1.7 并发化"></a>1.7 并发化</h3><h2 id="2-高可用原则"><a href="#2-高可用原则" class="headerlink" title="2 高可用原则"></a>2 高可用原则</h2><h3 id="2-1-降级"><a href="#2-1-降级" class="headerlink" title="2.1 降级"></a>2.1 降级</h3><p>设计降级开关</p>
+<h3 id="2-2-限流"><a href="#2-2-限流" class="headerlink" title="2.2 限流"></a>2.2 限流</h3><p>限流的目的是防止恶意请求流量、恶意攻击，或者防止流量超出系统峰值。</p>
+<p>思路：</p>
+<ol>
+<li>恶意请求流量只访问到 cache。</li>
+<li>对于穿透到后端应用的流量可以考虑使用 Nginx 的 limit 模块处理。</li>
+<li>对于恶意的 IP 可以使用 nginx deny 进行屏蔽。</li>
+</ol>
+<h3 id="2-3-切流量"><a href="#2-3-切流量" class="headerlink" title="2.3 切流量"></a>2.3 切流量</h3><h3 id="2-4-可回滚"><a href="#2-4-可回滚" class="headerlink" title="2.4 可回滚"></a>2.4 可回滚</h3><h2 id="3-业务设计原则"><a href="#3-业务设计原则" class="headerlink" title="3 业务设计原则"></a>3 业务设计原则</h2><h3 id="3-1-防重设计"><a href="#3-1-防重设计" class="headerlink" title="3.1 防重设计"></a>3.1 防重设计</h3><h3 id="3-2-幂等设计"><a href="#3-2-幂等设计" class="headerlink" title="3.2 幂等设计"></a>3.2 幂等设计</h3><h3 id="3-3-流程可定义"><a href="#3-3-流程可定义" class="headerlink" title="3.3 流程可定义"></a>3.3 流程可定义</h3><h3 id="3-4-状态与状态机"><a href="#3-4-状态与状态机" class="headerlink" title="3.4 状态与状态机"></a>3.4 状态与状态机</h3><h3 id="3-5-后台系统操作可反馈"><a href="#3-5-后台系统操作可反馈" class="headerlink" title="3.5 后台系统操作可反馈"></a>3.5 后台系统操作可反馈</h3><h3 id="3-6-后台系统审批化"><a href="#3-6-后台系统审批化" class="headerlink" title="3.6 后台系统审批化"></a>3.6 后台系统审批化</h3><h3 id="3-7-文档和注释"><a href="#3-7-文档和注释" class="headerlink" title="3.7 文档和注释"></a>3.7 文档和注释</h3>]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高可用</tag>
+        <tag>高并发</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>亿级流量网站架构 高可用 回滚</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%8F%AF%E7%94%A8-%E5%9B%9E%E6%BB%9A/</url>
+    <content><![CDATA[<a id="more"></a>]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高可用</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>亿级流量网站架构 高可用 资源隔离</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%8F%AF%E7%94%A8-%E8%B5%84%E6%BA%90%E9%9A%94%E7%A6%BB/</url>
+    <content><![CDATA[<h1 id="隔离"><a href="#隔离" class="headerlink" title="隔离"></a>隔离</h1><a id="more"></a>
+
+<h2 id="1-线程隔离"><a href="#1-线程隔离" class="headerlink" title="1 线程隔离"></a>1 线程隔离</h2><p>线程隔离主要是指线程池隔离，当一种业务的请求处理发生问题时，不会将故障扩散到其它线程池，从而保证其他服务可用。</p>
+<h2 id="2-进程隔离"><a href="#2-进程隔离" class="headerlink" title="2 进程隔离"></a>2 进程隔离</h2><p>通过系统拆分为多个子系统来实现物理隔离，使得某一个子系统出现问题时不会影响到其它子系统。</p>
+<h2 id="3-集群隔离"><a href="#3-集群隔离" class="headerlink" title="3 集群隔离"></a>3 集群隔离</h2><p>商品服务为秒杀提供单独的服务集群，即为服务分组。</p>
+<h2 id="4-机房隔离"><a href="#4-机房隔离" class="headerlink" title="4 机房隔离"></a>4 机房隔离</h2><p>多机房部署，不能跨机房调用。</p>
+<h2 id="5-读写隔离"><a href="#5-读写隔离" class="headerlink" title="5 读写隔离"></a>5 读写隔离</h2><p>Redis 主从模式实现读写分离、</p>
+<h2 id="6-动静隔离"><a href="#6-动静隔离" class="headerlink" title="6 动静隔离"></a>6 动静隔离</h2><p>静态资源放在 CDN 上。</p>
+<h2 id="7-爬虫隔离"><a href="#7-爬虫隔离" class="headerlink" title="7 爬虫隔离"></a>7 爬虫隔离</h2><ol>
+<li>限流</li>
+<li>爬虫路由到单独的集群上</li>
+</ol>
+<h2 id="8-热点隔离"><a href="#8-热点隔离" class="headerlink" title="8 热点隔离"></a>8 热点隔离</h2><p>秒杀、抢购属于热点服务，将其作成独立系统或服务进行隔离。</p>
+<h2 id="9-资源隔离"><a href="#9-资源隔离" class="headerlink" title="9 资源隔离"></a>9 资源隔离</h2><h2 id="10-使用-Hystrix-实现隔离"><a href="#10-使用-Hystrix-实现隔离" class="headerlink" title="10 使用 Hystrix 实现隔离"></a>10 使用 Hystrix 实现隔离</h2><h2 id="11-基于-Servlet-3-实现请求隔离"><a href="#11-基于-Servlet-3-实现请求隔离" class="headerlink" title="11 基于 Servlet 3 实现请求隔离"></a>11 基于 Servlet 3 实现请求隔离</h2><p>异步 NIO</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高可用</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>亿级流量网站架构 高可用 负载均衡</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%8F%AF%E7%94%A8-%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/</url>
+    <content><![CDATA[<h1 id="负载均衡与反向代理"><a href="#负载均衡与反向代理" class="headerlink" title="负载均衡与反向代理"></a>负载均衡与反向代理</h1><a id="more"></a>
+
+<p>Nginx 一般用于七层负载均衡，其吞吐量有一定的限制。为了提升吞吐量，会在 DNS 和 Nginx 之间引入接入层，如使用 LVS（软件负载均衡器）、F5（硬件负载均衡器）可以做四层负载均衡，即首先 DNS 解析到 LVS</p>
+<p>术语：</p>
+<p>Nginx：接入层、反向代理服务器、负载均衡器</p>
+<p>upstream server：上游服务器，也称为 real server：真实处理业务的服务器</p>
+<p>负载均衡关心方面：</p>
+<ul>
+<li>上游服务器配置</li>
+<li>负载均衡算法</li>
+<li>失败重试机制</li>
+<li>服务器心跳检测</li>
+</ul>
+<h2 id="1-upstream-配置"><a href="#1-upstream-配置" class="headerlink" title="1 upstream 配置"></a>1 upstream 配置</h2><p>Nginx 配置上游服务器</p>
+<p>http 指令下 配置 upstream</p>
+<h2 id="2-负载均衡算法"><a href="#2-负载均衡算法" class="headerlink" title="2 负载均衡算法"></a>2 负载均衡算法</h2><p>upstream server：</p>
+<ul>
+<li>round-robin：轮询</li>
+<li>ip_hash：ip 哈希</li>
+<li>hash key [consistent]：对 key 哈希或一致性哈希</li>
+</ul>
+<h2 id="3-失败重试"><a href="#3-失败重试" class="headerlink" title="3 失败重试"></a>3 失败重试</h2><p>配置：upstream server 和 proxy pass</p>
+<h2 id="4-健康检查"><a href="#4-健康检查" class="headerlink" title="4 健康检查"></a>4 健康检查</h2><p>Nginx 对上游服务器的健康检查默认采用的是惰性策略，可以集成 nginx_upstream_check_module（<a href="https://github.com/yaoweibin/nginx_upstream_check_module%EF%BC%89">https://github.com/yaoweibin/nginx_upstream_check_module）</a> 模块进行主动健康检查。</p>
+<h3 id="4-1-TCP-心跳检查"><a href="#4-1-TCP-心跳检查" class="headerlink" title="4.1 TCP 心跳检查"></a>4.1 TCP 心跳检查</h3><h3 id="4-2-HTTP-心跳检查"><a href="#4-2-HTTP-心跳检查" class="headerlink" title="4.2 HTTP 心跳检查"></a>4.2 HTTP 心跳检查</h3><h2 id="5-其他配置"><a href="#5-其他配置" class="headerlink" title="5 其他配置"></a>5 其他配置</h2><h3 id="5-1-上游服务器域名"><a href="#5-1-上游服务器域名" class="headerlink" title="5.1 上游服务器域名"></a>5.1 上游服务器域名</h3><h3 id="5-2-上游服务器备份"><a href="#5-2-上游服务器备份" class="headerlink" title="5.2 上游服务器备份"></a>5.2 上游服务器备份</h3><h3 id="5-3-上游服务器不可用"><a href="#5-3-上游服务器不可用" class="headerlink" title="5.3 上游服务器不可用"></a>5.3 上游服务器不可用</h3><h2 id="6-长连接"><a href="#6-长连接" class="headerlink" title="6 长连接"></a>6 长连接</h2><p>客户端与 Nginx 的长连接</p>
+<p>Nginx 与 上游服务器的长连接：通过 keepalive 指令配置长连接数量。</p>
+<h2 id="7-反向代理示例"><a href="#7-反向代理示例" class="headerlink" title="7 反向代理示例"></a>7 反向代理示例</h2><h2 id="8-HTTP-动态负载均衡（七层）"><a href="#8-HTTP-动态负载均衡（七层）" class="headerlink" title="8 HTTP 动态负载均衡（七层）"></a>8 HTTP 动态负载均衡（七层）</h2><p>使用 Consul 将upstream 动态注册到 Nginx 上。</p>
+<p>Consul 是一款开源的动态分布式服务与发现系统。</p>
+<h3 id="8-1-Consul-Consul-template"><a href="#8-1-Consul-Consul-template" class="headerlink" title="8.1 Consul + Consul-template"></a>8.1 Consul + Consul-template</h3><p>每次配置变更都需要 reload nginx，reload 是有一定的损耗的。</p>
+<h3 id="8-2-Consul-OpenRestry"><a href="#8-2-Consul-OpenRestry" class="headerlink" title="8.2 Consul + OpenRestry"></a>8.2 Consul + OpenRestry</h3><p>使用 Consul 注册服务，使用 OpenRestry balancer_by_lua 实现无 reload 动态负载均衡。</p>
+<h2 id="9-Nginx-四层负载均衡"><a href="#9-Nginx-四层负载均衡" class="headerlink" title="9 Nginx 四层负载均衡"></a>9 Nginx 四层负载均衡</h2><h3 id="9-1-静态负载均衡"><a href="#9-1-静态负载均衡" class="headerlink" title="9.1 静态负载均衡"></a>9.1 静态负载均衡</h3><p>ngx_stream_core_stream 默认没有启用，安装 Nginx 时，添加 <code>--with-stream</code> 配置参数启用。</p>
+<p>可以使用开源的 nginx-stream-upsync-module 实现动态负载均衡。</p>
+<h3 id="9-2-动态负载均衡"><a href="#9-2-动态负载均衡" class="headerlink" title="9,2 动态负载均衡"></a>9,2 动态负载均衡</h3><p> nginx-upsync-module，提供了七层动态负载均衡 </p>
+]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高可用</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>亿级流量网站架构 高可用 降级</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%8F%AF%E7%94%A8-%E9%99%8D%E7%BA%A7/</url>
+    <content><![CDATA[<h1 id="降级"><a href="#降级" class="headerlink" title="降级"></a>降级</h1><a id="more"></a>
+
+<p>当访问量剧增、服务出现问题（如响应时间长或不响应）或非核心服务影响到核心流程的性能时，任然需要保证服务还是可用的，即使有损服务。</p>
+<h2 id="1-降级预案"><a href="#1-降级预案" class="headerlink" title="1 降级预案"></a>1 降级预案</h2><p>降级按是否自动化可分为：自动开关降级和人工开关降级</p>
+<p>降级按功能可分为：读服务降级和写服务降级</p>
+<p>降级按照处于的系统层次可分为：多级降级</p>
+<h2 id="2-自动开关降级"><a href="#2-自动开关降级" class="headerlink" title="2 自动开关降级"></a>2 自动开关降级</h2><h3 id="2-1-超时降级"><a href="#2-1-超时降级" class="headerlink" title="2.1 超时降级"></a>2.1 超时降级</h3><h3 id="2-2-统计失败降级"><a href="#2-2-统计失败降级" class="headerlink" title="2.2 统计失败降级"></a>2.2 统计失败降级</h3><h3 id="2-3-故障降级"><a href="#2-3-故障降级" class="headerlink" title="2.3 故障降级"></a>2.3 故障降级</h3><h3 id="2-4-限流降级"><a href="#2-4-限流降级" class="headerlink" title="2.4 限流降级"></a>2.4 限流降级</h3><h2 id="3-人工开关降级"><a href="#3-人工开关降级" class="headerlink" title="3 人工开关降级"></a>3 人工开关降级</h2><h2 id="4-读服务降级"><a href="#4-读服务降级" class="headerlink" title="4 读服务降级"></a>4 读服务降级</h2><h2 id="5-写服务降级"><a href="#5-写服务降级" class="headerlink" title="5 写服务降级"></a>5 写服务降级</h2><h2 id="6-多级降级"><a href="#6-多级降级" class="headerlink" title="6 多级降级"></a>6 多级降级</h2>]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高可用</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>亿级流量网站架构 高可用 超时与重试</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%8F%AF%E7%94%A8-%E8%B6%85%E6%97%B6%E4%B8%8E%E9%87%8D%E8%AF%95/</url>
+    <content><![CDATA[<a id="more"></a>]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高可用</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>亿级流量网站架构 高可用 限流</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%8F%AF%E7%94%A8-%E9%99%90%E6%B5%81/</url>
+    <content><![CDATA[<h1 id="限流"><a href="#限流" class="headerlink" title="限流"></a>限流</h1><a id="more"></a>
+
+<h2 id="1-限流算法"><a href="#1-限流算法" class="headerlink" title="1 限流算法"></a>1 限流算法</h2><p>常见的限流算法有：令牌桶、漏桶、计数器</p>
+<h3 id="1-1-令牌桶算法"><a href="#1-1-令牌桶算法" class="headerlink" title="1.1 令牌桶算法"></a>1.1 令牌桶算法</h3><h3 id="1-2-漏桶算法"><a href="#1-2-漏桶算法" class="headerlink" title="1.2 漏桶算法"></a>1.2 漏桶算法</h3><h2 id="2-应用级限流"><a href="#2-应用级限流" class="headerlink" title="2 应用级限流"></a>2 应用级限流</h2><h3 id="2-1-总并发数-连接-请求数限流"><a href="#2-1-总并发数-连接-请求数限流" class="headerlink" title="2.1 总并发数/连接/请求数限流"></a>2.1 总并发数/连接/请求数限流</h3><p>对于一个应用系统来说，一定会有极限并发数/请求数，即总有一个 TPS/QPS 阈值，如果超过了阈值，则系统就不会响应用户请求或响应变得很慢，因此我们最好进行过载保护，以防止大量请求涌入击垮系统。</p>
+<p>Tomcat 的 Connector 配置：</p>
+<ul>
+<li>acceptCount：</li>
+<li>maxConnections：</li>
+<li>maxThreads：</li>
+</ul>
+<p>MySQL、Redis也有类似的限制连接数的配置。</p>
+<h3 id="2-2-总资源数限流"><a href="#2-2-总资源数限流" class="headerlink" title="2.2 总资源数限流"></a>2.2 总资源数限流</h3><p>连接池、线程池</p>
+<h3 id="2-3-某个接口的总并发-请求数"><a href="#2-3-某个接口的总并发-请求数" class="headerlink" title="2.3 某个接口的总并发/请求数"></a>2.3 某个接口的总并发/请求数</h3><p>如果接口可能会有突发情况，但又担心访问量太大造成崩溃，如抢购业务，那么就需要限制这个接口的总并发/请求数。可以使用 Java 的 AtomicLong 或者 Semaphore 进行限流。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (atomic.incrementAndGet() &gt; 限流数) &#123;</span><br><span class="line">        <span class="comment">// 拒绝请求</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 处理请求</span></span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    atomic.deementAndGet();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-某个接口的时间窗请求数"><a href="#2-4-某个接口的时间窗请求数" class="headerlink" title="2.4 某个接口的时间窗请求数"></a>2.4 某个接口的时间窗请求数</h3><p>一个时间窗口内的请求数</p>
+<p>使用 Guava 的 Cache 存储计数器</p>
+<h3 id="2-5-平滑限流某个接口的请求数"><a href="#2-5-平滑限流某个接口的请求数" class="headerlink" title="2.5 平滑限流某个接口的请求数"></a>2.5 平滑限流某个接口的请求数</h3><p>以上的方法不能应对瞬时的请求，从而导致一些问题。</p>
+<p>令牌桶和漏桶算法可以整形为平均速率请求。</p>
+<p>Guava RateLimiter 提供了令牌桶算法可用于平滑突发限流（SmoothBursty）和平滑预热限流（SmoothWarmingUp）实现。</p>
+<h2 id="3-分布式限流"><a href="#3-分布式限流" class="headerlink" title="3 分布式限流"></a>3 分布式限流</h2><p>分布式限流最关键的是要将限流服务原子化，而解决方案可以使用 Redis + Lua 或者 Nginx + Lua 技术实现。</p>
+<h3 id="3-1-Redis-Lua"><a href="#3-1-Redis-Lua" class="headerlink" title="3.1 Redis + Lua"></a>3.1 Redis + Lua</h3><h3 id="3-2-Nginx-Lua"><a href="#3-2-Nginx-Lua" class="headerlink" title="3.2 Nginx + Lua"></a>3.2 Nginx + Lua</h3><p><a href="https://github.com/openresty/lua-resty-lock">https://github.com/openresty/lua-resty-lock</a></p>
+<h2 id="4-接入层限流"><a href="#4-接入层限流" class="headerlink" title="4 接入层限流"></a>4 接入层限流</h2><h3 id="4-1-ngx-http-limit-conn-module"><a href="#4-1-ngx-http-limit-conn-module" class="headerlink" title="4.1 ngx_http_limit_conn_module"></a>4.1 ngx_http_limit_conn_module</h3><h3 id="4-2-ngx-http-limit-req-module"><a href="#4-2-ngx-http-limit-req-module" class="headerlink" title="4.2 ngx_http_limit_req_module"></a>4.2 ngx_http_limit_req_module</h3>]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高可用</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>亿级流量网站架构 高并发 HTTP 缓存</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%B9%B6%E5%8F%91-HTTP-%E7%BC%93%E5%AD%98/</url>
+    <content><![CDATA[<h1 id="HTTP-缓存"><a href="#HTTP-缓存" class="headerlink" title="HTTP 缓存"></a>HTTP 缓存</h1><h2 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h2><p>浏览器缓存缓存场景</p>
+<h2 id="2-HTTP-缓存"><a href="#2-HTTP-缓存" class="headerlink" title="2 HTTP 缓存"></a>2 HTTP 缓存</h2><h3 id="2-1-ETag"><a href="#2-1-ETag" class="headerlink" title="2.1 ETag"></a>2.1 ETag</h3><h3 id="2-2-Last-Modified"><a href="#2-2-Last-Modified" class="headerlink" title="2.2 Last-Modified"></a>2.2 Last-Modified</h3><h2 id="3-HTTPClient-客户端缓存"><a href="#3-HTTPClient-客户端缓存" class="headerlink" title="3 HTTPClient 客户端缓存"></a>3 HTTPClient 客户端缓存</h2><h2 id="4-Nginx-HTTP-缓存设置"><a href="#4-Nginx-HTTP-缓存设置" class="headerlink" title="4 Nginx HTTP 缓存设置"></a>4 Nginx HTTP 缓存设置</h2><h2 id="5-Nginx-代理层缓存"><a href="#5-Nginx-代理层缓存" class="headerlink" title="5 Nginx 代理层缓存"></a>5 Nginx 代理层缓存</h2>]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高并发</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>亿级流量网站架构 高并发 多级缓存</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%B9%B6%E5%8F%91-%E5%A4%9A%E7%BA%A7%E7%BC%93%E5%AD%98/</url>
+    <content><![CDATA[<h1 id="多级缓存"><a href="#多级缓存" class="headerlink" title="多级缓存"></a>多级缓存</h1><p>从架构和提升命中率层面探讨缓存方案</p>
+<h2 id="1-多级缓存介绍"><a href="#1-多级缓存介绍" class="headerlink" title="1 多级缓存介绍"></a>1 多级缓存介绍</h2><h2 id="2-如何缓存数据"><a href="#2-如何缓存数据" class="headerlink" title="2 如何缓存数据"></a>2 如何缓存数据</h2>]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高并发</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>亿级流量网站架构 高并发 应用级缓存</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%B9%B6%E5%8F%91-%E5%BA%94%E7%94%A8%E7%BA%A7%E7%BC%93%E5%AD%98/</url>
+    <content><![CDATA[<h1 id="应用级缓存"><a href="#应用级缓存" class="headerlink" title="应用级缓存"></a>应用级缓存</h1><a id="more"></a>
+
+<h2 id="1-缓存简介"><a href="#1-缓存简介" class="headerlink" title="1 缓存简介"></a>1 缓存简介</h2><p>缓存工作机制是先从缓存中读取数据，如果没有，再从慢速设备上读取实际数据并同步到缓存。经常读取的数据、频繁访问的数据、热点数据、I/O 瓶颈数据、计算昂贵的数据、服务 5 分钟法则的数据和局部性原理的数据都可以存进缓存。</p>
+<h2 id="2-缓存命中率"><a href="#2-缓存命中率" class="headerlink" title="2 缓存命中率"></a>2 缓存命中率</h2><p>缓存命中率 = 从缓存中读取次数 / (总读取次数（从缓存中读取次数 + 从慢速设备上读取次数）)</p>
+<p>命中率越高越好</p>
+<h2 id="3-缓存回收策略"><a href="#3-缓存回收策略" class="headerlink" title="3 缓存回收策略"></a>3 缓存回收策略</h2><ol>
+<li><p>基于空间</p>
+<p>缓存设置了存储空间</p>
+</li>
+<li><p>基于容量</p>
+<p>缓存设置了最大大小</p>
+</li>
+<li><p>基于时间</p>
+<p>TTL（Time To Live）：存活期</p>
+<p>TTI（Time To Idle）：空闲期</p>
+</li>
+<li><p>基于 Java 对象引用</p>
+<ul>
+<li>软引用</li>
+<li>弱引用</li>
+<li>虚引用</li>
+</ul>
+</li>
+<li><p>回收算法</p>
+<ul>
+<li>FIFO</li>
+<li>LRU</li>
+<li>LFU</li>
+</ul>
+</li>
+</ol>
+<h2 id="4-Java-缓存类型"><a href="#4-Java-缓存类型" class="headerlink" title="4 Java 缓存类型"></a>4 Java 缓存类型</h2><h3 id="4-1-堆缓存"><a href="#4-1-堆缓存" class="headerlink" title="4.1 堆缓存"></a>4.1 堆缓存</h3><p>使用  Java 堆来存储缓存对象。一般使用堆缓存存储较热的数据。可以使用 Guava Cache、Ehcache 3.X，MapDB 实现。</p>
+<h3 id="4-2-堆外缓存"><a href="#4-2-堆外缓存" class="headerlink" title="4.2 堆外缓存"></a>4.2 堆外缓存</h3><h3 id="4-3-磁盘缓存"><a href="#4-3-磁盘缓存" class="headerlink" title="4.3 磁盘缓存"></a>4.3 磁盘缓存</h3><h3 id="4-4-分布式缓存"><a href="#4-4-分布式缓存" class="headerlink" title="4.4 分布式缓存"></a>4.4 分布式缓存</h3><p>多 JVM 实例会存在两个问题：</p>
+<ol>
+<li>单机容量问题</li>
+<li>资源一致性问题</li>
+</ol>
+<p>可以使用分布式缓存解决。</p>
+<p>可以使用 ehcache-clustered（配合 Terracotta server）实现 Java 进程间分布式缓存。也可以使用 Redis 实现分布式缓存。</p>
+<p>两种模式如下：</p>
+<ul>
+<li>单机时：存储最热的数据到堆缓存，相对较热的数据到堆外缓存，不热的数据到磁盘缓存。</li>
+<li>集群时：存储最热的数据到堆缓存，相对较热的数据到堆外缓存，全量数据到分布式缓存。</li>
+</ul>
+<h2 id="5-应用级缓存实例"><a href="#5-应用级缓存实例" class="headerlink" title="5 应用级缓存实例"></a>5 应用级缓存实例</h2><h2 id="6-缓存使用模式实践"><a href="#6-缓存使用模式实践" class="headerlink" title="6 缓存使用模式实践"></a>6 缓存使用模式实践</h2><p>缓存使用模式/模板：</p>
+<ul>
+<li>Cache-Aside</li>
+<li>Cache-As-SoR</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高并发</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>亿级流量网站架构 高并发 异步并发</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%B9%B6%E5%8F%91-%E5%BC%82%E6%AD%A5%E5%B9%B6%E5%8F%91/</url>
+    <content><![CDATA[<h1 id="异步并发实战"><a href="#异步并发实战" class="headerlink" title="异步并发实战"></a>异步并发实战</h1><h2 id="1-同步阻塞调用"><a href="#1-同步阻塞调用" class="headerlink" title="1 同步阻塞调用"></a>1 同步阻塞调用</h2><h2 id="2-异步-Future"><a href="#2-异步-Future" class="headerlink" title="2 异步 Future"></a>2 异步 Future</h2><h2 id="3-异步-Callback"><a href="#3-异步-Callback" class="headerlink" title="3 异步 Callback"></a>3 异步 Callback</h2><h2 id="4-异步编排-CompletableFuture"><a href="#4-异步编排-CompletableFuture" class="headerlink" title="4 异步编排 CompletableFuture"></a>4 异步编排 CompletableFuture</h2><h2 id="5-异步-Web-服务实现"><a href="#5-异步-Web-服务实现" class="headerlink" title="5 异步 Web 服务实现"></a>5 异步 Web 服务实现</h2>]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高并发</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>亿级流量网站架构 高并发 扩容</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%B9%B6%E5%8F%91-%E6%89%A9%E5%AE%B9/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高并发</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>亿级流量网站架构 高并发 线程池连接池</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%B9%B6%E5%8F%91-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高并发</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>亿级流量网站架构 高并发 队列</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%B9%B6%E5%8F%91-%E9%98%9F%E5%88%97/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>高并发</tag>
+        <tag>架构</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用ThreadLocal创建线程上下文</title>
     <url>/2020/12/26/%E4%BD%BF%E7%94%A8ThreadLocal%E5%88%9B%E5%BB%BA%E7%BA%BF%E7%A8%8B%E4%B8%8A%E4%B8%8B%E6%96%87/</url>
     <content><![CDATA[<h1 id="使用ThreadLocal创建线程上下文"><a href="#使用ThreadLocal创建线程上下文" class="headerlink" title="使用ThreadLocal创建线程上下文"></a>使用ThreadLocal创建线程上下文</h1><a id="more"></a>
@@ -1084,6 +1672,21 @@
         <tag>ThreadLocal</tag>
         <tag>上下文</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>分布式 ID</title>
+    <url>/2021/01/02/%E5%88%86%E5%B8%83%E5%BC%8F-ID/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>分布式事物</title>
+    <url>/2021/01/02/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E7%89%A9/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>分布式锁</title>
+    <url>/2021/01/02/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
+    <content><![CDATA[]]></content>
   </entry>
   <entry>
     <title>项目启动加载配置类型数据至内存</title>
