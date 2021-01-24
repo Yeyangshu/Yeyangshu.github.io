@@ -312,7 +312,9 @@
   <entry>
     <title>Kafka基本概念</title>
     <url>/2021/01/24/Kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
-    <content><![CDATA[<h1 id="Kafka基本概念"><a href="#Kafka基本概念" class="headerlink" title="Kafka基本概念"></a>Kafka基本概念</h1><h2 id="Kafka-是什么？"><a href="#Kafka-是什么？" class="headerlink" title="Kafka 是什么？"></a>Kafka 是什么？</h2><h2 id="Kafka-基础架构"><a href="#Kafka-基础架构" class="headerlink" title="Kafka 基础架构"></a>Kafka 基础架构</h2><p>一个典型的 Kafka 体系架构包括：</p>
+    <content><![CDATA[<h1 id="Kafka基本概念"><a href="#Kafka基本概念" class="headerlink" title="Kafka基本概念"></a>Kafka基本概念</h1><a id="more"></a>
+
+<h2 id="Kafka-是什么？"><a href="#Kafka-是什么？" class="headerlink" title="Kafka 是什么？"></a>Kafka 是什么？</h2><h2 id="Kafka-基础架构"><a href="#Kafka-基础架构" class="headerlink" title="Kafka 基础架构"></a>Kafka 基础架构</h2><p>一个典型的 Kafka 体系架构包括：</p>
 <h3 id="ZooKeeper集群"><a href="#ZooKeeper集群" class="headerlink" title="ZooKeeper集群"></a>ZooKeeper集群</h3><p>ZooKeeper 是 Kafka 用来负责集群元数据的管理、控制器的选举等操作的。</p>
 <h3 id="Producer"><a href="#Producer" class="headerlink" title="Producer"></a>Producer</h3><p>生产者，也就是发送消息的一方。生产者负责创建消息，然后将其投递到Kafka中。</p>
 <h3 id="Consumer"><a href="#Consumer" class="headerlink" title="Consumer"></a>Consumer</h3><p>消费者，也就是接收消息的一方。消费者连接到Kafka上并接收消息，进而进行相应的业务逻辑处理。</p>
@@ -336,7 +338,9 @@
   <entry>
     <title>Kafka消费者</title>
     <url>/2021/01/24/Kafka%E6%B6%88%E8%B4%B9%E8%80%85/</url>
-    <content><![CDATA[<h1 id="Kafka消费者"><a href="#Kafka消费者" class="headerlink" title="Kafka消费者"></a>Kafka消费者</h1><p>消费者（Consumer）负责订阅Kafka中的主题（Topic），并且从订阅的主题上拉取消息。在Kafka的消费理念中还有一层消费组（Consumer Group）的概念，每个消费者都有一个对应的消费组。当消息发布到主题后，只会被投递给订阅它的每个消费组中的一个消费者。也就是每一个分区只能被一个消费组中的一个消费者所消费。</p>
+    <content><![CDATA[<h1 id="Kafka消费者"><a href="#Kafka消费者" class="headerlink" title="Kafka消费者"></a>Kafka消费者</h1><a id="more"></a>
+
+<p>消费者（Consumer）负责订阅Kafka中的主题（Topic），并且从订阅的主题上拉取消息。在Kafka的消费理念中还有一层消费组（Consumer Group）的概念，每个消费者都有一个对应的消费组。当消息发布到主题后，只会被投递给订阅它的每个消费组中的一个消费者。也就是每一个分区只能被一个消费组中的一个消费者所消费。</p>
 <p>对于消息中间件而言，一般有两种消息投递模式：</p>
 <ul>
 <li><p>点对点（P2P，Point-to-Point）模式</p>
@@ -421,7 +425,9 @@
   <entry>
     <title>Kafka生产者</title>
     <url>/2021/01/24/Kafka%E7%94%9F%E4%BA%A7%E8%80%85/</url>
-    <content><![CDATA[<h1 id="Kafka生产者"><a href="#Kafka生产者" class="headerlink" title="Kafka生产者"></a>Kafka生产者</h1><h2 id="1-简要生产步骤"><a href="#1-简要生产步骤" class="headerlink" title="1 简要生产步骤"></a>1 简要生产步骤</h2><p>一个正常的生产逻辑需要具备以下几个步骤：</p>
+    <content><![CDATA[<h1 id="Kafka生产者"><a href="#Kafka生产者" class="headerlink" title="Kafka生产者"></a>Kafka生产者</h1><a id="more"></a>
+
+<h2 id="1-简要生产步骤"><a href="#1-简要生产步骤" class="headerlink" title="1 简要生产步骤"></a>1 简要生产步骤</h2><p>一个正常的生产逻辑需要具备以下几个步骤：</p>
 <ol>
 <li>配置生产者客户端参数及创建相应的生产者实例。</li>
 <li>构建待发送的消息。</li>
@@ -559,58 +565,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Redis 使用LRU算法做缓存使用</title>
-    <url>/2020/12/27/Redis-%E4%BD%BF%E7%94%A8LRU%E7%AE%97%E6%B3%95%E5%81%9A%E7%BC%93%E5%AD%98%E4%BD%BF%E7%94%A8/</url>
-    <content><![CDATA[<h1 id="Redis-作为缓存使用"><a href="#Redis-作为缓存使用" class="headerlink" title="Redis 作为缓存使用"></a>Redis 作为缓存使用</h1><a id="more"></a>
-
-<p>使用 Redis 做缓存，当你新增数据时，让 Redis 自动地回收旧数据是件很方便的事情。</p>
-<p>Redis 回收数据分为两种情况：</p>
-<ul>
-<li>内存回收</li>
-<li>key 过期删除</li>
-</ul>
-<h2 id="1-内存回收"><a href="#1-内存回收" class="headerlink" title="1 内存回收"></a>1 内存回收</h2><p>当 Redis 存储数据使用的内存超过 Redis 设置的内存限制就会触发内存回收。当达到指定的内存限制大小时，需要选择回收策略进行内存回收。</p>
-<h3 id="1-1-内存设置"><a href="#1-1-内存设置" class="headerlink" title="1.1 内存设置"></a>1.1 内存设置</h3><p><code>maxmemory </code> 配置指令用于配置 Redis 存储数据时指定限制的内存大小</p>
-<p>通过配置文件 <code>redis.conf</code> 可以设置该指令，或者在运行时使用 <code>CONFIG SET</code> 命令来进行配置。</p>
-<p>配置文件内存设置案例：</p>
-<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="attr">maxmemory</span> <span class="string">100mb</span></span><br></pre></td></tr></table></figure>
-<h3 id="1-2-回收策略"><a href="#1-2-回收策略" class="headerlink" title="1.2 回收策略"></a>1.2 回收策略</h3><p><code>maxmemory-policy</code> 配置指令用于 Redis 的回收策略。</p>
-<p>回收策略：</p>
-<ul>
-<li>volatile-lru：采用最近使用最少的淘汰策略，Redis 将回收那些超时的（仅仅是超时的）键值对，也就是它只淘汰那些超时的键值对。</li>
-<li>allkeys-lru：采用最近最少使用的淘汰策略，Redis 将对所有（不仅仅是超时的）的键值对采用最近最少使用的淘汰策略。</li>
-<li>volatile-lfu：采用最近最不常用的淘汰策略，所谓最近最不常用，也就是一定时期内被访问次数最少的。Redis将回收超时的键值对。</li>
-<li>allkeys-lfu：采用最近最不常用的淘汰策略，Redis 将对所有的键值对采用最近最不常用的淘汰策略。</li>
-<li>volatile-random：采用随机淘汰策略删除超时的键值对。</li>
-<li>allkeys-random：采用随机淘汰策略删除所有的键值对，这个策略不常用。</li>
-<li>volatile-ttl：采用删除存活时间最短的键值对策略。</li>
-<li>noeviction：不淘汰任何键值对，当内存满时，如果进行读操作，例如get命令，它将正常工作，而做写操作，它将返回错误，也就是说，当Redis采用这个策略内存达到最大的时候，它就只能读不能写了。</li>
-</ul>
-<h3 id="2-key-过期删除"><a href="#2-key-过期删除" class="headerlink" title="2 key 过期删除"></a>2 key 过期删除</h3><p>Redis keys 过期有两种方式：</p>
-<ul>
-<li>被动方式</li>
-<li>主动方式</li>
-</ul>
-<h3 id="2-1-被动方式"><a href="#2-1-被动方式" class="headerlink" title="2.1 被动方式"></a>2.1 被动方式</h3><p>放任键过期不管，但是每次从键空间中获取键时，都检查取得的键是否过期，如果过期的话，就删除该键；如果没有过期，就返回该键。</p>
-<h3 id="2-2-主动方式"><a href="#2-2-主动方式" class="headerlink" title="2.2 主动方式"></a>2.2 主动方式</h3><p>被动方式的删除是不够的，因为有些过期的 keys，永远不会访问他们，但是这些 keys 应该过期，所以定时随机测试设置 keys 的过期时间，将这些过期的 keys 从 key 空间删除。</p>
-<p>Redis会每秒10 次去做以下的事情：</p>
-<ol>
-<li>测试随机的 20 个 keys 进行相关过期检测。</li>
-<li>删除所有已经过期的 keys。</li>
-<li>如果有多于 25% 的 keys 过期，重复步骤 1。</li>
-</ol>
-<p>Redis 会不断重复过期检测，直到过期的 keys 的低于 25%，这意味着在任意时刻，最多会清除 1/4 过期的 keys。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
-        <tag>LRU</tag>
-        <tag>缓存</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Redis 事务</title>
     <url>/2020/12/27/Redis-%E4%BA%8B%E5%8A%A1/</url>
     <content><![CDATA[<h1 id="Redis-事务"><a href="#Redis-事务" class="headerlink" title="Redis 事务"></a>Redis 事务</h1><p>将一组命令放在同一个事务中进行处理</p>
@@ -667,6 +621,58 @@
       </tags>
   </entry>
   <entry>
+    <title>Redis 使用LRU算法做缓存使用</title>
+    <url>/2020/12/27/Redis-%E4%BD%BF%E7%94%A8LRU%E7%AE%97%E6%B3%95%E5%81%9A%E7%BC%93%E5%AD%98%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="Redis-作为缓存使用"><a href="#Redis-作为缓存使用" class="headerlink" title="Redis 作为缓存使用"></a>Redis 作为缓存使用</h1><a id="more"></a>
+
+<p>使用 Redis 做缓存，当你新增数据时，让 Redis 自动地回收旧数据是件很方便的事情。</p>
+<p>Redis 回收数据分为两种情况：</p>
+<ul>
+<li>内存回收</li>
+<li>key 过期删除</li>
+</ul>
+<h2 id="1-内存回收"><a href="#1-内存回收" class="headerlink" title="1 内存回收"></a>1 内存回收</h2><p>当 Redis 存储数据使用的内存超过 Redis 设置的内存限制就会触发内存回收。当达到指定的内存限制大小时，需要选择回收策略进行内存回收。</p>
+<h3 id="1-1-内存设置"><a href="#1-1-内存设置" class="headerlink" title="1.1 内存设置"></a>1.1 内存设置</h3><p><code>maxmemory </code> 配置指令用于配置 Redis 存储数据时指定限制的内存大小</p>
+<p>通过配置文件 <code>redis.conf</code> 可以设置该指令，或者在运行时使用 <code>CONFIG SET</code> 命令来进行配置。</p>
+<p>配置文件内存设置案例：</p>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="attr">maxmemory</span> <span class="string">100mb</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-2-回收策略"><a href="#1-2-回收策略" class="headerlink" title="1.2 回收策略"></a>1.2 回收策略</h3><p><code>maxmemory-policy</code> 配置指令用于 Redis 的回收策略。</p>
+<p>回收策略：</p>
+<ul>
+<li>volatile-lru：采用最近使用最少的淘汰策略，Redis 将回收那些超时的（仅仅是超时的）键值对，也就是它只淘汰那些超时的键值对。</li>
+<li>allkeys-lru：采用最近最少使用的淘汰策略，Redis 将对所有（不仅仅是超时的）的键值对采用最近最少使用的淘汰策略。</li>
+<li>volatile-lfu：采用最近最不常用的淘汰策略，所谓最近最不常用，也就是一定时期内被访问次数最少的。Redis将回收超时的键值对。</li>
+<li>allkeys-lfu：采用最近最不常用的淘汰策略，Redis 将对所有的键值对采用最近最不常用的淘汰策略。</li>
+<li>volatile-random：采用随机淘汰策略删除超时的键值对。</li>
+<li>allkeys-random：采用随机淘汰策略删除所有的键值对，这个策略不常用。</li>
+<li>volatile-ttl：采用删除存活时间最短的键值对策略。</li>
+<li>noeviction：不淘汰任何键值对，当内存满时，如果进行读操作，例如get命令，它将正常工作，而做写操作，它将返回错误，也就是说，当Redis采用这个策略内存达到最大的时候，它就只能读不能写了。</li>
+</ul>
+<h3 id="2-key-过期删除"><a href="#2-key-过期删除" class="headerlink" title="2 key 过期删除"></a>2 key 过期删除</h3><p>Redis keys 过期有两种方式：</p>
+<ul>
+<li>被动方式</li>
+<li>主动方式</li>
+</ul>
+<h3 id="2-1-被动方式"><a href="#2-1-被动方式" class="headerlink" title="2.1 被动方式"></a>2.1 被动方式</h3><p>放任键过期不管，但是每次从键空间中获取键时，都检查取得的键是否过期，如果过期的话，就删除该键；如果没有过期，就返回该键。</p>
+<h3 id="2-2-主动方式"><a href="#2-2-主动方式" class="headerlink" title="2.2 主动方式"></a>2.2 主动方式</h3><p>被动方式的删除是不够的，因为有些过期的 keys，永远不会访问他们，但是这些 keys 应该过期，所以定时随机测试设置 keys 的过期时间，将这些过期的 keys 从 key 空间删除。</p>
+<p>Redis会每秒10 次去做以下的事情：</p>
+<ol>
+<li>测试随机的 20 个 keys 进行相关过期检测。</li>
+<li>删除所有已经过期的 keys。</li>
+<li>如果有多于 25% 的 keys 过期，重复步骤 1。</li>
+</ol>
+<p>Redis 会不断重复过期检测，直到过期的 keys 的低于 25%，这意味着在任意时刻，最多会清除 1/4 过期的 keys。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+        <tag>LRU</tag>
+        <tag>缓存</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis 分区</title>
     <url>/2020/12/27/Redis-%E5%88%86%E5%8C%BA/</url>
     <content><![CDATA[<h1 id="Redis-分区"><a href="#Redis-分区" class="headerlink" title="Redis 分区"></a>Redis 分区</h1><a id="more"></a>]]></content>
@@ -720,6 +726,41 @@
       <tags>
         <tag>Redis</tag>
         <tag>SpringBoot</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Redis 哨兵模式高可用解决方案</title>
+    <url>/2020/12/27/Redis-%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%AB%98%E5%8F%AF%E7%94%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</url>
+    <content><![CDATA[<h1 id="Redis-哨兵模式高可用解决方案"><a href="#Redis-哨兵模式高可用解决方案" class="headerlink" title="Redis 哨兵模式高可用解决方案"></a>Redis 哨兵模式高可用解决方案</h1><a id="more"></a>
+
+<h2 id="1-Redis哨兵简介"><a href="#1-Redis哨兵简介" class="headerlink" title="1 Redis哨兵简介"></a>1 Redis哨兵简介</h2><p>Redis的哨兵系统用于管理多个Redis服务器，该系统执行以下三个任务：</p>
+<ul>
+<li>监控</li>
+<li>提醒</li>
+<li>自动故障转移</li>
+</ul>
+<h2 id="2-Redis哨兵使用"><a href="#2-Redis哨兵使用" class="headerlink" title="2 Redis哨兵使用"></a>2 Redis哨兵使用</h2><h3 id="2-1-配置-Sentinel"><a href="#2-1-配置-Sentinel" class="headerlink" title="2.1 配置 Sentinel"></a>2.1 配置 Sentinel</h3><p>新建三个 sentinel 配置文件，例 26379.conf、26380.conf、26381.conf 监听主机，内容为</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">port 26379&#x2F;26380&#x2F;26381</span><br><span class="line">sentinel monitor mymaster 127.0.0.1 6379 2</span><br></pre></td></tr></table></figure>
+<p>运行主机</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;6379.conf</span><br></pre></td></tr></table></figure>
+<p>运行两个 slave</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;6380.conf --replicaof 127.0.0.1 6379</span><br><span class="line">redis-server .&#x2F;6381.conf --replicaof 127.0.0.1 6379</span><br></pre></td></tr></table></figure>
+<p>启动哨兵</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;26379.conf --sentinel</span><br><span class="line">redis-server .&#x2F;26380.conf --sentinel</span><br><span class="line">redis-server .&#x2F;26381.conf --sentinel</span><br></pre></td></tr></table></figure>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722211540287.png" alt="image-20200722211540287"></p>
+<h3 id="2-2-测试哨兵"><a href="#2-2-测试哨兵" class="headerlink" title="2.2 测试哨兵"></a>2.2 测试哨兵</h3><p>此时断开 6379，经过一段时间，会投票选出新的主机，本次测试 2 票选出 6381</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">6909:X 13 Jul 2020 17:06:41.887 # +sdown master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +odown master mymaster 127.0.0.1 6379 #quorum 3&#x2F;2</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +new-epoch 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +try-failover master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.964 # +vote-for-leader f0d0f7c12cc881a04d88ad7831100d0eea82cec4 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.969 # 3dd3212a440f415e989718634222ae89fc2fd219 voted for 3dd3212a440f415e989718634222ae89fc2fd219 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.989 # 44c8a525d5b8390571e2621fa3dfa416eafa8c0b voted for f0d0f7c12cc881a04d88ad7831100d0eea82cec4 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.027 # +elected-leader master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.027 # +failover-state-select-slave master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.100 # +selected-slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.100 * +failover-state-send-slaveof-noone slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.159 * +failover-state-wait-promotion slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.445 # +promoted-slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.445 # +failover-state-reconf-slaves master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.528 * +slave-reconf-sent slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.113 # -odown master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.482 * +slave-reconf-inprog slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.482 * +slave-reconf-done slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 # +failover-end master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 * +slave slave 127.0.0.1:6379 127.0.0.1 6379 @ mymaster 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:07:13.568 # +sdown slave 127.0.0.1:6379 127.0.0.1 6379 @ mymaster 127.0.0.1 6381</span><br></pre></td></tr></table></figure>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212104628.png" alt="image-20200722212104628"></p>
+<p>哨兵会自动更改配置文件</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212459813.png" alt="image-20200722212459813"></p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212525730.png" alt="image-20200722212525730"></p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+        <tag>HA</tag>
       </tags>
   </entry>
   <entry>
@@ -844,41 +885,6 @@
       <tags>
         <tag>Redis</tag>
         <tag>SpringBoot</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Redis 哨兵模式高可用解决方案</title>
-    <url>/2020/12/27/Redis-%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%AB%98%E5%8F%AF%E7%94%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</url>
-    <content><![CDATA[<h1 id="Redis-哨兵模式高可用解决方案"><a href="#Redis-哨兵模式高可用解决方案" class="headerlink" title="Redis 哨兵模式高可用解决方案"></a>Redis 哨兵模式高可用解决方案</h1><a id="more"></a>
-
-<h2 id="1-Redis哨兵简介"><a href="#1-Redis哨兵简介" class="headerlink" title="1 Redis哨兵简介"></a>1 Redis哨兵简介</h2><p>Redis的哨兵系统用于管理多个Redis服务器，该系统执行以下三个任务：</p>
-<ul>
-<li>监控</li>
-<li>提醒</li>
-<li>自动故障转移</li>
-</ul>
-<h2 id="2-Redis哨兵使用"><a href="#2-Redis哨兵使用" class="headerlink" title="2 Redis哨兵使用"></a>2 Redis哨兵使用</h2><h3 id="2-1-配置-Sentinel"><a href="#2-1-配置-Sentinel" class="headerlink" title="2.1 配置 Sentinel"></a>2.1 配置 Sentinel</h3><p>新建三个 sentinel 配置文件，例 26379.conf、26380.conf、26381.conf 监听主机，内容为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">port 26379&#x2F;26380&#x2F;26381</span><br><span class="line">sentinel monitor mymaster 127.0.0.1 6379 2</span><br></pre></td></tr></table></figure>
-<p>运行主机</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;6379.conf</span><br></pre></td></tr></table></figure>
-<p>运行两个 slave</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;6380.conf --replicaof 127.0.0.1 6379</span><br><span class="line">redis-server .&#x2F;6381.conf --replicaof 127.0.0.1 6379</span><br></pre></td></tr></table></figure>
-<p>启动哨兵</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">redis-server .&#x2F;26379.conf --sentinel</span><br><span class="line">redis-server .&#x2F;26380.conf --sentinel</span><br><span class="line">redis-server .&#x2F;26381.conf --sentinel</span><br></pre></td></tr></table></figure>
-<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722211540287.png" alt="image-20200722211540287"></p>
-<h3 id="2-2-测试哨兵"><a href="#2-2-测试哨兵" class="headerlink" title="2.2 测试哨兵"></a>2.2 测试哨兵</h3><p>此时断开 6379，经过一段时间，会投票选出新的主机，本次测试 2 票选出 6381</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">6909:X 13 Jul 2020 17:06:41.887 # +sdown master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +odown master mymaster 127.0.0.1 6379 #quorum 3&#x2F;2</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +new-epoch 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.946 # +try-failover master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.964 # +vote-for-leader f0d0f7c12cc881a04d88ad7831100d0eea82cec4 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.969 # 3dd3212a440f415e989718634222ae89fc2fd219 voted for 3dd3212a440f415e989718634222ae89fc2fd219 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:41.989 # 44c8a525d5b8390571e2621fa3dfa416eafa8c0b voted for f0d0f7c12cc881a04d88ad7831100d0eea82cec4 1</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.027 # +elected-leader master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.027 # +failover-state-select-slave master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.100 # +selected-slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.100 * +failover-state-send-slaveof-noone slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.159 * +failover-state-wait-promotion slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.445 # +promoted-slave slave 127.0.0.1:6381 127.0.0.1 6381 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.445 # +failover-state-reconf-slaves master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:42.528 * +slave-reconf-sent slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.113 # -odown master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.482 * +slave-reconf-inprog slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.482 * +slave-reconf-done slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 # +failover-end master mymaster 127.0.0.1 6379</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 # +switch-master mymaster 127.0.0.1 6379 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 * +slave slave 127.0.0.1:6380 127.0.0.1 6380 @ mymaster 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:06:43.554 * +slave slave 127.0.0.1:6379 127.0.0.1 6379 @ mymaster 127.0.0.1 6381</span><br><span class="line">6909:X 13 Jul 2020 17:07:13.568 # +sdown slave 127.0.0.1:6379 127.0.0.1 6379 @ mymaster 127.0.0.1 6381</span><br></pre></td></tr></table></figure>
-<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212104628.png" alt="image-20200722212104628"></p>
-<p>哨兵会自动更改配置文件</p>
-<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212459813.png" alt="image-20200722212459813"></p>
-<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20200722212525730.png" alt="image-20200722212525730"></p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
-        <tag>HA</tag>
       </tags>
   </entry>
   <entry>
@@ -1613,15 +1619,9 @@
       </tags>
   </entry>
   <entry>
-    <title>亿级流量网站架构 高可用 降级</title>
-    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%8F%AF%E7%94%A8-%E9%99%8D%E7%BA%A7/</url>
-    <content><![CDATA[<h1 id="降级"><a href="#降级" class="headerlink" title="降级"></a>降级</h1><a id="more"></a>
-
-<p>当访问量剧增、服务出现问题（如响应时间长或不响应）或非核心服务影响到核心流程的性能时，任然需要保证服务还是可用的，即使有损服务。</p>
-<h2 id="1-降级预案"><a href="#1-降级预案" class="headerlink" title="1 降级预案"></a>1 降级预案</h2><p>降级按是否自动化可分为：自动开关降级和人工开关降级</p>
-<p>降级按功能可分为：读服务降级和写服务降级</p>
-<p>降级按照处于的系统层次可分为：多级降级</p>
-<h2 id="2-自动开关降级"><a href="#2-自动开关降级" class="headerlink" title="2 自动开关降级"></a>2 自动开关降级</h2><h3 id="2-1-超时降级"><a href="#2-1-超时降级" class="headerlink" title="2.1 超时降级"></a>2.1 超时降级</h3><h3 id="2-2-统计失败降级"><a href="#2-2-统计失败降级" class="headerlink" title="2.2 统计失败降级"></a>2.2 统计失败降级</h3><h3 id="2-3-故障降级"><a href="#2-3-故障降级" class="headerlink" title="2.3 故障降级"></a>2.3 故障降级</h3><h3 id="2-4-限流降级"><a href="#2-4-限流降级" class="headerlink" title="2.4 限流降级"></a>2.4 限流降级</h3><h2 id="3-人工开关降级"><a href="#3-人工开关降级" class="headerlink" title="3 人工开关降级"></a>3 人工开关降级</h2><h2 id="4-读服务降级"><a href="#4-读服务降级" class="headerlink" title="4 读服务降级"></a>4 读服务降级</h2><h2 id="5-写服务降级"><a href="#5-写服务降级" class="headerlink" title="5 写服务降级"></a>5 写服务降级</h2><h2 id="6-多级降级"><a href="#6-多级降级" class="headerlink" title="6 多级降级"></a>6 多级降级</h2>]]></content>
+    <title>亿级流量网站架构 高可用 超时与重试</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%8F%AF%E7%94%A8-%E8%B6%85%E6%97%B6%E4%B8%8E%E9%87%8D%E8%AF%95/</url>
+    <content><![CDATA[<a id="more"></a>]]></content>
       <categories>
         <category>Java</category>
         <category>书籍</category>
@@ -1632,9 +1632,15 @@
       </tags>
   </entry>
   <entry>
-    <title>亿级流量网站架构 高可用 超时与重试</title>
-    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%8F%AF%E7%94%A8-%E8%B6%85%E6%97%B6%E4%B8%8E%E9%87%8D%E8%AF%95/</url>
-    <content><![CDATA[<a id="more"></a>]]></content>
+    <title>亿级流量网站架构 高可用 降级</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%8F%AF%E7%94%A8-%E9%99%8D%E7%BA%A7/</url>
+    <content><![CDATA[<h1 id="降级"><a href="#降级" class="headerlink" title="降级"></a>降级</h1><a id="more"></a>
+
+<p>当访问量剧增、服务出现问题（如响应时间长或不响应）或非核心服务影响到核心流程的性能时，任然需要保证服务还是可用的，即使有损服务。</p>
+<h2 id="1-降级预案"><a href="#1-降级预案" class="headerlink" title="1 降级预案"></a>1 降级预案</h2><p>降级按是否自动化可分为：自动开关降级和人工开关降级</p>
+<p>降级按功能可分为：读服务降级和写服务降级</p>
+<p>降级按照处于的系统层次可分为：多级降级</p>
+<h2 id="2-自动开关降级"><a href="#2-自动开关降级" class="headerlink" title="2 自动开关降级"></a>2 自动开关降级</h2><h3 id="2-1-超时降级"><a href="#2-1-超时降级" class="headerlink" title="2.1 超时降级"></a>2.1 超时降级</h3><h3 id="2-2-统计失败降级"><a href="#2-2-统计失败降级" class="headerlink" title="2.2 统计失败降级"></a>2.2 统计失败降级</h3><h3 id="2-3-故障降级"><a href="#2-3-故障降级" class="headerlink" title="2.3 故障降级"></a>2.3 故障降级</h3><h3 id="2-4-限流降级"><a href="#2-4-限流降级" class="headerlink" title="2.4 限流降级"></a>2.4 限流降级</h3><h2 id="3-人工开关降级"><a href="#3-人工开关降级" class="headerlink" title="3 人工开关降级"></a>3 人工开关降级</h2><h2 id="4-读服务降级"><a href="#4-读服务降级" class="headerlink" title="4 读服务降级"></a>4 读服务降级</h2><h2 id="5-写服务降级"><a href="#5-写服务降级" class="headerlink" title="5 写服务降级"></a>5 写服务降级</h2><h2 id="6-多级降级"><a href="#6-多级降级" class="headerlink" title="6 多级降级"></a>6 多级降级</h2>]]></content>
       <categories>
         <category>Java</category>
         <category>书籍</category>
@@ -1881,6 +1887,31 @@
       </tags>
   </entry>
   <entry>
+    <title>分布式锁</title>
+    <url>/2021/01/02/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
+    <content><![CDATA[<h1 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h1><a id="more"></a>
+
+<h2 id="1-数据库锁"><a href="#1-数据库锁" class="headerlink" title="1 数据库锁"></a>1 数据库锁</h2><p>阻塞式加锁，适合并发量不高的小项目。</p>
+<p>数据库创建一个锁表，添加唯一索引，通过操作该表的数据来实现。获得锁的时候在表中添加一条记录，释放锁的时候就删除这条记录，如果有多个请求同时提交到数据库的话，数据库可以保证只有一个操作可以成功，可以认为操作成功的那个请求获得了锁。</p>
+<p>存在以下几个问题</p>
+<ul>
+<li>锁没有过期时间；</li>
+<li>只能是非阻塞锁，插入失败直接报错，无法重试；</li>
+<li>不可重入，已经获得锁的进程也必须重新获取锁。</li>
+</ul>
+<h2 id="2-单机-Redis-锁"><a href="#2-单机-Redis-锁" class="headerlink" title="2 单机 Redis 锁"></a>2 单机 Redis 锁</h2><h3 id="2-1-SETNX"><a href="#2-1-SETNX" class="headerlink" title="2.1 SETNX"></a>2.1 SETNX</h3><p>使用 SETNX（set if not exist）指令插入一个键值对，如果 Key 已经存在，那么会返回 false，否则插入成功并返回 true。</p>
+<p>可以使用 EXPIRE 指令为一个键值对设置一个过期时间，从而避免了数据库唯一索引实现方式中释放锁失败的问题。</p>
+<h3 id="2-2-Redisson"><a href="#2-2-Redisson" class="headerlink" title="2.2 Redisson"></a>2.2 Redisson</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 生成key</span></span><br><span class="line">String lock = <span class="string">&quot;order_&quot;</span> + (orderId + <span class="string">&quot;&quot;</span>);</span><br><span class="line">RLock rlock = redisson.getLock(lock.intern());</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 此代码默认 设置key 超时时间30秒，过10秒，再延时</span></span><br><span class="line">    rlock.lock();</span><br><span class="line">    <span class="comment">// 业务代码</span></span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    rlock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-多机-Redis-Redlock"><a href="#3-多机-Redis-Redlock" class="headerlink" title="3 多机 Redis Redlock"></a>3 多机 Redis Redlock</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 生成redis key</span></span><br><span class="line">String key = (RedisKeyConstant.GRAB_LOCK_ORDER_KEY_PRE + orderId).intern();</span><br><span class="line"></span><br><span class="line">RLock rLock1 = redisson1.getLock(key);</span><br><span class="line">RLock rLock2 = redisson2.getLock(key);</span><br><span class="line">RLock rLock3 = redisson3.getLock(key);</span><br><span class="line">RedissonRedLock redissonRedLock = <span class="keyword">new</span> RedissonRedLock(rLock1, rLock2, rLock3);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// redissson代码默认设置key超时时间30秒，过10秒再延时</span></span><br><span class="line">    redissonRedLock.lock();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 业务代码</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;  <span class="keyword">finally</span> &#123;</span><br><span class="line">    redissonRedLock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="4-Zookeeper-有序临时节点"><a href="#4-Zookeeper-有序临时节点" class="headerlink" title="4 Zookeeper 有序临时节点"></a>4 Zookeeper 有序临时节点</h2>]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>分布式锁</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>缓存和数据一致性</title>
     <url>/2021/01/06/%E7%BC%93%E5%AD%98%E5%92%8C%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/</url>
     <content><![CDATA[<h1 id="缓存和数据一致性"><a href="#缓存和数据一致性" class="headerlink" title="缓存和数据一致性"></a>缓存和数据一致性</h1><a id="more"></a>
@@ -1936,31 +1967,6 @@
       <categories>
         <category>Java</category>
       </categories>
-  </entry>
-  <entry>
-    <title>分布式锁</title>
-    <url>/2021/01/02/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
-    <content><![CDATA[<h1 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h1><a id="more"></a>
-
-<h2 id="1-数据库锁"><a href="#1-数据库锁" class="headerlink" title="1 数据库锁"></a>1 数据库锁</h2><p>阻塞式加锁，适合并发量不高的小项目。</p>
-<p>数据库创建一个锁表，添加唯一索引，通过操作该表的数据来实现。获得锁的时候在表中添加一条记录，释放锁的时候就删除这条记录，如果有多个请求同时提交到数据库的话，数据库可以保证只有一个操作可以成功，可以认为操作成功的那个请求获得了锁。</p>
-<p>存在以下几个问题</p>
-<ul>
-<li>锁没有过期时间；</li>
-<li>只能是非阻塞锁，插入失败直接报错，无法重试；</li>
-<li>不可重入，已经获得锁的进程也必须重新获取锁。</li>
-</ul>
-<h2 id="2-单机-Redis-锁"><a href="#2-单机-Redis-锁" class="headerlink" title="2 单机 Redis 锁"></a>2 单机 Redis 锁</h2><h3 id="2-1-SETNX"><a href="#2-1-SETNX" class="headerlink" title="2.1 SETNX"></a>2.1 SETNX</h3><p>使用 SETNX（set if not exist）指令插入一个键值对，如果 Key 已经存在，那么会返回 false，否则插入成功并返回 true。</p>
-<p>可以使用 EXPIRE 指令为一个键值对设置一个过期时间，从而避免了数据库唯一索引实现方式中释放锁失败的问题。</p>
-<h3 id="2-2-Redisson"><a href="#2-2-Redisson" class="headerlink" title="2.2 Redisson"></a>2.2 Redisson</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 生成key</span></span><br><span class="line">String lock = <span class="string">&quot;order_&quot;</span> + (orderId + <span class="string">&quot;&quot;</span>);</span><br><span class="line">RLock rlock = redisson.getLock(lock.intern());</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 此代码默认 设置key 超时时间30秒，过10秒，再延时</span></span><br><span class="line">    rlock.lock();</span><br><span class="line">    <span class="comment">// 业务代码</span></span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    rlock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-多机-Redis-Redlock"><a href="#3-多机-Redis-Redlock" class="headerlink" title="3 多机 Redis Redlock"></a>3 多机 Redis Redlock</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 生成redis key</span></span><br><span class="line">String key = (RedisKeyConstant.GRAB_LOCK_ORDER_KEY_PRE + orderId).intern();</span><br><span class="line"></span><br><span class="line">RLock rLock1 = redisson1.getLock(key);</span><br><span class="line">RLock rLock2 = redisson2.getLock(key);</span><br><span class="line">RLock rLock3 = redisson3.getLock(key);</span><br><span class="line">RedissonRedLock redissonRedLock = <span class="keyword">new</span> RedissonRedLock(rLock1, rLock2, rLock3);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// redissson代码默认设置key超时时间30秒，过10秒再延时</span></span><br><span class="line">    redissonRedLock.lock();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 业务代码</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;  <span class="keyword">finally</span> &#123;</span><br><span class="line">    redissonRedLock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="4-Zookeeper-有序临时节点"><a href="#4-Zookeeper-有序临时节点" class="headerlink" title="4 Zookeeper 有序临时节点"></a>4 Zookeeper 有序临时节点</h2>]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>分布式锁</tag>
-      </tags>
   </entry>
   <entry>
     <title>Redis 基本数据类型 String</title>
