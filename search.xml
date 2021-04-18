@@ -1772,20 +1772,41 @@
 <li>LRU（Least Recently Used）：最少使用算法，即上次使用时间距离现在最久的那个被移除。</li>
 <li>LFU（Least Frequebtly Used）；最不常用算法，一定时间内使用次数（频率）最少的那个被移除。</li>
 </ul>
-<h2 id="4-Java-缓存类型"><a href="#4-Java-缓存类型" class="headerlink" title="4 Java 缓存类型"></a>4 Java 缓存类型</h2><h3 id="4-1-堆缓存"><a href="#4-1-堆缓存" class="headerlink" title="4.1 堆缓存"></a>4.1 堆缓存</h3><p>使用  Java 堆来存储缓存对象。一般使用堆缓存存储较热的数据。可以使用 Guava Cache、Ehcache 3.X，MapDB 实现。</p>
-<h3 id="4-2-堆外缓存"><a href="#4-2-堆外缓存" class="headerlink" title="4.2 堆外缓存"></a>4.2 堆外缓存</h3><h3 id="4-3-磁盘缓存"><a href="#4-3-磁盘缓存" class="headerlink" title="4.3 磁盘缓存"></a>4.3 磁盘缓存</h3><h3 id="4-4-分布式缓存"><a href="#4-4-分布式缓存" class="headerlink" title="4.4 分布式缓存"></a>4.4 分布式缓存</h3><p>多 JVM 实例会存在两个问题：</p>
+<h2 id="4-Java-缓存类型"><a href="#4-Java-缓存类型" class="headerlink" title="4 Java 缓存类型"></a>4 Java 缓存类型</h2><h3 id="4-1-堆缓存"><a href="#4-1-堆缓存" class="headerlink" title="4.1 堆缓存"></a>4.1 堆缓存</h3><p>使用  Java 堆来存储缓存对象。</p>
+<ul>
+<li>优点：没有序列化/反序列化，是最快的缓存。</li>
+<li>缺点：缓存数据量很大时，GC 暂停时间会变长，存储容量受限于堆空间大小。</li>
+</ul>
+<p>一般使用堆缓存存储较热的数据。可以使用 Guava Cache、Ehcache 3.X，MapDB 实现。</p>
+<h3 id="4-2-堆外缓存"><a href="#4-2-堆外缓存" class="headerlink" title="4.2 堆外缓存"></a>4.2 堆外缓存</h3><p>即缓存数据存储在堆外内存。</p>
+<ul>
+<li><p>优点：可以减少 GC 暂停时间（减少 GC 扫描和对象移动），可以支持更大的缓存空间。</p>
+</li>
+<li><p>缺点：读取数据时需要序列化/反序列化。</p>
+</li>
+</ul>
+<p>可以使用 Ehcache 3.X，MapDB 实现。</p>
+<h3 id="4-3-磁盘缓存"><a href="#4-3-磁盘缓存" class="headerlink" title="4.3 磁盘缓存"></a>4.3 磁盘缓存</h3><p>即缓存数据到磁盘上。</p>
+<ul>
+<li>优点：JVM 重启时数据还是存在的。</li>
+<li>缺点：堆外缓存会丢失，需要重新加载。</li>
+</ul>
+<p>可以使用 Ehcache 3.X，MapDB 实现。</p>
+<h3 id="4-4-分布式缓存"><a href="#4-4-分布式缓存" class="headerlink" title="4.4 分布式缓存"></a>4.4 分布式缓存</h3><p>多 JVM 实例会存在两个问题：</p>
 <ol>
 <li>单机容量问题</li>
 <li>资源一致性问题</li>
+<li>缓存不命中时，需要回源到 DB/服务 请求多变问题。</li>
 </ol>
 <p>可以使用分布式缓存解决。</p>
-<p>可以使用 ehcache-clustered（配合 Terracotta server）实现 Java 进程间分布式缓存。也可以使用 Redis 实现分布式缓存。</p>
+<p>可以使用 ehcache-clustered（配合 Terracotta server）实现 Java 进程间分布式缓存，也可以使用 Redis 实现分布式缓存。</p>
 <p>两种模式如下：</p>
 <ul>
 <li>单机时：存储最热的数据到堆缓存，相对较热的数据到堆外缓存，不热的数据到磁盘缓存。</li>
 <li>集群时：存储最热的数据到堆缓存，相对较热的数据到堆外缓存，全量数据到分布式缓存。</li>
 </ul>
-<h2 id="5-应用级缓存实例"><a href="#5-应用级缓存实例" class="headerlink" title="5 应用级缓存实例"></a>5 应用级缓存实例</h2><h2 id="6-缓存使用模式实践"><a href="#6-缓存使用模式实践" class="headerlink" title="6 缓存使用模式实践"></a>6 缓存使用模式实践</h2><p>缓存使用模式/模板：</p>
+<h2 id="5-应用级缓存实例"><a href="#5-应用级缓存实例" class="headerlink" title="5 应用级缓存实例"></a>5 应用级缓存实例</h2><p>暂略。</p>
+<h2 id="6-缓存使用模式实践"><a href="#6-缓存使用模式实践" class="headerlink" title="6 缓存使用模式实践"></a>6 缓存使用模式实践</h2><p>缓存使用模式/模板：</p>
 <ul>
 <li>Cache-Aside</li>
 <li>Cache-As-SoR</li>
@@ -1939,7 +1960,12 @@
     <url>/2021/01/06/%E7%BC%93%E5%AD%98%E5%92%8C%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/</url>
     <content><![CDATA[<h1 id="缓存和数据一致性"><a href="#缓存和数据一致性" class="headerlink" title="缓存和数据一致性"></a>缓存和数据一致性</h1><a id="more"></a>
 
-<p>SoR(system of record)：记录系统，数据源，即时机存储原始数据的系统</p>
+<p>名词解释：</p>
+<ul>
+<li>SoR（system of record）：记录系统，数据源，即实际存储原始数据的系统。</li>
+<li>Cache：缓存，SoR 的快照数据。</li>
+<li>回源：回到数据源头获取数据。</li>
+</ul>
 <h2 id="1-Cache-Aside"><a href="#1-Cache-Aside" class="headerlink" title="1 Cache Aside"></a>1 Cache Aside</h2><p>业务代码围绕着 Cache 写，由业务代码直接维护缓存。</p>
 <ol>
 <li><p>读场景</p>
@@ -1963,9 +1989,9 @@
 </ol>
 <h2 id="2-Cache-As-SoR"><a href="#2-Cache-As-SoR" class="headerlink" title="2 Cache-As-SoR"></a>2 Cache-As-SoR</h2><p>把 Cache 看做 SoR（数据库），所有操作只对 Cache 进行，然后 Cache 再委托给 SoR 进行真实的读/写。</p>
 <p>有三种实现：Read-Through、Write-Through、Write-Behind</p>
-<h3 id="Read-Through"><a href="#Read-Through" class="headerlink" title="Read-Through"></a>Read-Through</h3><p>Read-Through，业务代码首先调用 Cache，如果 Cache 不命中由 Cache 回源到 SoR，而不是业务代码，即由 Cache 读 SoR。</p>
-<h3 id="Write-Through"><a href="#Write-Through" class="headerlink" title="Write-Through"></a>Write-Through</h3><p>Write-Through，被称为穿透写模式/只写模式。业务代码首先调用 Cache 写（新增/修改）数据，然后由 Cache 负责写数据和写 SoR，而不是业务代码。</p>
-<h3 id="Write-Behind"><a href="#Write-Behind" class="headerlink" title="Write-Behind"></a>Write-Behind</h3><p>Write-behind，也叫 Write-Back，回写模式。Write-Behind 不同于 Write-Through 的是，Write-Through 是异步写。异步之后可以实现批量写、合并写、延时写和限流。</p>
+<h3 id="2-1-Read-Through"><a href="#2-1-Read-Through" class="headerlink" title="2.1 Read-Through"></a>2.1 Read-Through</h3><p>Read-Through，业务代码首先调用 Cache，如果 Cache 不命中由 Cache 回源到 SoR，而不是业务代码，即由 Cache 读 SoR。</p>
+<h3 id="2-2-Write-Through"><a href="#2-2-Write-Through" class="headerlink" title="2.2 Write-Through"></a>2.2 Write-Through</h3><p>Write-Through，被称为穿透写模式/只写模式。业务代码首先调用 Cache 写（新增/修改）数据，然后由 Cache 负责写数据和写 SoR，而不是业务代码。</p>
+<h3 id="2-3-Write-Behind"><a href="#2-3-Write-Behind" class="headerlink" title="2.3 Write-Behind"></a>2.3 Write-Behind</h3><p>Write-behind，也叫 Write-Back，回写模式。Write-Behind 不同于 Write-Through 的是，Write-Through 是异步写。异步之后可以实现批量写、合并写、延时写和限流。</p>
 ]]></content>
       <categories>
         <category>Java</category>
