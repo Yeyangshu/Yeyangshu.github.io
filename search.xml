@@ -159,6 +159,76 @@
       </tags>
   </entry>
   <entry>
+    <title>JVM 虚拟机基础概念</title>
+    <url>/2020/12/28/JVM-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/</url>
+    <content><![CDATA[<h1 id="虚拟机基础概念"><a href="#虚拟机基础概念" class="headerlink" title="虚拟机基础概念"></a>虚拟机基础概念</h1><a id="more"></a>
+
+<h2 id="1-什么是虚拟机"><a href="#1-什么是虚拟机" class="headerlink" title="1 什么是虚拟机"></a>1 什么是虚拟机</h2><p>百度百科：虚拟机是一种抽象化的计算机，通过在实际的计算机上仿真模拟各种计算机功能来实现的。Java 虚拟机有自己完善的硬体架构，如处理器、堆栈、寄存器等，还具有相应的指令系统。Java 虚拟机屏蔽了与具体操作系统平台相关的信息，使得Java程序只需生成在 Java 虚拟机上运行的目标代码（字节码），就可以在多种平台上不加修改地运行。</p>
+<h2 id="2-流行的-Java-虚拟机"><a href="#2-流行的-Java-虚拟机" class="headerlink" title="2 流行的 Java 虚拟机"></a>2 流行的 Java 虚拟机</h2><ul>
+<li><p>Hotspot</p>
+<p>Oracle 官方虚拟机</p>
+</li>
+<li><p>JRockit</p>
+</li>
+<li><p> J9</p>
+</li>
+<li><p>Microsoft VM</p>
+</li>
+<li><p>Liquid VM</p>
+</li>
+<li><p>Taobao VM</p>
+</li>
+</ul>
+<h2 id="3-JDK、JRE、JVM"><a href="#3-JDK、JRE、JVM" class="headerlink" title="3 JDK、JRE、JVM"></a>3 JDK、JRE、JVM</h2><ul>
+<li>JVM：</li>
+<li>JRE = JVM + core libraries</li>
+<li>JDK = JRE + Development Kit</li>
+</ul>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20201228215823470.png" alt="image-20201228215823470"></p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>JVM</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java NIO 教程</title>
+    <url>/2020/12/24/Java-NIO-%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="Java-NIO-教程"><a href="#Java-NIO-教程" class="headerlink" title="Java NIO 教程"></a>Java NIO 教程</h1><p>本系列教程翻译自 Jakob Jenkov 的文章，原文链接：<a href="http://tutorials.jenkov.com/java-nio/index.html">http://tutorials.jenkov.com/java-nio/index.html</a></p>
+<a id="more"></a>
+<p>Java NIO（New IO）是 Java IO API 的替代品，意味着可以替代标准 Java IO 和 Java Networking API。 Java NIO 提供了与传统 IO API 不同的 IO 编程模型。 注意：有时 NIO 被称为是非阻塞 IO。 但是，这并不是 NIO 最初的意思。 另外，NIO API 的某些部分实际上是阻塞的，例如：文件 API，因此，“非阻塞”标签可能会引起误导。</p>
+<h2 id="1-Java-NIO-Non-blocking-IO（非阻塞-IO）"><a href="#1-Java-NIO-Non-blocking-IO（非阻塞-IO）" class="headerlink" title="1 Java NIO: Non-blocking IO（非阻塞 IO）"></a>1 Java NIO: Non-blocking IO（非阻塞 IO）</h2><p>Java NIO 使您可以使用非阻塞 IO。 例如，线程可以要求通道将数据读入缓冲区，当通道将数据读入缓冲区时，线程可以执行其他操作。 一旦将数据读入缓冲区，线程就可以继续对其进行处理。 将数据写入通道时也是如此。</p>
+<h2 id="2-Java-NIO-Channels-and-Buffers（通道和缓冲区）"><a href="#2-Java-NIO-Channels-and-Buffers（通道和缓冲区）" class="headerlink" title="2 Java NIO: Channels and Buffers（通道和缓冲区）"></a>2 Java NIO: Channels and Buffers（通道和缓冲区）</h2><p>标准的 IO 基于字节流和字符流进行操作的，而 NIO 是基于通道（Channel）和缓冲区（Buffer）进行操作，数据总是从通道读取到缓冲区中，或者从缓冲区写入到通道中。</p>
+<h2 id="3-Java-NIO-Selectors（选择器）"><a href="#3-Java-NIO-Selectors（选择器）" class="headerlink" title="3 Java NIO: Selectors（选择器）"></a>3 Java NIO: Selectors（选择器）</h2><p>Java NIO包含“选择器”的概念。 选择器是一个对象，可以监视多个通道的事件（例如：打开连接，到达数据等）。 因此，单个线程可以监视多个通道以获取数据。</p>
+<h2 id="4-Java-NIO-Concepts"><a href="#4-Java-NIO-Concepts" class="headerlink" title="4 Java NIO Concepts"></a>4 Java NIO Concepts</h2><p>与旧的 Java IO 模型相比，在 Java NIO 中需要学习几个新概念。 这些概念在下面列出：</p>
+<ul>
+<li><a href="http://tutorials.jenkov.com/java-nio/channels.html">Channels</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/buffers.html">Buffers</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/scatter-gather.html">Scatter - Gather</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/channel-to-channel-transfers.html">Channel to Channel Transfers</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/selectors.html">Selectors</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/file-channel.html">FileChannel</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/socketchannel.html">SocketChannel</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/server-socket-channel.html">ServerSocketChannel</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/non-blocking-server.html">Non-blocking Server Design</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/datagram-channel.html">DatagramChannel</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/pipe.html">Pipe</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/nio-vs-io.html">NIO vs. IO</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/path.html">Path</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/files.html">Files</a></li>
+<li><a href="http://tutorials.jenkov.com/java-nio/asynchronousfilechannel.html">AsynchronousFileChannel</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>NIO</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Java NIO Channel</title>
     <url>/2020/12/24/Java-NIO-Channel/</url>
     <content><![CDATA[<h1 id="Java-NIO-Channel"><a href="#Java-NIO-Channel" class="headerlink" title="Java NIO Channel"></a>Java NIO Channel</h1><p><code>Java NIO Channels</code> 类似于流，但有一些区别：</p>
@@ -192,38 +262,19 @@
       </tags>
   </entry>
   <entry>
-    <title>JVM 虚拟机基础概念</title>
-    <url>/2020/12/28/JVM-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/</url>
-    <content><![CDATA[<h1 id="虚拟机基础概念"><a href="#虚拟机基础概念" class="headerlink" title="虚拟机基础概念"></a>虚拟机基础概念</h1><a id="more"></a>
+    <title>Kafka主题与分区</title>
+    <url>/2021/01/25/Kafka%E4%B8%BB%E9%A2%98%E4%B8%8E%E5%88%86%E5%8C%BA/</url>
+    <content><![CDATA[<h1 id="Kafka主题与分区"><a href="#Kafka主题与分区" class="headerlink" title="Kafka主题与分区"></a>Kafka主题与分区</h1><a id="more"></a>
 
-<h2 id="1-什么是虚拟机"><a href="#1-什么是虚拟机" class="headerlink" title="1 什么是虚拟机"></a>1 什么是虚拟机</h2><p>百度百科：虚拟机是一种抽象化的计算机，通过在实际的计算机上仿真模拟各种计算机功能来实现的。Java 虚拟机有自己完善的硬体架构，如处理器、堆栈、寄存器等，还具有相应的指令系统。Java 虚拟机屏蔽了与具体操作系统平台相关的信息，使得Java程序只需生成在 Java 虚拟机上运行的目标代码（字节码），就可以在多种平台上不加修改地运行。</p>
-<h2 id="2-流行的-Java-虚拟机"><a href="#2-流行的-Java-虚拟机" class="headerlink" title="2 流行的 Java 虚拟机"></a>2 流行的 Java 虚拟机</h2><ul>
-<li><p>Hotspot</p>
-<p>Oracle 官方虚拟机</p>
-</li>
-<li><p>JRockit</p>
-</li>
-<li><p> J9</p>
-</li>
-<li><p>Microsoft VM</p>
-</li>
-<li><p>Liquid VM</p>
-</li>
-<li><p>Taobao VM</p>
-</li>
-</ul>
-<h2 id="3-JDK、JRE、JVM"><a href="#3-JDK、JRE、JVM" class="headerlink" title="3 JDK、JRE、JVM"></a>3 JDK、JRE、JVM</h2><ul>
-<li>JVM：</li>
-<li>JRE = JVM + core libraries</li>
-<li>JDK = JRE + Development Kit</li>
-</ul>
-<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20201228215823470.png" alt="image-20201228215823470"></p>
-]]></content>
+<h2 id="1-主题的管理"><a href="#1-主题的管理" class="headerlink" title="1 主题的管理"></a>1 主题的管理</h2><p>主题的管理包括创建主题、查看主题信息、修改主题和删除主题等操作。</p>
+<h3 id="1-1-创建主题"><a href="#1-1-创建主题" class="headerlink" title="1.1 创建主题"></a>1.1 创建主题</h3><h2 id="2-初识KafkaAdminClient"><a href="#2-初识KafkaAdminClient" class="headerlink" title="2 初识KafkaAdminClient"></a>2 初识KafkaAdminClient</h2><h2 id="3-分区的管理"><a href="#3-分区的管理" class="headerlink" title="3 分区的管理"></a>3 分区的管理</h2><h2 id="4-分区数的选择"><a href="#4-分区数的选择" class="headerlink" title="4 分区数的选择"></a>4 分区数的选择</h2>]]></content>
       <categories>
         <category>Java</category>
+        <category>书籍</category>
       </categories>
       <tags>
-        <tag>JVM</tag>
+        <tag>Kafka</tag>
+        <tag>深入理解Kafka：核心设计与实践原理</tag>
       </tags>
   </entry>
   <entry>
@@ -272,57 +323,6 @@
       </categories>
       <tags>
         <tag>NIO</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java NIO 教程</title>
-    <url>/2020/12/24/Java-NIO-%E6%95%99%E7%A8%8B/</url>
-    <content><![CDATA[<h1 id="Java-NIO-教程"><a href="#Java-NIO-教程" class="headerlink" title="Java NIO 教程"></a>Java NIO 教程</h1><p>本系列教程翻译自 Jakob Jenkov 的文章，原文链接：<a href="http://tutorials.jenkov.com/java-nio/index.html">http://tutorials.jenkov.com/java-nio/index.html</a></p>
-<a id="more"></a>
-<p>Java NIO（New IO）是 Java IO API 的替代品，意味着可以替代标准 Java IO 和 Java Networking API。 Java NIO 提供了与传统 IO API 不同的 IO 编程模型。 注意：有时 NIO 被称为是非阻塞 IO。 但是，这并不是 NIO 最初的意思。 另外，NIO API 的某些部分实际上是阻塞的，例如：文件 API，因此，“非阻塞”标签可能会引起误导。</p>
-<h2 id="1-Java-NIO-Non-blocking-IO（非阻塞-IO）"><a href="#1-Java-NIO-Non-blocking-IO（非阻塞-IO）" class="headerlink" title="1 Java NIO: Non-blocking IO（非阻塞 IO）"></a>1 Java NIO: Non-blocking IO（非阻塞 IO）</h2><p>Java NIO 使您可以使用非阻塞 IO。 例如，线程可以要求通道将数据读入缓冲区，当通道将数据读入缓冲区时，线程可以执行其他操作。 一旦将数据读入缓冲区，线程就可以继续对其进行处理。 将数据写入通道时也是如此。</p>
-<h2 id="2-Java-NIO-Channels-and-Buffers（通道和缓冲区）"><a href="#2-Java-NIO-Channels-and-Buffers（通道和缓冲区）" class="headerlink" title="2 Java NIO: Channels and Buffers（通道和缓冲区）"></a>2 Java NIO: Channels and Buffers（通道和缓冲区）</h2><p>标准的 IO 基于字节流和字符流进行操作的，而 NIO 是基于通道（Channel）和缓冲区（Buffer）进行操作，数据总是从通道读取到缓冲区中，或者从缓冲区写入到通道中。</p>
-<h2 id="3-Java-NIO-Selectors（选择器）"><a href="#3-Java-NIO-Selectors（选择器）" class="headerlink" title="3 Java NIO: Selectors（选择器）"></a>3 Java NIO: Selectors（选择器）</h2><p>Java NIO包含“选择器”的概念。 选择器是一个对象，可以监视多个通道的事件（例如：打开连接，到达数据等）。 因此，单个线程可以监视多个通道以获取数据。</p>
-<h2 id="4-Java-NIO-Concepts"><a href="#4-Java-NIO-Concepts" class="headerlink" title="4 Java NIO Concepts"></a>4 Java NIO Concepts</h2><p>与旧的 Java IO 模型相比，在 Java NIO 中需要学习几个新概念。 这些概念在下面列出：</p>
-<ul>
-<li><a href="http://tutorials.jenkov.com/java-nio/channels.html">Channels</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/buffers.html">Buffers</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/scatter-gather.html">Scatter - Gather</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/channel-to-channel-transfers.html">Channel to Channel Transfers</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/selectors.html">Selectors</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/file-channel.html">FileChannel</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/socketchannel.html">SocketChannel</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/server-socket-channel.html">ServerSocketChannel</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/non-blocking-server.html">Non-blocking Server Design</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/datagram-channel.html">DatagramChannel</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/pipe.html">Pipe</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/nio-vs-io.html">NIO vs. IO</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/path.html">Path</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/files.html">Files</a></li>
-<li><a href="http://tutorials.jenkov.com/java-nio/asynchronousfilechannel.html">AsynchronousFileChannel</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>NIO</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Kafka主题与分区</title>
-    <url>/2021/01/25/Kafka%E4%B8%BB%E9%A2%98%E4%B8%8E%E5%88%86%E5%8C%BA/</url>
-    <content><![CDATA[<h1 id="Kafka主题与分区"><a href="#Kafka主题与分区" class="headerlink" title="Kafka主题与分区"></a>Kafka主题与分区</h1><a id="more"></a>
-
-<p>主题的管理；· 初识KafkaAdminClient；· 分区的管理；· 分区数的选择</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-        <category>书籍</category>
-      </categories>
-      <tags>
-        <tag>Kafka</tag>
-        <tag>深入理解Kafka：核心设计与实践原理</tag>
       </tags>
   </entry>
   <entry>
@@ -1364,6 +1364,30 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Redis 缓存穿透、缓存击穿、缓存雪崩</title>
+    <url>/2020/12/27/Redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E3%80%81%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9/</url>
+    <content><![CDATA[<h1 id="Redis-缓存穿透、缓存击穿、缓存雪崩"><a href="#Redis-缓存穿透、缓存击穿、缓存雪崩" class="headerlink" title="Redis 缓存穿透、缓存击穿、缓存雪崩"></a>Redis 缓存穿透、缓存击穿、缓存雪崩</h1><a id="more"></a>
+
+<h2 id="1-Redis-缓存穿透"><a href="#1-Redis-缓存穿透" class="headerlink" title="1 Redis 缓存穿透"></a>1 Redis 缓存穿透</h2><h3 id="1-1-什么是缓存穿透？"><a href="#1-1-什么是缓存穿透？" class="headerlink" title="1.1 什么是缓存穿透？"></a>1.1 什么是缓存穿透？</h3><p>缓存穿透是指在高并发场景下并使用 Redis 作为缓存的时候，查询一个 DB 不存在的数据。</p>
+<h3 id="1-2-缓存穿透解决方案"><a href="#1-2-缓存穿透解决方案" class="headerlink" title="1.2 缓存穿透解决方案"></a>1.2 缓存穿透解决方案</h3><h4 id="1-2-1-布隆过滤器"><a href="#1-2-1-布隆过滤器" class="headerlink" title="1.2.1 布隆过滤器"></a>1.2.1 布隆过滤器</h4><p>将所有可能存在的数据哈希到一个足够大的 bitmap 中，一个一定不存在的数据会被这个 bitmap 拦截掉，从而避免了对底层存储系统的查询压力。</p>
+<h2 id="2-Redis-缓存击穿"><a href="#2-Redis-缓存击穿" class="headerlink" title="2 Redis 缓存击穿"></a>2 Redis 缓存击穿</h2><h3 id="2-1-什么是缓存击穿？"><a href="#2-1-什么是缓存击穿？" class="headerlink" title="2.1 什么是缓存击穿？"></a>2.1 什么是缓存击穿？</h3><p>缓存击穿是指在高并发场景下并使用 Redis 作为缓存的时候，由于 Redis 会清除过期的 key，某个 key 不存在造成所有的并发都访问到数据库，大量的请求可能会瞬间把后端 DB 压垮。</p>
+<h3 id="2-2-缓存击穿解决方案"><a href="#2-2-缓存击穿解决方案" class="headerlink" title="2.2 缓存击穿解决方案"></a>2.2 缓存击穿解决方案</h3><h4 id="2-2-1-设置永不过期"><a href="#2-2-1-设置永不过期" class="headerlink" title="2.2.1 设置永不过期"></a>2.2.1 设置永不过期</h4><p>最简单的方法，key 设置不过期就不会产生此问题</p>
+<h4 id="2-2-2-使用互斥锁"><a href="#2-2-2-使用互斥锁" class="headerlink" title="2.2.2 使用互斥锁"></a>2.2.2 使用互斥锁</h4><p>使用 Redis 的 <code>SETNX</code>，只有抢到锁的才会去 DB 加载数据，没有抢到锁的等待一段时间。</p>
+<h2 id="3-Redis-缓存雪崩"><a href="#3-Redis-缓存雪崩" class="headerlink" title="3 Redis 缓存雪崩"></a>3 Redis 缓存雪崩</h2><h3 id="3-1-什么是缓存雪崩？"><a href="#3-1-什么是缓存雪崩？" class="headerlink" title="3.1 什么是缓存雪崩？"></a>3.1 什么是缓存雪崩？</h3><p>缓存雪崩是指在高并发场景下并使用 Redis 作为缓存的时候，大量的 key 同时失效间接造成大量的请求访问到达 DB。</p>
+<h3 id="3-2-缓存雪崩解决方案"><a href="#3-2-缓存雪崩解决方案" class="headerlink" title="3.2  缓存雪崩解决方案"></a>3.2  缓存雪崩解决方案</h3><h4 id="3-2-1-随机过期时间"><a href="#3-2-1-随机过期时间" class="headerlink" title="3.2.1 随机过期时间"></a>3.2.1 随机过期时间</h4><p>如果 Redis 中的数据与时点性无关，可以设置 key 随机过期时间，让缓存失效的时间点尽量均匀。</p>
+<h3 id="3-2-2-互斥锁"><a href="#3-2-2-互斥锁" class="headerlink" title="3.2.2 互斥锁"></a>3.2.2 互斥锁</h3><p>如果 Redis 中的数据具有时点性，假设到 0:00 大量的 key 过期，可以对 key 加互斥锁，与缓存击穿类似。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+        <tag>Redis 缓存穿透</tag>
+        <tag>Redis 缓存击穿</tag>
+        <tag>Redis 缓存雪崩</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SpringBoot 线程池（一）：使用同步线程池</title>
     <url>/2020/12/21/SpringBoot-%E7%BA%BF%E7%A8%8B%E6%B1%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BD%BF%E7%94%A8%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E6%B1%A0/</url>
     <content><![CDATA[<h1 id="SpringBoot-线程池（一）：使用同步线程池"><a href="#SpringBoot-线程池（一）：使用同步线程池" class="headerlink" title="SpringBoot 线程池（一）：使用同步线程池"></a>SpringBoot 线程池（一）：使用同步线程池</h1><a id="more"></a>
@@ -1387,30 +1411,6 @@
       <tags>
         <tag>SpringBoot</tag>
         <tag>JUC</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Redis 缓存穿透、缓存击穿、缓存雪崩</title>
-    <url>/2020/12/27/Redis-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E3%80%81%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF%E3%80%81%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9/</url>
-    <content><![CDATA[<h1 id="Redis-缓存穿透、缓存击穿、缓存雪崩"><a href="#Redis-缓存穿透、缓存击穿、缓存雪崩" class="headerlink" title="Redis 缓存穿透、缓存击穿、缓存雪崩"></a>Redis 缓存穿透、缓存击穿、缓存雪崩</h1><a id="more"></a>
-
-<h2 id="1-Redis-缓存穿透"><a href="#1-Redis-缓存穿透" class="headerlink" title="1 Redis 缓存穿透"></a>1 Redis 缓存穿透</h2><h3 id="1-1-什么是缓存穿透？"><a href="#1-1-什么是缓存穿透？" class="headerlink" title="1.1 什么是缓存穿透？"></a>1.1 什么是缓存穿透？</h3><p>缓存穿透是指在高并发场景下并使用 Redis 作为缓存的时候，查询一个 DB 不存在的数据。</p>
-<h3 id="1-2-缓存穿透解决方案"><a href="#1-2-缓存穿透解决方案" class="headerlink" title="1.2 缓存穿透解决方案"></a>1.2 缓存穿透解决方案</h3><h4 id="1-2-1-布隆过滤器"><a href="#1-2-1-布隆过滤器" class="headerlink" title="1.2.1 布隆过滤器"></a>1.2.1 布隆过滤器</h4><p>将所有可能存在的数据哈希到一个足够大的 bitmap 中，一个一定不存在的数据会被这个 bitmap 拦截掉，从而避免了对底层存储系统的查询压力。</p>
-<h2 id="2-Redis-缓存击穿"><a href="#2-Redis-缓存击穿" class="headerlink" title="2 Redis 缓存击穿"></a>2 Redis 缓存击穿</h2><h3 id="2-1-什么是缓存击穿？"><a href="#2-1-什么是缓存击穿？" class="headerlink" title="2.1 什么是缓存击穿？"></a>2.1 什么是缓存击穿？</h3><p>缓存击穿是指在高并发场景下并使用 Redis 作为缓存的时候，由于 Redis 会清除过期的 key，某个 key 不存在造成所有的并发都访问到数据库，大量的请求可能会瞬间把后端 DB 压垮。</p>
-<h3 id="2-2-缓存击穿解决方案"><a href="#2-2-缓存击穿解决方案" class="headerlink" title="2.2 缓存击穿解决方案"></a>2.2 缓存击穿解决方案</h3><h4 id="2-2-1-设置永不过期"><a href="#2-2-1-设置永不过期" class="headerlink" title="2.2.1 设置永不过期"></a>2.2.1 设置永不过期</h4><p>最简单的方法，key 设置不过期就不会产生此问题</p>
-<h4 id="2-2-2-使用互斥锁"><a href="#2-2-2-使用互斥锁" class="headerlink" title="2.2.2 使用互斥锁"></a>2.2.2 使用互斥锁</h4><p>使用 Redis 的 <code>SETNX</code>，只有抢到锁的才会去 DB 加载数据，没有抢到锁的等待一段时间。</p>
-<h2 id="3-Redis-缓存雪崩"><a href="#3-Redis-缓存雪崩" class="headerlink" title="3 Redis 缓存雪崩"></a>3 Redis 缓存雪崩</h2><h3 id="3-1-什么是缓存雪崩？"><a href="#3-1-什么是缓存雪崩？" class="headerlink" title="3.1 什么是缓存雪崩？"></a>3.1 什么是缓存雪崩？</h3><p>缓存雪崩是指在高并发场景下并使用 Redis 作为缓存的时候，大量的 key 同时失效间接造成大量的请求访问到达 DB。</p>
-<h3 id="3-2-缓存雪崩解决方案"><a href="#3-2-缓存雪崩解决方案" class="headerlink" title="3.2  缓存雪崩解决方案"></a>3.2  缓存雪崩解决方案</h3><h4 id="3-2-1-随机过期时间"><a href="#3-2-1-随机过期时间" class="headerlink" title="3.2.1 随机过期时间"></a>3.2.1 随机过期时间</h4><p>如果 Redis 中的数据与时点性无关，可以设置 key 随机过期时间，让缓存失效的时间点尽量均匀。</p>
-<h3 id="3-2-2-互斥锁"><a href="#3-2-2-互斥锁" class="headerlink" title="3.2.2 互斥锁"></a>3.2.2 互斥锁</h3><p>如果 Redis 中的数据具有时点性，假设到 0:00 大量的 key 过期，可以对 key 加互斥锁，与缓存击穿类似。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
-        <tag>Redis 缓存穿透</tag>
-        <tag>Redis 缓存击穿</tag>
-        <tag>Redis 缓存雪崩</tag>
       </tags>
   </entry>
   <entry>
@@ -1728,34 +1728,50 @@
     <content><![CDATA[<h1 id="应用级缓存"><a href="#应用级缓存" class="headerlink" title="应用级缓存"></a>应用级缓存</h1><a id="more"></a>
 
 <h2 id="1-缓存简介"><a href="#1-缓存简介" class="headerlink" title="1 缓存简介"></a>1 缓存简介</h2><p>缓存工作机制是先从缓存中读取数据，如果没有，再从慢速设备上读取实际数据并同步到缓存。经常读取的数据、频繁访问的数据、热点数据、I/O 瓶颈数据、计算昂贵的数据、服务 5 分钟法则的数据和局部性原理的数据都可以存进缓存。</p>
-<h2 id="2-缓存命中率"><a href="#2-缓存命中率" class="headerlink" title="2 缓存命中率"></a>2 缓存命中率</h2><p>缓存命中率 = 从缓存中读取次数 / (总读取次数（从缓存中读取次数 + 从慢速设备上读取次数）)</p>
-<p>命中率越高越好</p>
-<h2 id="3-缓存回收策略"><a href="#3-缓存回收策略" class="headerlink" title="3 缓存回收策略"></a>3 缓存回收策略</h2><ol>
-<li><p>基于空间</p>
-<p>缓存设置了存储空间</p>
-</li>
-<li><p>基于容量</p>
-<p>缓存设置了最大大小</p>
-</li>
-<li><p>基于时间</p>
-<p>TTL（Time To Live）：存活期</p>
-<p>TTI（Time To Idle）：空闲期</p>
-</li>
-<li><p>基于 Java 对象引用</p>
+<blockquote>
+<p>I/O 的 5 分钟法则：1987年，Jim Gray 和 Gianfranco Putzolu 推出了著名的5分钟法则，以权衡内存和 I/O 容量，他们的计算将使用内存芯片和磁盘驱动器的适当价格，将永久保存一条记录（或页面）的成本与每次访问该记录（或页面）时执行磁盘 I/O 的成本进行比较。他们的规则的名称是指访问之间的收支平衡时间间隔。如果更频繁地访问记录（或页面），则应将其保存在内存中；否则，它应该保留在磁盘上并在需要时读取。</p>
+<p>$BreakEvenIntervalinSeconds = \frac{PagesPerMBofRAM}{PagesPerMBofRAM} * \frac{PricePerDiskDrive}{PricePerMBofRAM}$</p>
 <ul>
-<li>软引用</li>
-<li>弱引用</li>
-<li>虚引用</li>
-</ul>
+<li><p>PagesPerMBofRAM：表示内存每兆字节的 Pag e数，如果 page size = 4KB，则该值为 1MB/(4KB/page) = 256 page/MB。</p>
 </li>
-<li><p>回收算法</p>
+<li><p>AccessesPerSecondPerDisk：每块磁盘每秒支持的最大 I/O 请求数，如下表所示为 250 Page/ (Second*Disk)。</p>
+</li>
+<li><p>(PagesPerMBofRAM /AccessesPerSecondPerDisk)：表示 1 兆的空间通过磁盘访问的方式所需要的秒数。256/200 = 1.25(Second*Disk)/MB，表示 1 兆字节需要 1.25 个盘秒来完成（类似工作任务按人月来做单位）。</p>
+</li>
+<li><p>PricePerDiskDrive：表示一块磁盘的成本，如下表所示为$48/disk。<br>PricePerMBofRAM：表示每兆内存的代价，如下表所示为50/(2048)=0.024$/MB。</p>
+</li>
+<li><p>PricePerDiskDrive/ PricePerMBofRAM:表示用来买磁盘的钱可以买多少兆内存。48/0.024=2000MB /disk。</p>
+</li>
+</ul>
+<p>详细内容参考：<a href="https://zhuanlan.zhihu.com/p/100626824?utm_source=wechat_timeline">https://zhuanlan.zhihu.com/p/100626824?utm_source=wechat_timeline</a></p>
+</blockquote>
+<p>案例：CPU 多级缓存</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210418104732355.png" alt="image-20210418104732355"></p>
+<h2 id="2-缓存命中率"><a href="#2-缓存命中率" class="headerlink" title="2 缓存命中率"></a>2 缓存命中率</h2><p>缓存命中率是从缓存中读取数据的次数与总读取次数的比率，命中率越高越好。</p>
+<p>$缓存命中率 =  \frac{从缓存中读取次数} {总读取次数（从缓存中读取次数 + 从慢速设备上读取次数）)}$</p>
+<h2 id="3-缓存回收策略"><a href="#3-缓存回收策略" class="headerlink" title="3 缓存回收策略"></a>3 缓存回收策略</h2><h3 id="3-1-基于空间"><a href="#3-1-基于空间" class="headerlink" title="3.1 基于空间"></a>3.1 基于空间</h3><p>缓存设置了存储空间，当达到存储空间上限时，按照一定的策略移除数据。</p>
+<h3 id="3-2-基于容量"><a href="#3-2-基于容量" class="headerlink" title="3.2 基于容量"></a>3.2 基于容量</h3><p>缓存设置了最大大小，当缓存条目超过最大大小时，按照一定的策略移除旧数据。</p>
+<h3 id="3-3-基于时间"><a href="#3-3-基于时间" class="headerlink" title="3.3 基于时间"></a>3.3 基于时间</h3><ul>
+<li><p>TTL（Time To Live）：存活期，即缓存数据创建开始直到到期的一个时间段（不管缓存数据有没有被访问到，都将过期）。</p>
+</li>
+<li><p>TTI（Time To Idle）：空闲期，即缓存数据多久没有被访问后移除缓存的时间。</p>
+</li>
+</ul>
+<h3 id="3-4-基于-Java-对象引用"><a href="#3-4-基于-Java-对象引用" class="headerlink" title="3.4 基于 Java 对象引用"></a>3.4 基于 Java 对象引用</h3><p>只有在没有其他强引用对象引用弱引用/软引用对象时，垃圾回收器才回收该引用。</p>
 <ul>
-<li>FIFO</li>
-<li>LRU</li>
-<li>LFU</li>
-</ul>
+<li><p>软引用：如果一个对象是软引用，当 JVM 堆内存不足时，垃圾回收器将回收软引用对象。<strong>软引用适合做缓存。</strong></p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210418110909494.png" alt="image-20210418110909494"></p>
 </li>
-</ol>
+<li><p>弱引用：当垃圾回收器回收内存时，如果发现弱引用，则将它立即回收。案例：ThreadLocal</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210418110627013.png" alt="image-20210418110627013"></p>
+</li>
+</ul>
+<h3 id="3-5-回收算法"><a href="#3-5-回收算法" class="headerlink" title="3.5 回收算法"></a>3.5 回收算法</h3><p>最常用：LRU</p>
+<ul>
+<li>FIFO（First In First Out）：先进先出算法，即先放入缓存的先被移除。</li>
+<li>LRU（Least Recently Used）：最少使用算法，即上次使用时间距离现在最久的那个被移除。</li>
+<li>LFU（Least Frequebtly Used）；最不常用算法，一定时间内使用次数（频率）最少的那个被移除。</li>
+</ul>
 <h2 id="4-Java-缓存类型"><a href="#4-Java-缓存类型" class="headerlink" title="4 Java 缓存类型"></a>4 Java 缓存类型</h2><h3 id="4-1-堆缓存"><a href="#4-1-堆缓存" class="headerlink" title="4.1 堆缓存"></a>4.1 堆缓存</h3><p>使用  Java 堆来存储缓存对象。一般使用堆缓存存储较热的数据。可以使用 Guava Cache、Ehcache 3.X，MapDB 实现。</p>
 <h3 id="4-2-堆外缓存"><a href="#4-2-堆外缓存" class="headerlink" title="4.2 堆外缓存"></a>4.2 堆外缓存</h3><h3 id="4-3-磁盘缓存"><a href="#4-3-磁盘缓存" class="headerlink" title="4.3 磁盘缓存"></a>4.3 磁盘缓存</h3><h3 id="4-4-分布式缓存"><a href="#4-4-分布式缓存" class="headerlink" title="4.4 分布式缓存"></a>4.4 分布式缓存</h3><p>多 JVM 实例会存在两个问题：</p>
 <ol>
@@ -1774,6 +1790,7 @@
 <li>Cache-Aside</li>
 <li>Cache-As-SoR</li>
 </ul>
+<p>文章见：<a href="https://yeyangshu.top/2021/01/06/%E7%BC%93%E5%AD%98%E5%92%8C%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/">https://yeyangshu.top/2021/01/06/%E7%BC%93%E5%AD%98%E5%92%8C%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/</a></p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -1800,8 +1817,8 @@
       </tags>
   </entry>
   <entry>
-    <title>亿级流量网站架构 高并发 扩容</title>
-    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%B9%B6%E5%8F%91-%E6%89%A9%E5%AE%B9/</url>
+    <title>亿级流量网站架构 高并发 线程池连接池</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%B9%B6%E5%8F%91-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>Java</category>
@@ -1813,8 +1830,8 @@
       </tags>
   </entry>
   <entry>
-    <title>亿级流量网站架构 高并发 线程池连接池</title>
-    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%B9%B6%E5%8F%91-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9E%E6%8E%A5%E6%B1%A0/</url>
+    <title>亿级流量网站架构 高并发 扩容</title>
+    <url>/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%B9%B6%E5%8F%91-%E6%89%A9%E5%AE%B9/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>Java</category>
@@ -1893,6 +1910,31 @@
       </tags>
   </entry>
   <entry>
+    <title>分布式锁</title>
+    <url>/2021/01/02/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
+    <content><![CDATA[<h1 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h1><a id="more"></a>
+
+<h2 id="1-数据库锁"><a href="#1-数据库锁" class="headerlink" title="1 数据库锁"></a>1 数据库锁</h2><p>阻塞式加锁，适合并发量不高的小项目。</p>
+<p>数据库创建一个锁表，添加唯一索引，通过操作该表的数据来实现。获得锁的时候在表中添加一条记录，释放锁的时候就删除这条记录，如果有多个请求同时提交到数据库的话，数据库可以保证只有一个操作可以成功，可以认为操作成功的那个请求获得了锁。</p>
+<p>存在以下几个问题</p>
+<ul>
+<li>锁没有过期时间；</li>
+<li>只能是非阻塞锁，插入失败直接报错，无法重试；</li>
+<li>不可重入，已经获得锁的进程也必须重新获取锁。</li>
+</ul>
+<h2 id="2-单机-Redis-锁"><a href="#2-单机-Redis-锁" class="headerlink" title="2 单机 Redis 锁"></a>2 单机 Redis 锁</h2><h3 id="2-1-SETNX"><a href="#2-1-SETNX" class="headerlink" title="2.1 SETNX"></a>2.1 SETNX</h3><p>使用 SETNX（set if not exist）指令插入一个键值对，如果 Key 已经存在，那么会返回 false，否则插入成功并返回 true。</p>
+<p>可以使用 EXPIRE 指令为一个键值对设置一个过期时间，从而避免了数据库唯一索引实现方式中释放锁失败的问题。</p>
+<h3 id="2-2-Redisson"><a href="#2-2-Redisson" class="headerlink" title="2.2 Redisson"></a>2.2 Redisson</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 生成key</span></span><br><span class="line">String lock = <span class="string">&quot;order_&quot;</span> + (orderId + <span class="string">&quot;&quot;</span>);</span><br><span class="line">RLock rlock = redisson.getLock(lock.intern());</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 此代码默认 设置key 超时时间30秒，过10秒，再延时</span></span><br><span class="line">    rlock.lock();</span><br><span class="line">    <span class="comment">// 业务代码</span></span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    rlock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-多机-Redis-Redlock"><a href="#3-多机-Redis-Redlock" class="headerlink" title="3 多机 Redis Redlock"></a>3 多机 Redis Redlock</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 生成redis key</span></span><br><span class="line">String key = (RedisKeyConstant.GRAB_LOCK_ORDER_KEY_PRE + orderId).intern();</span><br><span class="line"></span><br><span class="line">RLock rLock1 = redisson1.getLock(key);</span><br><span class="line">RLock rLock2 = redisson2.getLock(key);</span><br><span class="line">RLock rLock3 = redisson3.getLock(key);</span><br><span class="line">RedissonRedLock redissonRedLock = <span class="keyword">new</span> RedissonRedLock(rLock1, rLock2, rLock3);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// redissson代码默认设置key超时时间30秒，过10秒再延时</span></span><br><span class="line">    redissonRedLock.lock();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 业务代码</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;  <span class="keyword">finally</span> &#123;</span><br><span class="line">    redissonRedLock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="4-Zookeeper-有序临时节点"><a href="#4-Zookeeper-有序临时节点" class="headerlink" title="4 Zookeeper 有序临时节点"></a>4 Zookeeper 有序临时节点</h2>]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>分布式锁</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>缓存和数据一致性</title>
     <url>/2021/01/06/%E7%BC%93%E5%AD%98%E5%92%8C%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/</url>
     <content><![CDATA[<h1 id="缓存和数据一致性"><a href="#缓存和数据一致性" class="headerlink" title="缓存和数据一致性"></a>缓存和数据一致性</h1><a id="more"></a>
@@ -1930,31 +1972,6 @@
       </categories>
       <tags>
         <tag>缓存</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>分布式锁</title>
-    <url>/2021/01/02/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
-    <content><![CDATA[<h1 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h1><a id="more"></a>
-
-<h2 id="1-数据库锁"><a href="#1-数据库锁" class="headerlink" title="1 数据库锁"></a>1 数据库锁</h2><p>阻塞式加锁，适合并发量不高的小项目。</p>
-<p>数据库创建一个锁表，添加唯一索引，通过操作该表的数据来实现。获得锁的时候在表中添加一条记录，释放锁的时候就删除这条记录，如果有多个请求同时提交到数据库的话，数据库可以保证只有一个操作可以成功，可以认为操作成功的那个请求获得了锁。</p>
-<p>存在以下几个问题</p>
-<ul>
-<li>锁没有过期时间；</li>
-<li>只能是非阻塞锁，插入失败直接报错，无法重试；</li>
-<li>不可重入，已经获得锁的进程也必须重新获取锁。</li>
-</ul>
-<h2 id="2-单机-Redis-锁"><a href="#2-单机-Redis-锁" class="headerlink" title="2 单机 Redis 锁"></a>2 单机 Redis 锁</h2><h3 id="2-1-SETNX"><a href="#2-1-SETNX" class="headerlink" title="2.1 SETNX"></a>2.1 SETNX</h3><p>使用 SETNX（set if not exist）指令插入一个键值对，如果 Key 已经存在，那么会返回 false，否则插入成功并返回 true。</p>
-<p>可以使用 EXPIRE 指令为一个键值对设置一个过期时间，从而避免了数据库唯一索引实现方式中释放锁失败的问题。</p>
-<h3 id="2-2-Redisson"><a href="#2-2-Redisson" class="headerlink" title="2.2 Redisson"></a>2.2 Redisson</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 生成key</span></span><br><span class="line">String lock = <span class="string">&quot;order_&quot;</span> + (orderId + <span class="string">&quot;&quot;</span>);</span><br><span class="line">RLock rlock = redisson.getLock(lock.intern());</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 此代码默认 设置key 超时时间30秒，过10秒，再延时</span></span><br><span class="line">    rlock.lock();</span><br><span class="line">    <span class="comment">// 业务代码</span></span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    rlock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-多机-Redis-Redlock"><a href="#3-多机-Redis-Redlock" class="headerlink" title="3 多机 Redis Redlock"></a>3 多机 Redis Redlock</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 生成redis key</span></span><br><span class="line">String key = (RedisKeyConstant.GRAB_LOCK_ORDER_KEY_PRE + orderId).intern();</span><br><span class="line"></span><br><span class="line">RLock rLock1 = redisson1.getLock(key);</span><br><span class="line">RLock rLock2 = redisson2.getLock(key);</span><br><span class="line">RLock rLock3 = redisson3.getLock(key);</span><br><span class="line">RedissonRedLock redissonRedLock = <span class="keyword">new</span> RedissonRedLock(rLock1, rLock2, rLock3);</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// redissson代码默认设置key超时时间30秒，过10秒再延时</span></span><br><span class="line">    redissonRedLock.lock();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 业务代码</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;  <span class="keyword">finally</span> &#123;</span><br><span class="line">    redissonRedLock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="4-Zookeeper-有序临时节点"><a href="#4-Zookeeper-有序临时节点" class="headerlink" title="4 Zookeeper 有序临时节点"></a>4 Zookeeper 有序临时节点</h2>]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>分布式锁</tag>
       </tags>
   </entry>
   <entry>

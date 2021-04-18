@@ -29,12 +29,16 @@
 <meta property="og:site_name" content="叶杨树">
 <meta property="og:description" content="应用级缓存">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210418104732355.png">
+<meta property="og:image" content="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210418110909494.png">
+<meta property="og:image" content="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210418110627013.png">
 <meta property="article:published_time" content="2021-01-02T13:32:20.000Z">
-<meta property="article:modified_time" content="2021-01-25T14:01:19.631Z">
+<meta property="article:modified_time" content="2021-04-18T03:24:56.556Z">
 <meta property="article:author" content="yeyangshu">
 <meta property="article:tag" content="高并发">
 <meta property="article:tag" content="架构">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210418104732355.png">
 
 <link rel="canonical" href="https://yeyangshu.top/2021/01/02/%E4%BA%BF%E7%BA%A7%E6%B5%81%E9%87%8F%E7%BD%91%E7%AB%99%E6%9E%B6%E6%9E%84-%E9%AB%98%E5%B9%B6%E5%8F%91-%E5%BA%94%E7%94%A8%E7%BA%A7%E7%BC%93%E5%AD%98/">
 
@@ -210,7 +214,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-25 22:01:19" itemprop="dateModified" datetime="2021-01-25T22:01:19+08:00">2021-01-25</time>
+                <time title="修改时间：2021-04-18 11:24:56" itemprop="dateModified" datetime="2021-04-18T11:24:56+08:00">2021-04-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -253,14 +257,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>631</span>
+              <span>2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -275,34 +279,50 @@
         <h1 id="应用级缓存"><a href="#应用级缓存" class="headerlink" title="应用级缓存"></a>应用级缓存</h1><a id="more"></a>
 
 <h2 id="1-缓存简介"><a href="#1-缓存简介" class="headerlink" title="1 缓存简介"></a>1 缓存简介</h2><p>缓存工作机制是先从缓存中读取数据，如果没有，再从慢速设备上读取实际数据并同步到缓存。经常读取的数据、频繁访问的数据、热点数据、I/O 瓶颈数据、计算昂贵的数据、服务 5 分钟法则的数据和局部性原理的数据都可以存进缓存。</p>
-<h2 id="2-缓存命中率"><a href="#2-缓存命中率" class="headerlink" title="2 缓存命中率"></a>2 缓存命中率</h2><p>缓存命中率 = 从缓存中读取次数 / (总读取次数（从缓存中读取次数 + 从慢速设备上读取次数）)</p>
-<p>命中率越高越好</p>
-<h2 id="3-缓存回收策略"><a href="#3-缓存回收策略" class="headerlink" title="3 缓存回收策略"></a>3 缓存回收策略</h2><ol>
-<li><p>基于空间</p>
-<p>缓存设置了存储空间</p>
-</li>
-<li><p>基于容量</p>
-<p>缓存设置了最大大小</p>
-</li>
-<li><p>基于时间</p>
-<p>TTL（Time To Live）：存活期</p>
-<p>TTI（Time To Idle）：空闲期</p>
-</li>
-<li><p>基于 Java 对象引用</p>
+<blockquote>
+<p>I/O 的 5 分钟法则：1987年，Jim Gray 和 Gianfranco Putzolu 推出了著名的5分钟法则，以权衡内存和 I/O 容量，他们的计算将使用内存芯片和磁盘驱动器的适当价格，将永久保存一条记录（或页面）的成本与每次访问该记录（或页面）时执行磁盘 I/O 的成本进行比较。他们的规则的名称是指访问之间的收支平衡时间间隔。如果更频繁地访问记录（或页面），则应将其保存在内存中；否则，它应该保留在磁盘上并在需要时读取。</p>
+<p>$BreakEvenIntervalinSeconds = \frac{PagesPerMBofRAM}{PagesPerMBofRAM} * \frac{PricePerDiskDrive}{PricePerMBofRAM}$</p>
 <ul>
-<li>软引用</li>
-<li>弱引用</li>
-<li>虚引用</li>
-</ul>
+<li><p>PagesPerMBofRAM：表示内存每兆字节的 Pag e数，如果 page size = 4KB，则该值为 1MB/(4KB/page) = 256 page/MB。</p>
 </li>
-<li><p>回收算法</p>
+<li><p>AccessesPerSecondPerDisk：每块磁盘每秒支持的最大 I/O 请求数，如下表所示为 250 Page/ (Second*Disk)。</p>
+</li>
+<li><p>(PagesPerMBofRAM /AccessesPerSecondPerDisk)：表示 1 兆的空间通过磁盘访问的方式所需要的秒数。256/200 = 1.25(Second*Disk)/MB，表示 1 兆字节需要 1.25 个盘秒来完成（类似工作任务按人月来做单位）。</p>
+</li>
+<li><p>PricePerDiskDrive：表示一块磁盘的成本，如下表所示为$48/disk。<br>PricePerMBofRAM：表示每兆内存的代价，如下表所示为50/(2048)=0.024$/MB。</p>
+</li>
+<li><p>PricePerDiskDrive/ PricePerMBofRAM:表示用来买磁盘的钱可以买多少兆内存。48/0.024=2000MB /disk。</p>
+</li>
+</ul>
+<p>详细内容参考：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/100626824?utm_source=wechat_timeline">https://zhuanlan.zhihu.com/p/100626824?utm_source=wechat_timeline</a></p>
+</blockquote>
+<p>案例：CPU 多级缓存</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210418104732355.png" alt="image-20210418104732355"></p>
+<h2 id="2-缓存命中率"><a href="#2-缓存命中率" class="headerlink" title="2 缓存命中率"></a>2 缓存命中率</h2><p>缓存命中率是从缓存中读取数据的次数与总读取次数的比率，命中率越高越好。</p>
+<p>$缓存命中率 =  \frac{从缓存中读取次数} {总读取次数（从缓存中读取次数 + 从慢速设备上读取次数）)}$</p>
+<h2 id="3-缓存回收策略"><a href="#3-缓存回收策略" class="headerlink" title="3 缓存回收策略"></a>3 缓存回收策略</h2><h3 id="3-1-基于空间"><a href="#3-1-基于空间" class="headerlink" title="3.1 基于空间"></a>3.1 基于空间</h3><p>缓存设置了存储空间，当达到存储空间上限时，按照一定的策略移除数据。</p>
+<h3 id="3-2-基于容量"><a href="#3-2-基于容量" class="headerlink" title="3.2 基于容量"></a>3.2 基于容量</h3><p>缓存设置了最大大小，当缓存条目超过最大大小时，按照一定的策略移除旧数据。</p>
+<h3 id="3-3-基于时间"><a href="#3-3-基于时间" class="headerlink" title="3.3 基于时间"></a>3.3 基于时间</h3><ul>
+<li><p>TTL（Time To Live）：存活期，即缓存数据创建开始直到到期的一个时间段（不管缓存数据有没有被访问到，都将过期）。</p>
+</li>
+<li><p>TTI（Time To Idle）：空闲期，即缓存数据多久没有被访问后移除缓存的时间。</p>
+</li>
+</ul>
+<h3 id="3-4-基于-Java-对象引用"><a href="#3-4-基于-Java-对象引用" class="headerlink" title="3.4 基于 Java 对象引用"></a>3.4 基于 Java 对象引用</h3><p>只有在没有其他强引用对象引用弱引用/软引用对象时，垃圾回收器才回收该引用。</p>
 <ul>
-<li>FIFO</li>
-<li>LRU</li>
-<li>LFU</li>
-</ul>
+<li><p>软引用：如果一个对象是软引用，当 JVM 堆内存不足时，垃圾回收器将回收软引用对象。<strong>软引用适合做缓存。</strong></p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210418110909494.png" alt="image-20210418110909494"></p>
 </li>
-</ol>
+<li><p>弱引用：当垃圾回收器回收内存时，如果发现弱引用，则将它立即回收。案例：ThreadLocal</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210418110627013.png" alt="image-20210418110627013"></p>
+</li>
+</ul>
+<h3 id="3-5-回收算法"><a href="#3-5-回收算法" class="headerlink" title="3.5 回收算法"></a>3.5 回收算法</h3><p>最常用：LRU</p>
+<ul>
+<li>FIFO（First In First Out）：先进先出算法，即先放入缓存的先被移除。</li>
+<li>LRU（Least Recently Used）：最少使用算法，即上次使用时间距离现在最久的那个被移除。</li>
+<li>LFU（Least Frequebtly Used）；最不常用算法，一定时间内使用次数（频率）最少的那个被移除。</li>
+</ul>
 <h2 id="4-Java-缓存类型"><a href="#4-Java-缓存类型" class="headerlink" title="4 Java 缓存类型"></a>4 Java 缓存类型</h2><h3 id="4-1-堆缓存"><a href="#4-1-堆缓存" class="headerlink" title="4.1 堆缓存"></a>4.1 堆缓存</h3><p>使用  Java 堆来存储缓存对象。一般使用堆缓存存储较热的数据。可以使用 Guava Cache、Ehcache 3.X，MapDB 实现。</p>
 <h3 id="4-2-堆外缓存"><a href="#4-2-堆外缓存" class="headerlink" title="4.2 堆外缓存"></a>4.2 堆外缓存</h3><h3 id="4-3-磁盘缓存"><a href="#4-3-磁盘缓存" class="headerlink" title="4.3 磁盘缓存"></a>4.3 磁盘缓存</h3><h3 id="4-4-分布式缓存"><a href="#4-4-分布式缓存" class="headerlink" title="4.4 分布式缓存"></a>4.4 分布式缓存</h3><p>多 JVM 实例会存在两个问题：</p>
 <ol>
@@ -321,6 +341,7 @@
 <li>Cache-Aside</li>
 <li>Cache-As-SoR</li>
 </ul>
+<p>文章见：<a href="https://yeyangshu.top/2021/01/06/%E7%BC%93%E5%AD%98%E5%92%8C%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/">https://yeyangshu.top/2021/01/06/%E7%BC%93%E5%AD%98%E5%92%8C%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/</a></p>
 
     </div>
 
@@ -423,7 +444,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E7%BA%A7%E7%BC%93%E5%AD%98"><span class="nav-number">1.</span> <span class="nav-text">应用级缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%BC%93%E5%AD%98%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">1 缓存简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%BC%93%E5%AD%98%E5%91%BD%E4%B8%AD%E7%8E%87"><span class="nav-number">1.2.</span> <span class="nav-text">2 缓存命中率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%BC%93%E5%AD%98%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5"><span class="nav-number">1.3.</span> <span class="nav-text">3 缓存回收策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Java-%E7%BC%93%E5%AD%98%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">4 Java 缓存类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E5%A0%86%E7%BC%93%E5%AD%98"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 堆缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E5%A0%86%E5%A4%96%E7%BC%93%E5%AD%98"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 堆外缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E7%A3%81%E7%9B%98%E7%BC%93%E5%AD%98"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3 磁盘缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98"><span class="nav-number">1.4.4.</span> <span class="nav-text">4.4 分布式缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%BA%94%E7%94%A8%E7%BA%A7%E7%BC%93%E5%AD%98%E5%AE%9E%E4%BE%8B"><span class="nav-number">1.5.</span> <span class="nav-text">5 应用级缓存实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E7%BC%93%E5%AD%98%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%BC%8F%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.6.</span> <span class="nav-text">6 缓存使用模式实践</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E7%BA%A7%E7%BC%93%E5%AD%98"><span class="nav-number">1.</span> <span class="nav-text">应用级缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E7%BC%93%E5%AD%98%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">1 缓存简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%BC%93%E5%AD%98%E5%91%BD%E4%B8%AD%E7%8E%87"><span class="nav-number">1.2.</span> <span class="nav-text">2 缓存命中率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%BC%93%E5%AD%98%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5"><span class="nav-number">1.3.</span> <span class="nav-text">3 缓存回收策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E5%9F%BA%E4%BA%8E%E7%A9%BA%E9%97%B4"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 基于空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E5%9F%BA%E4%BA%8E%E5%AE%B9%E9%87%8F"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 基于容量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4"><span class="nav-number">1.3.3.</span> <span class="nav-text">3.3 基于时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E5%9F%BA%E4%BA%8E-Java-%E5%AF%B9%E8%B1%A1%E5%BC%95%E7%94%A8"><span class="nav-number">1.3.4.</span> <span class="nav-text">3.4 基于 Java 对象引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95"><span class="nav-number">1.3.5.</span> <span class="nav-text">3.5 回收算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Java-%E7%BC%93%E5%AD%98%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">4 Java 缓存类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E5%A0%86%E7%BC%93%E5%AD%98"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 堆缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E5%A0%86%E5%A4%96%E7%BC%93%E5%AD%98"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 堆外缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E7%A3%81%E7%9B%98%E7%BC%93%E5%AD%98"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3 磁盘缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98"><span class="nav-number">1.4.4.</span> <span class="nav-text">4.4 分布式缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%BA%94%E7%94%A8%E7%BA%A7%E7%BC%93%E5%AD%98%E5%AE%9E%E4%BE%8B"><span class="nav-number">1.5.</span> <span class="nav-text">5 应用级缓存实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E7%BC%93%E5%AD%98%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%BC%8F%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.6.</span> <span class="nav-text">6 缓存使用模式实践</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -502,12 +523,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">98k</span>
+    <span title="站点总字数">100k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:29</span>
+    <span title="站点阅读时长">1:31</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
