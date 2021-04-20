@@ -2171,7 +2171,9 @@
   <entry>
     <title>Kafka可靠性探究</title>
     <url>/2021/04/19/Kafka%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8E%A2%E7%A9%B6/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<h1 id="可靠性探究"><a href="#可靠性探究" class="headerlink" title="可靠性探究"></a>可靠性探究</h1><a id="more"></a>
+
+<h2 id="1-副本剖析"><a href="#1-副本剖析" class="headerlink" title="1 副本剖析"></a>1 副本剖析</h2>]]></content>
       <categories>
         <category>Java</category>
         <category>书籍</category>
@@ -2210,7 +2212,24 @@
   <entry>
     <title>Kafka深入服务器</title>
     <url>/2021/04/19/Kafka%E6%B7%B1%E5%85%A5%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<h1 id="深入服务器"><a href="#深入服务器" class="headerlink" title="深入服务器"></a>深入服务器</h1><a id="more"></a>
+
+<h2 id="1-协议设计"><a href="#1-协议设计" class="headerlink" title="1 协议设计"></a>1 协议设计</h2><p>Kafka自定义了一组基于TCP的二进制协议，只要遵守这组协议的格式，就可以向Kafka发送消息，也可以从Kafka中拉取消息，或者做一些其他的事情，比如提交消费位移等。</p>
+<p>每种协议类型都有对应的请求（Request）和响应（Response），它们都遵守特定的协议模式。</p>
+<p>协议请求头中包含 4 个域（Field）：</p>
+<ul>
+<li>api_key</li>
+<li>api_version</li>
+<li>correlation_id</li>
+<li>client_id</li>
+</ul>
+<p>每种类型的 Response 也包含相同结构的协议响应头（ResponseHeader）和不同结构的响应体（ResponseBody）</p>
+<p>协议响应头中只有一个域：</p>
+<ul>
+<li>correlation_id</li>
+</ul>
+<h2 id="2-时间轮"><a href="#2-时间轮" class="headerlink" title="2 时间轮"></a>2 时间轮</h2><p>Kafka中存在大量的延时操作，比如延时生产、延时拉取和延时删除等。Kafka基于时间轮的概念自定义实现了一个用于延时功能的定时器（SystemTimer）实现延时的功能。</p>
+]]></content>
       <categories>
         <category>Java</category>
         <category>书籍</category>
@@ -2426,7 +2445,9 @@
   <entry>
     <title>代码大全-表驱动法</title>
     <url>/2021/04/20/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8-%E8%A1%A8%E9%A9%B1%E5%8A%A8%E6%B3%95/</url>
-    <content><![CDATA[<h1 id="表驱动法"><a href="#表驱动法" class="headerlink" title="表驱动法"></a>表驱动法</h1><p>表驱动法是一种编程模式—从表里面查找信息而不使用逻辑语句（if 和 case）。</p>
+    <content><![CDATA[<h1 id="表驱动法"><a href="#表驱动法" class="headerlink" title="表驱动法"></a>表驱动法</h1><a id="more"></a>
+
+<p>表驱动法是一种编程模式—从表里面查找信息而不使用逻辑语句（if 和 case）。</p>
 <p>事实上，凡是能通过逻辑语句来选择的事物，都可以通过查表来选择。</p>
 <h2 id="1-表驱动法使用总则"><a href="#1-表驱动法使用总则" class="headerlink" title="1 表驱动法使用总则"></a>1 表驱动法使用总则</h2><p>在适当的情况下，采用表驱动法，所生成的代码会比复杂逻辑代码更简单、更容易修改，而且效率更高。</p>
 <h3 id="1-1-使用表驱动法的两个问题"><a href="#1-1-使用表驱动法的两个问题" class="headerlink" title="1.1 使用表驱动法的两个问题"></a>1.1 使用表驱动法的两个问题</h3><h4 id="1-1-1-问题一：怎样从表中查询条目？"><a href="#1-1-1-问题一：怎样从表中查询条目？" class="headerlink" title="1.1.1 问题一：怎样从表中查询条目？"></a>1.1.1 问题一：怎样从表中查询条目？</h4><p>表查询记录的方法列表：</p>
@@ -2649,7 +2670,11 @@
   <entry>
     <title>Kafka日志存储</title>
     <url>/2021/04/18/Kafka%E6%97%A5%E5%BF%97%E5%AD%98%E5%82%A8/</url>
-    <content><![CDATA[<h1 id="Kafka日志存储"><a href="#Kafka日志存储" class="headerlink" title="Kafka日志存储"></a>Kafka日志存储</h1><h2 id="1-文件目录布局"><a href="#1-文件目录布局" class="headerlink" title="1 文件目录布局"></a>1 文件目录布局</h2>]]></content>
+    <content><![CDATA[<h1 id="Kafka日志存储"><a href="#Kafka日志存储" class="headerlink" title="Kafka日志存储"></a>Kafka日志存储</h1><h2 id="1-文件目录布局"><a href="#1-文件目录布局" class="headerlink" title="1 文件目录布局"></a>1 文件目录布局</h2><p>Log 在物理上以命名形式为＜topic＞-＜partition＞文件夹的形式存储</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210420224459562.png" alt="image-20210420224459562"></p>
+<p>LogSegment 对应于磁盘上的一个日志文件和两个索引文件</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210420225029440.png" alt="image-20210420225029440"></p>
+]]></content>
       <categories>
         <category>Java</category>
         <category>书籍</category>
