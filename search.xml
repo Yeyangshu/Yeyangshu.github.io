@@ -2208,19 +2208,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Kafka日志存储.md</title>
-    <url>/2021/04/19/Kafka%E6%97%A5%E5%BF%97%E5%AD%98%E5%82%A8/</url>
-    <content><![CDATA[<h1 id="Kafka日志存储"><a href="#Kafka日志存储" class="headerlink" title="Kafka日志存储"></a>Kafka日志存储</h1>]]></content>
-      <categories>
-        <category>Java</category>
-        <category>书籍</category>
-      </categories>
-      <tags>
-        <tag>Kafka</tag>
-        <tag>深入理解Kafka：核心设计与实践原理</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Kafka深入服务器</title>
     <url>/2021/04/19/Kafka%E6%B7%B1%E5%85%A5%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
     <content><![CDATA[]]></content>
