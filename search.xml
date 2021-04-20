@@ -2646,4 +2646,17 @@
         <tag>代码大全</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Kafka日志存储</title>
+    <url>/2021/04/18/Kafka%E6%97%A5%E5%BF%97%E5%AD%98%E5%82%A8/</url>
+    <content><![CDATA[<h1 id="Kafka日志存储"><a href="#Kafka日志存储" class="headerlink" title="Kafka日志存储"></a>Kafka日志存储</h1><h2 id="1-文件目录布局"><a href="#1-文件目录布局" class="headerlink" title="1 文件目录布局"></a>1 文件目录布局</h2>]]></content>
+      <categories>
+        <category>Java</category>
+        <category>书籍</category>
+      </categories>
+      <tags>
+        <tag>Kafka</tag>
+        <tag>深入理解Kafka：核心设计与实践原理</tag>
+      </tags>
+  </entry>
 </search>
