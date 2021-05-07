@@ -2229,6 +2229,22 @@
 <li>correlation_id</li>
 </ul>
 <h2 id="2-时间轮"><a href="#2-时间轮" class="headerlink" title="2 时间轮"></a>2 时间轮</h2><p>Kafka中存在大量的延时操作，比如延时生产、延时拉取和延时删除等。Kafka基于时间轮的概念自定义实现了一个用于延时功能的定时器（SystemTimer）实现延时的功能。</p>
+<p>基于时间轮可以将插入和删除操作的时间复杂度都降为O（1）。</p>
+<p>Kafka中的时间轮（TimingWheel）是一个存储定时任务的环形队列，底层采用数组实现，数组中的每个元素可以存放一个定时任务列表（TimerTaskList）。TimerTaskList是一个环形的双向链表，链表中的每一项表示的都是定时任务项（TimerTaskEntry），其中封装了真正的定时任务（TimerTask）。</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210507230729415.png" alt="image-20210507230729415"></p>
+<h2 id="3-延时操作"><a href="#3-延时操作" class="headerlink" title="3 延时操作"></a>3 延时操作</h2><h3 id="3-1-延时生产"><a href="#3-1-延时生产" class="headerlink" title="3.1 延时生产"></a>3.1 延时生产</h3><p>如果在使用生产者客户端发送消息的时候将 acks 参数设置为 -1，那么就意味着需要等待 ISR 集合中的所有副本都确认收到消息之后才能正确地收到响应的结果，或者捕获超时异常。</p>
+<p>Kafka在收到客户端的生产请求（ProduceRequest）后，将消息3和消息4写入leader副本的本地日志文件。那么需要等到follower1和follower2两个副本都收到消息3和消息4后才能告知客户端正确地接收了所发送的消息。如果在一定的时间内，follower1副本或follower2副本没能够完全拉取到消息3和消息4，那么就需要返回超时异常给客户端。</p>
+<p>等待消息3和消息4写入follower1副本和follower2副本，并返回相应的响应结果给客户端的动作是由谁来执行的呢？在将消息写入 leader 副本的本地日志文件之后，Kafka会创建一个延时的生产操作（DelayedProduce），用来处理消息正常写入所有副本或超时的情况，以返回相应的响应结果给客户端。</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210507231536065.png" alt="image-20210507231536065"></p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210507231549048.png" alt="image-20210507231549048"></p>
+<p>在Kafka中有多种延时操作，比如前面提及的延时生产，还有延时拉取（DelayedFetch）、延时数据删除（DelayedDeleteRecords）等。延时操作需要延时返回响应的结果，首先它必须有一个超时时间（delayMs），如果在这个超时时间内没有完成既定的任务，那么就需要强制完成以返回响应结果给客户端。</p>
+<p>延时操作创建之后会被加入延时操作管理器（DelayedOperationPurgatory）来做专门的处理。延时操作有可能会超时，每个延时操作管理器都会配备一个定时器（SystemTimer）来做超时管理，定时器的底层就是采用时间轮（TimingWheel）实现的。</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210507231902144.png" alt="image-20210507231902144"></p>
+<h3 id="3-2-延时拉取"><a href="#3-2-延时拉取" class="headerlink" title="3.2 延时拉取"></a>3.2 延时拉取</h3><p>两个follower副本都已经拉取到了leader副本的最新位置，此时又向leader副本发送拉取请求，而leader副本并没有新的消息写入，那么此时leader副本该如何处理呢？</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210507232117536.png" alt="image-20210507232117536"></p>
+<p>Kafka选择了延时操作来处理这种情况。Kafka在处理拉取请求时，会先读取一次日志文件，如果收集不到足够多（fetchMinBytes，由参数fetch.min.bytes配置，默认值为1）的消息，那么就会创建一个延时拉取操作（DelayedFetch）以等待拉取到足够数量的消息。当延时拉取操作执行时，会再读取一次日志文件，然后将拉取结果返回给 follower 副本。延时拉取操作也会有一个专门的延时操作管理器负责管理。如果拉取进度一直没有追赶上leader副本，那么在拉取leader副本的消息时一般拉取的消息大小都会不小于fetchMinBytes，这样Kafka也就不会创建相应的延时拉取操作，而是立即返回拉取结果。</p>
+<h2 id="4-控制器"><a href="#4-控制器" class="headerlink" title="4 控制器"></a>4 控制器</h2><p>在 Kafka 集群中会有一个或多个 broker，其中有一个 broker 会被选举为控制器（Kafka Controller），它负责管理整个集群中所有分区和副本的状态。当某个分区的leader副本出现故障时，由控制器负责为该分区选举新的leader副本。当检测到某个分区的ISR集合发生变化时，由控制器负责通知所有broker更新其元数据信息。当使用kafka-topics.sh脚本为某个topic增加分区数量时，同样还是由控制器负责分区的重新分配。</p>
+<h3 id="4-1-控制器的选举及异常恢复"><a href="#4-1-控制器的选举及异常恢复" class="headerlink" title="4.1 控制器的选举及异常恢复"></a>4.1 控制器的选举及异常恢复</h3><p>Kafka中的控制器选举工作依赖于ZooKeeper，成功竞选为控制器的broker会在ZooKeeper中创建/controller这个临时（EPHEMERAL）节点。</p>
 ]]></content>
       <categories>
         <category>Java</category>
