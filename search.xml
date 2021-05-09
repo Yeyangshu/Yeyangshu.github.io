@@ -330,15 +330,58 @@
     <url>/2021/01/24/Kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
     <content><![CDATA[<h1 id="Kafka基本概念"><a href="#Kafka基本概念" class="headerlink" title="Kafka基本概念"></a>Kafka基本概念</h1><a id="more"></a>
 
-<h2 id="Kafka-是什么？"><a href="#Kafka-是什么？" class="headerlink" title="Kafka 是什么？"></a>Kafka 是什么？</h2><h2 id="Kafka-基础架构"><a href="#Kafka-基础架构" class="headerlink" title="Kafka 基础架构"></a>Kafka 基础架构</h2><p>一个典型的 Kafka 体系架构包括：</p>
-<h3 id="ZooKeeper集群"><a href="#ZooKeeper集群" class="headerlink" title="ZooKeeper集群"></a>ZooKeeper集群</h3><p>ZooKeeper 是 Kafka 用来负责集群元数据的管理、控制器的选举等操作的。</p>
-<h3 id="Producer"><a href="#Producer" class="headerlink" title="Producer"></a>Producer</h3><p>生产者，也就是发送消息的一方。生产者负责创建消息，然后将其投递到Kafka中。</p>
-<h3 id="Consumer"><a href="#Consumer" class="headerlink" title="Consumer"></a>Consumer</h3><p>消费者，也就是接收消息的一方。消费者连接到Kafka上并接收消息，进而进行相应的业务逻辑处理。</p>
-<h3 id="Broker"><a href="#Broker" class="headerlink" title="Broker"></a>Broker</h3><p>服务代理节点。对于 Kafka 而言，Broker 可以简单地看作一个独立的 Kafka 服务节点或 Kafka 服务实例。</p>
-<h2 id="Kafka-基本术语"><a href="#Kafka-基本术语" class="headerlink" title="Kafka 基本术语"></a>Kafka 基本术语</h2><h3 id="Topic"><a href="#Topic" class="headerlink" title="Topic"></a>Topic</h3><p>Kafka 将消息分门别类，每一类的消息称之为一个主题（Topic）。 </p>
-<h3 id="Log"><a href="#Log" class="headerlink" title="Log"></a>Log</h3><p>对于每个 topic，Kafka 集群都会维护一个分区 log</p>
+<h2 id="1-Kafka-是什么？"><a href="#1-Kafka-是什么？" class="headerlink" title="1 Kafka 是什么？"></a>1 Kafka 是什么？</h2><h2 id="2-Kafka-基础架构"><a href="#2-Kafka-基础架构" class="headerlink" title="2 Kafka 基础架构"></a>2 Kafka 基础架构</h2><p>一个典型的 Kafka 体系架构包括：</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210509170052634.png" alt="image-20210509170052634"></p>
+<h3 id="2-1-ZooKeeper集群"><a href="#2-1-ZooKeeper集群" class="headerlink" title="2.1 ZooKeeper集群"></a>2.1 ZooKeeper集群</h3><p>ZooKeeper 是 Kafka 用来负责集群元数据的管理、控制器的选举等操作的。</p>
+<h3 id="2-2-Producer"><a href="#2-2-Producer" class="headerlink" title="2.2 Producer"></a>2.2 Producer</h3><p>生产者，发送消息的一方。生产者负责创建消息，然后将其投递到 Kafka 中。</p>
+<h3 id="2-3-Consumer"><a href="#2-3-Consumer" class="headerlink" title="2.3 Consumer"></a>2.3 Consumer</h3><p>消费者，接收消息的一方。消费者连接到 Kafka 上并接收消息，进而进行相应的业务逻辑处理。</p>
+<h3 id="2-4-Broker"><a href="#2-4-Broker" class="headerlink" title="2.4 Broker"></a>2.4 Broker</h3><p>服务代理节点。对于 Kafka 而言，Broker 可以简单地看作一个独立的 Kafka 服务节点或 Kafka 服务实例。一个或多个Broker组成了一个Kafka集群</p>
+<h2 id="3-Kafka-基本概念"><a href="#3-Kafka-基本概念" class="headerlink" title="3 Kafka 基本概念"></a>3 Kafka 基本概念</h2><h3 id="3-1-主题（Topic）"><a href="#3-1-主题（Topic）" class="headerlink" title="3.1 主题（Topic）"></a>3.1 主题（Topic）</h3><p>Kafka中的消息以主题为单位进行归类，生产者负责将消息发送到特定的主题，消费者负责订阅主题并进行消费。</p>
+<h3 id="3-2-分区（Partition）"><a href="#3-2-分区（Partition）" class="headerlink" title="3.2 分区（Partition）"></a>3.2 分区（Partition）</h3><p>主题是一个逻辑上的概念，它可以细分为多个分区，一个分区只属于单个主题。同一主题下的不同分区包含的消息是不同的，分区在存储层面可以看作一个可追加的日志（Log）文件。</p>
+<p>每一条消息被发送到 broker 之前，会根据分区规则选择存储到哪个具体的分区。如果分区规则设定得合理，所有的消息都可以均匀地分配到不同的分区中。分区解决了一个主题一个文件的机器 I/O 性能瓶颈的问题。</p>
+<p>在创建主题的时候可以通过指定的参数来设置分区的个数，也可以在主题创建完成之后去修改分区的数量，通过增加分区的数量可以实现水平扩展。</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210509171307105.png" alt="image-20210509171307105"></p>
+<h4 id="3-2-1-多副本（Replica）机制"><a href="#3-2-1-多副本（Replica）机制" class="headerlink" title="3.2.1 多副本（Replica）机制"></a>3.2.1 多副本（Replica）机制</h4><p>Kafka 为分区引入了多副本（Replica）机制，通过增加副本数量可以提升容灾能力。</p>
+<p>同一分区的不同副本中保存的是相同的消息（在同一时刻，副本之间并非完全一样），副本之间是“一主多从”的关系：</p>
+<ul>
+<li>leader副本负责处理读写请求</li>
+<li>follower副本只负责与leader副本的消息同步</li>
+</ul>
+<p>副本处于不同的broker中，当leader副本出现故障时，从follower副本中重新选举新的leader副本对外提供服务。Kafka通过多副本机制实现了故障的自动转移，当Kafka集群中某个broker失效时仍然能保证服务可用。</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210509173515678.png" alt="image-20210509173515678"></p>
+<h4 id="3-2-2-AR、ISR、OSR"><a href="#3-2-2-AR、ISR、OSR" class="headerlink" title="3.2.2 AR、ISR、OSR"></a>3.2.2 AR、ISR、OSR</h4><ul>
+<li><p>AR：分区中的所有副本统称为AR（Assigned Replicas）。</p>
+</li>
+<li><p>ISR：所有与leader副本保持一定程度同步的副本（包括leader副本在内）组成ISR（In-Sync Replicas）。</p>
+</li>
+<li><p>OSR：与leader副本同步滞后过多的副本（不包括leader副本）组成OSR（Out-of-Sync Replicas）。</p>
+</li>
+</ul>
+<p>AR=ISR+OSR。在正常情况下，所有的 follower 副本都应该与 leader 副本保持一定程度的同步，即AR=ISR，OSR集合为空。</p>
+<p>leader副本负责维护和跟踪 ISR 集合中所有 follower 副本的滞后状态，当 follower 副本落后太多或失效时，leader 副本会把它从 ISR 集合中剔除。如果 OSR 集合中有 follower副本“追上”了leader副本，那么leader副本会把它从OSR集合转移至ISR集合。默认情况下，当leader副本发生故障时，只有在ISR集合中的副本才有资格被选举为新的leader，而在OSR集合中的副本则没有任何机会（可以通过修改相应的参数配置来改变）。</p>
+<h4 id="3-2-3-HW、LEO"><a href="#3-2-3-HW、LEO" class="headerlink" title="3.2.3 HW、LEO"></a>3.2.3 HW、LEO</h4><ul>
+<li>HW是High Watermark的缩写，俗称高水位。标识了一个特定的消息偏移量（offset），消费者只能拉取到这个offset之前的消息。</li>
+<li>LEO是Log End Offset的缩写，它标识当前日志文件中下一条待写入消息的offset。分区ISR集合中的每个副本都会维护自身的LEO，而ISR集合中最小的LEO即为分区的HW，对消费者而言只能消费HW之前的消息。</li>
+</ul>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210509190925717.png" alt="image-20210509190925717"></p>
+<h4 id="3-2-4-ISR集合、HW和LEO之间的关系示例"><a href="#3-2-4-ISR集合、HW和LEO之间的关系示例" class="headerlink" title="3.2.4 ISR集合、HW和LEO之间的关系示例"></a>3.2.4 ISR集合、HW和LEO之间的关系示例</h4><ol>
+<li><p>消息写入 leader 副本之后，follower 副本会发送拉取请求来拉取消息3和消息4以进行消息同步。</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210509194835627.png" alt="image-20210509194835627"></p>
+</li>
+<li><p>在同步过程中，不同的 follower 副本的同步效率不同。某一时刻 follower1完全跟上了leader副本，follower2 只同步了消息 3，此时 leader 副本的 LEO 为 5，follower1的 LEO 为 5，follower2 的 LEO 为4，那么当前分区的 HW 取最小值 4，此时消费者可以消费到 offset 为 0 至 3 之间的消息。</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210509194910565.png" alt="image-20210509194910565"></p>
+</li>
+<li><p>所有的副本都成功写入了消息3和消息4，整个分区的HW和LEO都变为5，消费者可以消费offset为4的消息。</p>
+<p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210509195005340.png" alt="image-20210509195005340"></p>
+</li>
+</ol>
+<p>由此可见，Kafka 的复制机制既不是完全的同步复制，也不是单纯的异步复制。</p>
+<p>同步复制要求所有能工作的 follower 副本都复制完，这条消息才会被确认为已成功提交，这种复制方式极大地影响了性能。</p>
+<p>异步复制方式下，follower副本异步地从leader副本中复制数据，数据只要被leader副本写入就被认为已经成功提交。在这种情况下，如果follower副本都还没有复制完而落后于leader副本，突然leader副本宕机，则会造成数据丢失。</p>
+<p>Kafka使用的这种ISR的方式则有效地权衡了数据可靠性和性能之间的关系。</p>
+<h3 id="3-3-日志（Log）"><a href="#3-3-日志（Log）" class="headerlink" title="3.3 日志（Log）"></a>3.3 日志（Log）</h3><p>对于每个 topic，Kafka 集群都会维护一个分区 log。</p>
 <p><img src="https://img.orchome.com/group1/M00/00/01/KmCudlf7DsaAVF0WAABMe0J0lv4158.png" alt="img"></p>
-<h3 id="offset"><a href="#offset" class="headerlink" title="offset"></a>offset</h3><p>offset 是消息在分区中的唯一标识，Kafka 通过它来保证消息在分区内的顺序性，不过 offset 并不跨越分区，Kafka 保证的是分区有序而不是主题有序。</p>
+<h3 id="3-4-偏移量（offset）"><a href="#3-4-偏移量（offset）" class="headerlink" title="3.4 偏移量（offset）"></a>3.4 偏移量（offset）</h3><p>offset 是消息在分区中的唯一标识，Kafka 通过它来保证消息在分区内的顺序性，不过 offset 并不跨越分区，Kafka 保证的是分区有序而不是主题有序。</p>
 <p>Kafka集群保持所有的消息，直到它们过期（无论消息是否被消费）。实际上消费者所持有的仅有的元数据就是这个offset（偏移量），也就是说offset由消费者来控制：正常情况当消费者消费消息的时候，偏移量也线性的的增加。但是实际偏移量由消费者控制，消费者可以将偏移量重置为更早的位置，重新读取消息。可以看到这种设计对消费者来说操作自如，一个消费者的操作不会影响其它消费者对此log的处理。</p>
 <p><img src="https://img.orchome.com/group1/M00/00/01/KmCudlf7D2iALXG_AAIhinsLf_Q676.png" alt="img"></p>
 ]]></content>
