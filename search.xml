@@ -376,8 +376,12 @@
 </li>
 </ol>
 <p>由此可见，Kafka 的复制机制既不是完全的同步复制，也不是单纯的异步复制。</p>
-<p>同步复制要求所有能工作的 follower 副本都复制完，这条消息才会被确认为已成功提交，这种复制方式极大地影响了性能。</p>
-<p>异步复制方式下，follower副本异步地从leader副本中复制数据，数据只要被leader副本写入就被认为已经成功提交。在这种情况下，如果follower副本都还没有复制完而落后于leader副本，突然leader副本宕机，则会造成数据丢失。</p>
+<ul>
+<li><p>同步复制要求所有能工作的 follower 副本都复制完，这条消息才会被确认为已成功提交，这种复制方式极大地影响了性能。</p>
+</li>
+<li><p>异步复制方式下，follower副本异步地从leader副本中复制数据，数据只要被leader副本写入就被认为已经成功提交。在这种情况下，如果follower副本都还没有复制完而落后于leader副本，突然leader副本宕机，则会造成数据丢失。</p>
+</li>
+</ul>
 <p>Kafka使用的这种ISR的方式则有效地权衡了数据可靠性和性能之间的关系。</p>
 <h3 id="3-3-日志（Log）"><a href="#3-3-日志（Log）" class="headerlink" title="3.3 日志（Log）"></a>3.3 日志（Log）</h3><p>对于每个 topic，Kafka 集群都会维护一个分区 log。</p>
 <p><img src="https://img.orchome.com/group1/M00/00/01/KmCudlf7DsaAVF0WAABMe0J0lv4158.png" alt="img"></p>
@@ -476,7 +480,7 @@
     <url>/2021/01/24/Kafka%E7%94%9F%E4%BA%A7%E8%80%85/</url>
     <content><![CDATA[<h1 id="Kafka生产者"><a href="#Kafka生产者" class="headerlink" title="Kafka生产者"></a>Kafka生产者</h1><a id="more"></a>
 
-<h2 id="1-简要生产步骤"><a href="#1-简要生产步骤" class="headerlink" title="1 简要生产步骤"></a>1 简要生产步骤</h2><p>一个正常的生产逻辑需要具备以下几个步骤：</p>
+<h2 id="1-生产者-KafkaProducer-使用方法"><a href="#1-生产者-KafkaProducer-使用方法" class="headerlink" title="1 生产者 KafkaProducer 使用方法"></a>1 生产者 KafkaProducer 使用方法</h2><h3 id="1-1-简要生产步骤"><a href="#1-1-简要生产步骤" class="headerlink" title="1.1 简要生产步骤"></a>1.1 简要生产步骤</h3><p>一个正常的生产逻辑需要具备以下几个步骤：</p>
 <ol>
 <li>配置生产者客户端参数及创建相应的生产者实例。</li>
 <li>构建待发送的消息。</li>
@@ -485,26 +489,24 @@
 </ol>
 <p>生产者代码示例</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 1 配置属性信息</span></span><br><span class="line">        Properties properties = <span class="keyword">new</span> Properties();</span><br><span class="line">        <span class="comment">// bootstrap.servers，必填，生产者客户端连接Kafka集群所需的broker地址清单</span></span><br><span class="line">        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, <span class="string">&quot;node01:9092,node02:9092,node03:9092&quot;</span>);</span><br><span class="line">        <span class="comment">// key.serializer，必填，key序列化操作的序列化器</span></span><br><span class="line">        properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());</span><br><span class="line">        <span class="comment">// value.serializer，必填，value序列化操作的序列化器</span></span><br><span class="line">        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2 创建Kafka producer</span></span><br><span class="line">        <span class="comment">// KafkaProducer是线程安全的，可以在多个线程中共享单个KafkaProducer实例，也可以将KafkaProducer实例进行池化来供其他线程调用</span></span><br><span class="line">        KafkaProducer&lt;String, String&gt; producer = <span class="keyword">new</span> KafkaProducer&lt;&gt;(properties);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3 生产者生产消息</span></span><br><span class="line">        <span class="comment">// </span></span><br><span class="line">        ProducerRecord&lt;String, String&gt; record = <span class="keyword">new</span> ProducerRecord&lt;&gt;(<span class="string">&quot;topic01&quot;</span>, <span class="string">&quot;Hello Kafka&quot;</span>);</span><br><span class="line">        <span class="comment">// 发送消息给服务器</span></span><br><span class="line">        producer.send(record);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 4 关闭生产者</span></span><br><span class="line">        producer.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="2-配置属性信息，创建Kafka-producer"><a href="#2-配置属性信息，创建Kafka-producer" class="headerlink" title="2 配置属性信息，创建Kafka producer"></a>2 配置属性信息，创建Kafka producer</h2><p>见代码必填项</p>
-<p>消息在真正发往Kafka之前，有可能需要经历拦截器（Interceptor）、序列化器（Serializer）和分区器（Partitioner）等一系列的作用</p>
-<h3 id="2-1-序列化器"><a href="#2-1-序列化器" class="headerlink" title="2.1 序列化器"></a>2.1 序列化器</h3><h4 id="2-1-1-默认序列化器"><a href="#2-1-1-默认序列化器" class="headerlink" title="2.1.1 默认序列化器"></a>2.1.1 默认序列化器</h4><p>在 <code>org.apache.kafka.common.serialization</code> 包下有各种各样的序列化器</p>
+<h3 id="1-2-配置属性信息，创建Kafka-producer"><a href="#1-2-配置属性信息，创建Kafka-producer" class="headerlink" title="1.2 配置属性信息，创建Kafka producer"></a>1.2 配置属性信息，创建Kafka producer</h3><p>见代码必填项</p>
+<p>消息在真正发往Kafka之前，有可能需要经历拦截器（Interceptor）、序列化器（Serializer）和分区器（Partitioner）等一系列的作用。</p>
+<h4 id="1-2-1-序列化器"><a href="#1-2-1-序列化器" class="headerlink" title="1.2.1 序列化器"></a>1.2.1 序列化器</h4><h5 id="1-2-1-1-默认序列化器"><a href="#1-2-1-1-默认序列化器" class="headerlink" title="1.2.1.1 默认序列化器"></a>1.2.1.1 默认序列化器</h5><p>在 <code>org.apache.kafka.common.serialization</code> 包下有各种各样的序列化器</p>
 <p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210124225943680.png" alt="image-20210124225943680"></p>
-<h4 id="2-1-2-自定义序列化器"><a href="#2-1-2-自定义序列化器" class="headerlink" title="2.1.2 自定义序列化器"></a>2.1.2 自定义序列化器</h4><p>如果需要自定义序列化器，需要实现 <code>Serializer</code> 接口，重写 <code>serialize</code> 方法。</p>
-<h3 id="2-2-分区器"><a href="#2-2-分区器" class="headerlink" title="2.2 分区器"></a>2.2 分区器</h3><p>消息经过序列化之后就需要确定它发往的分区，如果消息ProducerRecord中指定了partition字段，那么就不需要分区器的作用，因为partition代表的就是所要发往的分区号。</p>
+<h5 id="1-2-1-2-自定义序列化器"><a href="#1-2-1-2-自定义序列化器" class="headerlink" title="1.2.1.2 自定义序列化器"></a>1.2.1.2 自定义序列化器</h5><p>如果需要自定义序列化器，需要实现 <code>Serializer</code> 接口，重写 <code>serialize</code> 方法。</p>
+<h4 id="1-2-2-分区器"><a href="#1-2-2-分区器" class="headerlink" title="1.2.2 分区器"></a>1.2.2 分区器</h4><p>消息经过序列化之后就需要确定它发往的分区，如果消息ProducerRecord中指定了partition字段，那么就不需要分区器的作用，因为partition代表的就是所要发往的分区号。</p>
 <p>如果消息ProducerRecord中没有指定partition字段，那么就需要依赖分区器，根据key这个字段来计算partition的值。分区器的作用就是为消息分配分区。</p>
-<h4 id="2-1-1-默认分区器"><a href="#2-1-1-默认分区器" class="headerlink" title="2.1.1 默认分区器"></a>2.1.1 默认分区器</h4><p>默认分区器 ：DefaultPartitioner</p>
+<h5 id="1-2-1-1-默认分区器"><a href="#1-2-1-1-默认分区器" class="headerlink" title="1.2.1.1 默认分区器"></a>1.2.1.1 默认分区器</h5><p>默认分区器 ：DefaultPartitioner</p>
 <p>在 partition() 方法中定义了主要的分区分配逻辑。如果 key 不为 null，那么默认的分区器会对 key 进行哈希，最终根据得到的哈希值来计算分区号，拥有相同key的消息会被写入同一个分区。如果key为null，那么消息将会以轮询的方式发往主题内的各个可用分区。</p>
 <p>源码：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">partition</span><span class="params">(String topic, Object key, <span class="keyword">byte</span>[] keyBytes, Object value, <span class="keyword">byte</span>[] valueBytes, Cluster cluster)</span> </span>&#123;</span><br><span class="line">    List&lt;PartitionInfo&gt; partitions = cluster.partitionsForTopic(topic);</span><br><span class="line">    <span class="keyword">int</span> numPartitions = partitions.size();</span><br><span class="line">    <span class="keyword">if</span> (keyBytes == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">int</span> nextValue = <span class="keyword">this</span>.nextValue(topic);</span><br><span class="line">        List&lt;PartitionInfo&gt; availablePartitions = cluster.availablePartitionsForTopic(topic);</span><br><span class="line">        <span class="keyword">if</span> (availablePartitions.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> part = Utils.toPositive(nextValue) % availablePartitions.size();</span><br><span class="line">            <span class="keyword">return</span> ((PartitionInfo)availablePartitions.get(part)).partition();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> Utils.toPositive(nextValue) % numPartitions;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Utils.toPositive(Utils.murmur2(keyBytes)) % numPartitions;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="2-1-2-自定义分区"><a href="#2-1-2-自定义分区" class="headerlink" title="2.1.2 自定义分区"></a>2.1.2 自定义分区</h4><p>实现 Partitioner 接口，重写partition方法。</p>
+<h5 id="2-1-2-自定义分区"><a href="#2-1-2-自定义分区" class="headerlink" title="2.1.2 自定义分区"></a>2.1.2 自定义分区</h5><p>实现 Partitioner 接口，重写partition方法。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Properties properties = <span class="keyword">new</span> Properties();</span><br><span class="line">props.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, UserDefinePartitioner.class.getName());</span><br></pre></td></tr></table></figure>
-<h3 id="2-3-拦截器"><a href="#2-3-拦截器" class="headerlink" title="2.3 拦截器"></a>2.3 拦截器</h3><p>生产者拦截器既可以用来在消息发送前做一些准备工作，比如按照某个规则过滤不符合要求的消息、修改消息的内容等，也可以用来在发送回调逻辑前做一些定制化的需求，比如统计类工作。</p>
-<h4 id="2-3-1-自定义拦截器"><a href="#2-3-1-自定义拦截器" class="headerlink" title="2.3.1 自定义拦截器"></a>2.3.1 自定义拦截器</h4><p>实现 ProducerInterceptor 接口，重写onSend方法</p>
-<h2 id="3-生产者生产消息"><a href="#3-生产者生产消息" class="headerlink" title="3 生产者生产消息"></a>3 生产者生产消息</h2><p>ProducerRecord对象</p>
+<h4 id="1-2-3-拦截器"><a href="#1-2-3-拦截器" class="headerlink" title="1.2.3 拦截器"></a>1.2.3 拦截器</h4><p>生产者拦截器既可以用来在消息发送前做一些准备工作，比如按照某个规则过滤不符合要求的消息、修改消息的内容等，也可以用来在发送回调逻辑前做一些定制化的需求，比如统计类工作。</p>
+<h5 id="1-2-3-1-自定义拦截器"><a href="#1-2-3-1-自定义拦截器" class="headerlink" title="1.2.3.1 自定义拦截器"></a>1.2.3.1 自定义拦截器</h5><p>实现 ProducerInterceptor 接口，重写onSend方法</p>
+<h3 id="1-3-生产者生产消息"><a href="#1-3-生产者生产消息" class="headerlink" title="1.3 生产者生产消息"></a>1.3 生产者生产消息</h3><p>ProducerRecord对象</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProducerRecord</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">/** 主题，必填项 */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String topic;</span><br><span class="line">    <span class="comment">/** 分区号 */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Integer partition;</span><br><span class="line">    <span class="comment">/** 消息头部 */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Headers headers;</span><br><span class="line">    <span class="comment">/** 键 */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> K key;</span><br><span class="line">    <span class="comment">/** 值，必填项 */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> V value;</span><br><span class="line">    <span class="comment">/** 时间戳 */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Long timestamp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="4-发送消息"><a href="#4-发送消息" class="headerlink" title="4 发送消息"></a>4 发送消息</h2><p>发送消息有三种模式：</p>
+<h3 id="1-4-发送消息"><a href="#1-4-发送消息" class="headerlink" title="1.4 发送消息"></a>1.4 发送消息</h3><p>发送消息有三种模式：</p>
 <ul>
 <li>发后即忘（fire-and-forget）</li>
 <li>同步（sync）</li>
@@ -512,16 +514,27 @@
 </ul>
 <p>send方法</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Future&lt;RecordMetadata&gt; <span class="title">send</span><span class="params">(ProducerRecord&lt;K, V&gt; record)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.send(record, (Callback)<span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Future&lt;RecordMetadata&gt; <span class="title">send</span><span class="params">(ProducerRecord&lt;K, V&gt; record, Callback callback)</span> </span>&#123;</span><br><span class="line">    ProducerRecord&lt;K, V&gt; interceptedRecord = <span class="keyword">this</span>.interceptors.onSend(record);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.doSend(interceptedRecord, callback);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4-1-发后即忘"><a href="#4-1-发后即忘" class="headerlink" title="4.1 发后即忘"></a>4.1 发后即忘</h3><p>只管往Kafka中发送消息而并不关心消息是否正确到达。可能会造成消息的丢失，性能最高，可靠性最差。</p>
+<h4 id="1-4-1-发后即忘"><a href="#1-4-1-发后即忘" class="headerlink" title="1.4.1 发后即忘"></a>1.4.1 发后即忘</h4><p>只管往Kafka中发送消息而并不关心消息是否正确到达。可能会造成消息的丢失，性能最高，可靠性最差。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ProducerRecord&lt;String, String&gt; record = <span class="keyword">new</span> ProducerRecord&lt;&gt;(<span class="string">&quot;topic&quot;</span>, <span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line">producer.send(record)</span><br></pre></td></tr></table></figure>
-<h3 id="4-2-同步"><a href="#4-2-同步" class="headerlink" title="4.2 同步"></a>4.2 同步</h3><p>同步发送的方式可靠性高，要么消息被发送成功，要么发生异常。性能会差很多，需要阻塞等待一条消息发送完之后才能发送下一条。</p>
+<h4 id="1-4-2-同步"><a href="#1-4-2-同步" class="headerlink" title="1.4.2 同步"></a>1.4.2 同步</h4><p>同步发送的方式可靠性高，要么消息被发送成功，要么发生异常。性能会差很多，需要阻塞等待一条消息发送完之后才能发送下一条。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    ProducerRecord&lt;String, String&gt; record = <span class="keyword">new</span> ProducerRecord&lt;&gt;(<span class="string">&quot;topic&quot;</span>, <span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line">    Future&lt;RecordMetadata&gt; recordFuture = producer.send(record);</span><br><span class="line">    <span class="comment">// 调用了get()方法阻塞等待Kafka的响应，直到消息发送成功，或者发生异常。</span></span><br><span class="line">    recordFuture.get();</span><br><span class="line">&#125; <span class="keyword">catch</span> (InterruptedException | ExecutionException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>可以使用 <code>Future.get()</code> 方法获得元数据信息</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">RecordMetadata metadata = recordFuture.get();</span><br></pre></td></tr></table></figure>
-<h3 id="4-3-异步"><a href="#4-3-异步" class="headerlink" title="4.3 异步"></a>4.3 异步</h3><p>在send（）方法里指定一个Callback的回调函数，Kafka在返回响应时调用该函数来实现异步的发送确认。Kafka有响应时就会回调，要么发送成功，要么抛出异常。</p>
+<h4 id="1-4-3-异步"><a href="#1-4-3-异步" class="headerlink" title="1.4.3 异步"></a>1.4.3 异步</h4><p>在 send() 方法里指定一个 Callback 的回调函数，Kafka在返回响应时调用该函数来实现异步的发送确认。Kafka有响应时就会回调，要么发送成功，要么抛出异常。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ProducerRecord&lt;String, String&gt; record = <span class="keyword">new</span> ProducerRecord&lt;&gt;(<span class="string">&quot;topic&quot;</span>, <span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line">Future&lt;RecordMetadata&gt; recordFuture = producer.send(record, <span class="keyword">new</span> Callback() &#123;</span><br><span class="line">    <span class="comment">// 消息发送成功时，metadata不为null而exception为null；</span></span><br><span class="line">    <span class="comment">// 消息发送异常时，metadata为null而exception不为null。</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCompletion</span><span class="params">(RecordMetadata recordMetadata, Exception exception)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (exception == <span class="keyword">null</span>) &#123;</span><br><span class="line">            System.out.println(recordMetadata.topic() + recordMetadata.offset());</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            exception.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="5-关闭生产者"><a href="#5-关闭生产者" class="headerlink" title="5 关闭生产者"></a>5 关闭生产者</h2><p>close() 方法会阻塞等待之前所有的发送请求完成后再关闭 KafkaProducer。</p>
+<h3 id="1-5-关闭生产者"><a href="#1-5-关闭生产者" class="headerlink" title="1.5 关闭生产者"></a>1.5 关闭生产者</h3><p>close() 方法会阻塞等待之前所有的发送请求完成后再关闭 KafkaProducer。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">producer.close();</span><br></pre></td></tr></table></figure>
+<h2 id="2-生产者架构原理"><a href="#2-生产者架构原理" class="headerlink" title="2 生产者架构原理"></a>2 生产者架构原理</h2><h3 id="2-1-生产者架构"><a href="#2-1-生产者架构" class="headerlink" title="2.1 生产者架构"></a>2.1 生产者架构</h3><p><img src="https://yeyangshu-picgo.oss-cn-shanghai.aliyuncs.com/img/image-20210509225834040.png" alt="image-20210509225834040"></p>
+<p>生产者客户端由两个线程协调运行：</p>
+<ul>
+<li><p>主线程</p>
+<p>主线程中由KafkaProducer创建消息，然后通过可能的拦截器、序列化器和分区器的作用之后缓存到消息累加器（RecordAccumulator，也称为消息收集器）中。</p>
+</li>
+<li><p>Sender线程</p>
+<p>Sender 线程负责从RecordAccumulator中获取消息并将其发送到Kafka中。</p>
+</li>
+</ul>
+<p>RecordAccumulator 主要用来缓存消息以便 Sender 线程可以批量发送，进而减少网络传输的资源消耗以提升性能。</p>
 ]]></content>
       <categories>
         <category>Java</category>
