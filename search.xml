@@ -2392,7 +2392,9 @@
   <entry>
     <title>代码大全-变量名的力量</title>
     <url>/2021/04/20/%E4%BB%A3%E7%A0%81%E5%A4%A7%E5%85%A8-%E5%8F%98%E9%87%8F%E5%90%8D%E7%9A%84%E5%8A%9B%E9%87%8F/</url>
-    <content><![CDATA[<h1 id="变量名的力量"><a href="#变量名的力量" class="headerlink" title="变量名的力量"></a>变量名的力量</h1><p>本章主要适用于为变量、对象和基本数据命名，也适用于为类、包、文件以及其他的编程实体命名。</p>
+    <content><![CDATA[<h1 id="变量名的力量"><a href="#变量名的力量" class="headerlink" title="变量名的力量"></a>变量名的力量</h1><a id="more"></a>
+
+<p>本章主要适用于为变量、对象和基本数据命名，也适用于为类、包、文件以及其他的编程实体命名。</p>
 <h2 id="1-选择好变量名的注意事项"><a href="#1-选择好变量名的注意事项" class="headerlink" title="1 选择好变量名的注意事项"></a>1 选择好变量名的注意事项</h2><p>变量和变量名是不同的东西，本质而言却是同一事物。变量的好与坏在很大程度上取决于它的命名的好坏。在给变量命名的时候需要小心谨慎。</p>
 <p>一个不良变量名的例子：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 糟糕的变量名</span></span><br><span class="line">x = x - xx;</span><br><span class="line">xxx = fido + salesTax(fido);</span><br><span class="line">x = x + lateFee(x1, x) + xxx;</span><br><span class="line">x = x + insertest(x1, x);</span><br></pre></td></tr></table></figure>
